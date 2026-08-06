@@ -26,13 +26,13 @@ export default function BottomTabBar({ token }: { token: string }) {
             className="flex flex-1 flex-col items-center gap-1 py-2.5 transition-transform active:scale-95"
           >
             <item.Icon
-              className={`h-5 w-5 transition-colors ${active ? "text-brand-600" : "text-gray-400"}`}
+              className={`h-5 w-5 transition-colors ${active ? "nav-active" : "text-gray-400"}`}
               strokeWidth={active ? 2.2 : 1.9}
             />
-            <span className={`text-[11px] font-medium transition-colors ${active ? "text-brand-700" : "text-gray-400"}`}>
+            <span className={`text-[11px] font-medium transition-colors ${active ? "nav-active" : "text-gray-400"}`}>
               {item.label}
             </span>
-            <span className={`h-1 w-1 rounded-full transition-colors ${active ? "bg-brand-600" : "bg-transparent"}`} />
+            <span className={`h-1 w-1 rounded-full transition-colors ${active ? "nav-active-dot" : "bg-transparent"}`} />
           </Link>
         );
       })}

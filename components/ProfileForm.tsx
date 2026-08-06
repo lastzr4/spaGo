@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { AREAS } from "@/lib/areas";
 import { fileToCompressedDataUrl } from "@/lib/image";
-import { CameraIcon, CheckCircleIcon } from "@/components/icons";
+import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon } from "@/components/icons";
 
 type Props = {
   token: string;
+  slug: string;
   therapist: {
     name: string;
     phone: string;
@@ -19,11 +20,24 @@ type Props = {
   };
 };
 
-export default function ProfileForm({ token, therapist }: Props) {
+export default function ProfileForm({ token, slug, therapist }: Props) {
   const [form, setForm] = useState(therapist);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const promoUrl = typeof window !== "undefined" ? `${window.location.origin}/t/${slug}` : `/t/${slug}`;
+
+  async function handleCopy() {
+    try {
+      await navigator.clipboard.writeText(promoUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // clipboard may be unavailable; user can select the text manually
+    }
+  }
 
   async function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -59,7 +73,31 @@ export default function ProfileForm({ token, therapist }: Props) {
   }
 
   return (
-    <form onSubmit={handleSave} className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5">
+      <div className="rounded-2xl bg-brand-50/60 p-4">
+        <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+          <LinkIcon className="h-4 w-4" />
+          Pautan promosi anda
+        </p>
+        <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3 py-2.5">
+          <span className="flex-1 truncate text-[13px] text-gray-600">{promoUrl}</span>
+          <button type="button" onClick={handleCopy} className="btn-ghost shrink-0 bg-brand-50 px-2.5 py-1.5 text-xs">
+            <CopyIcon className="h-3.5 w-3.5" />
+            {copied ? "Disalin!" : "Salin"}
+          </button>
+        </div>
+        <a
+          href={`https://wa.me/?text=${encodeURIComponent(`Tempah urut dengan saya di sini: ${promoUrl}`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600"
+        >
+          <SendIcon className="h-3 w-3" />
+          Kongsi ke WhatsApp
+        </a>
+      </div>
+
+      <form onSubmit={handleSave} className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
         {form.photoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -119,6 +157,7 @@ export default function ProfileForm({ token, therapist }: Props) {
         {saved && <CheckCircleIcon filled className="h-4 w-4" />}
         {saving ? "Menyimpan..." : saved ? "Disimpan" : "Simpan"}
       </button>
-    </form>
+      </form>
+    </div>
   );
 }

@@ -15,7 +15,7 @@ html, body {
 
 body {
   color: #1d1230;
-  background: #faf9fc;
+  background: var(--app-bg, #faf9fc);
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -34,15 +34,25 @@ body {
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-600 px-5 py-3.5 text-[15px] font-semibold text-white shadow-[0_8px_20px_-6px_rgba(98,63,163,0.55)] transition-all duration-150 active:scale-[0.97] active:bg-brand-700 disabled:pointer-events-none disabled:opacity-40 disabled:shadow-none;
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-[15px] font-semibold text-white shadow-[0_8px_20px_-6px_rgba(98,63,163,0.55)] transition-all duration-150 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40 disabled:shadow-none;
+  background-color: var(--brand, #7a51c9);
+}
+.btn-primary:active {
+  filter: brightness(0.88);
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-brand-100 bg-white px-5 py-3.5 text-[15px] font-semibold text-brand-700 shadow-card transition-all duration-150 active:scale-[0.97] active:bg-brand-50 disabled:pointer-events-none disabled:opacity-40;
+  @apply inline-flex items-center justify-center gap-2 rounded-2xl border bg-white px-5 py-3.5 text-[15px] font-semibold shadow-card transition-all duration-150 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40;
+  border-color: color-mix(in srgb, var(--brand, #7a51c9) 20%, white);
+  color: var(--brand, #7a51c9);
+}
+.btn-secondary:active {
+  background-color: color-mix(in srgb, var(--brand, #7a51c9) 8%, white);
 }
 
 .btn-ghost {
-  @apply inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium text-brand-600 transition-all duration-150 active:scale-95 active:bg-brand-50;
+  @apply inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-all duration-150 active:scale-95;
+  color: var(--brand, #7a51c9);
 }
 
 .card {
@@ -62,7 +72,10 @@ body {
 }
 
 .chip-active {
-  @apply border-brand-600 bg-brand-50 text-brand-700 shadow-[0_0_0_1px_theme(colors.brand.600)];
+  border-color: var(--brand, #7a51c9);
+  background-color: color-mix(in srgb, var(--brand, #7a51c9) 10%, white);
+  color: var(--brand, #7a51c9);
+  box-shadow: 0 0 0 1px var(--brand, #7a51c9);
 }
 
 .skeleton {
@@ -70,5 +83,12 @@ body {
 }
 
 .avatar-ring {
-  box-shadow: 0 0 0 3px #fff, 0 0 0 4.5px theme("colors.brand.100");
+  box-shadow: 0 0 0 3px #fff, 0 0 0 4.5px color-mix(in srgb, var(--brand, #7a51c9) 25%, white);
+}
+
+.nav-active {
+  color: var(--brand, #7a51c9) !important;
+}
+.nav-active-dot {
+  background-color: var(--brand, #7a51c9) !important;
 }

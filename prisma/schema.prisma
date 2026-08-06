@@ -34,6 +34,7 @@ enum BookingStatus {
 model Therapist {
   id                  String              @id @default(cuid())
   dashboardToken      String              @unique @default(cuid())
+  slug                String              @unique
   name                String
   phone               String
   gender              Gender
@@ -117,4 +118,11 @@ model Review {
   createdAt     DateTime  @default(now())
 
   @@index([therapistId])
+}
+
+model SiteSettings {
+  id              String   @id @default("singleton")
+  themeColor      String   @default("#7a51c9")
+  backgroundColor String   @default("#faf9fc")
+  updatedAt       DateTime @updatedAt
 }

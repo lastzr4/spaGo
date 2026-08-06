@@ -21,6 +21,7 @@ export default async function DashboardHomePage({ params }: { params: { token: s
         <div className="card animate-fade-in">
           <ProfileForm
             token={params.token}
+            slug={therapist.slug}
             therapist={{
               name: therapist.name,
               phone: therapist.phone,

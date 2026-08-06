@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { isMatch } from "@/lib/gender";
 import TherapistCard from "@/components/TherapistCard";
 import TopBar from "@/components/TopBar";
+import Footer from "@/components/Footer";
 import type { Gender } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -74,6 +75,7 @@ export default async function TherapistsPage({
             })}
           </div>
         )}
+        <Footer />
       </main>
     </>
   );

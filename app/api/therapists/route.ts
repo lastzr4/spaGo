@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isMatch } from "@/lib/gender";
+import { generateUniqueSlug } from "@/lib/slug";
 import type { Gender } from "@prisma/client";
 
 // GET /api/therapists?area=Bangi&gender=FEMALE
@@ -55,11 +56,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "gender must be MALE or FEMALE" }, { status: 400 });
   }
 
+  const slug = await generateUniqueSlug(name);
+
   const therapist = await prisma.therapist.create({
     data: {
       name,
       phone,
       gender,
+      slug,
       clientGenderPolicy: clientGenderPolicy ?? "FEMALE_ONLY",
       coverageAreas,
       bio: bio ?? null,

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import BookingFlow from "@/components/BookingFlow";
+import PromoBookingFlow from "@/components/PromoBookingFlow";
 import ReviewSection from "@/components/ReviewSection";
 import TopBar from "@/components/TopBar";
 import Footer from "@/components/Footer";
@@ -8,15 +8,9 @@ import { StarIcon, MapPinIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
-export default async function TherapistDetailPage({
-  params,
-  searchParams,
-}: {
-  params: { id: string };
-  searchParams: { area?: string; gender?: string };
-}) {
+export default async function TherapistPromoPage({ params }: { params: { slug: string } }) {
   const therapist = await prisma.therapist.findUnique({
-    where: { id: params.id },
+    where: { slug: params.slug },
     include: { services: { where: { active: true }, orderBy: { price: "asc" } } },
   });
 
@@ -35,24 +29,27 @@ export default async function TherapistDetailPage({
     orderBy: [{ date: "asc" }, { startTime: "asc" }],
   });
 
-  const customerGender = (searchParams.gender as "MALE" | "FEMALE") ?? "FEMALE";
-
   const reviews = await prisma.review.findMany({
     where: { therapistId: therapist.id, hidden: false },
     orderBy: { createdAt: "desc" },
   });
   const average = reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : null;
 
+  const defaultGender = therapist.clientGenderPolicy === "MALE_ONLY" ? "MALE" : "FEMALE";
+
   return (
     <>
-      <TopBar title={therapist.name} backHref={`/therapists?area=${encodeURIComponent(searchParams.area ?? "")}&gender=${customerGender}`} />
+      <TopBar title={therapist.name} backHref="/" />
       <main className="flex-1 overflow-y-auto px-5 py-5">
         <div className="mb-5 flex animate-fade-in items-center gap-4">
           {therapist.photoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={therapist.photoUrl} alt={therapist.name} className="avatar-ring h-20 w-20 shrink-0 rounded-3xl object-cover" />
           ) : (
-            <div className="avatar-ring flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-400 to-brand-600 text-2xl font-bold text-white">
+            <div
+              className="avatar-ring flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl text-2xl font-bold text-white"
+              style={{ background: "linear-gradient(135deg, var(--brand, #7a51c9), color-mix(in srgb, var(--brand, #7a51c9) 55%, white))" }}
+            >
               {therapist.name.charAt(0).toUpperCase()}
             </div>
           )}
@@ -79,10 +76,10 @@ export default async function TherapistDetailPage({
         )}
 
         <div className="animate-fade-in">
-          <BookingFlow
+          <PromoBookingFlow
             therapistId={therapist.id}
             therapistPhone={therapist.phone}
-            customerGender={customerGender}
+            defaultGender={defaultGender}
             services={therapist.services.map((s) => ({
               id: s.id,
               name: s.name,
@@ -112,6 +109,7 @@ export default async function TherapistDetailPage({
             initialAverage={average}
           />
         </div>
+
         <Footer />
       </main>
     </>

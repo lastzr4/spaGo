@@ -1,10 +1,13 @@
-import Link from "next/link";
 import AreaGenderForm from "@/components/AreaGenderForm";
+import Footer from "@/components/Footer";
 
 export default function HomePage() {
   return (
     <main className="safe-top flex flex-1 flex-col">
-      <div className="relative overflow-hidden bg-gradient-to-br from-brand-600 via-brand-500 to-brand-400 px-6 pb-14 pt-10 text-white">
+      <div
+        className="relative overflow-hidden px-6 pb-14 pt-10 text-white"
+        style={{ background: "linear-gradient(135deg, var(--brand, #7a51c9), color-mix(in srgb, var(--brand, #7a51c9) 55%, white))" }}
+      >
         <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10" />
         <div className="absolute -bottom-16 -left-10 h-48 w-48 rounded-full bg-white/10" />
         <div className="relative animate-fade-in">
@@ -26,12 +29,7 @@ export default function HomePage() {
           <AreaGenderForm />
         </div>
 
-        <div className="mt-6 flex animate-fade-in items-center justify-center gap-1.5 pb-8 text-sm">
-          <span className="text-gray-500">Terapis mobile spa?</span>
-          <Link href="/dashboard/register" className="font-semibold text-brand-600 underline-offset-2 active:underline">
-            Daftar sebagai terapis
-          </Link>
-        </div>
+        <Footer />
       </div>
     </main>
   );
