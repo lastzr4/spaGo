@@ -45,6 +45,7 @@ model Therapist {
   coverageAreas       String[]
   photoUrl            String?
   active              Boolean             @default(true)
+  isDemo              Boolean             @default(false)
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
 
