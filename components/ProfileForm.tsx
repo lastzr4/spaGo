@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AREAS } from "@/lib/areas";
 import { fileToCompressedDataUrl } from "@/lib/image";
-import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon, LockIcon } from "@/components/icons";
+import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon, LockIcon, ChevronLeftIcon } from "@/components/icons";
 
 type Props = {
   token: string;
@@ -30,6 +30,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [copied, setCopied] = useState(false);
   const [credError, setCredError] = useState<string | null>(null);
+  const [editingCreds, setEditingCreds] = useState(false);
 
   const promoUrl = slug
     ? typeof window !== "undefined"
@@ -103,6 +104,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
       setSaved(true);
       setNewPin("");
       setNewPinConfirm("");
+      setEditingCreds(false);
       setTimeout(() => setSaved(false), 2000);
     } else {
       const data = await res.json().catch(() => null);
@@ -206,39 +208,82 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
       </label>
 
       <div className="rounded-2xl bg-brand-50/60 p-4">
-        <p className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-brand-900">
-          <LockIcon className="h-4 w-4" />
-          Log masuk
-        </p>
-        <div className="flex flex-col gap-3">
-          <input
-            className="input"
-            placeholder="Username"
-            value={form.username}
-            onChange={(e) => setForm({ ...form, username: e.target.value.trim() })}
-            autoCapitalize="none"
-          />
-          <div className="flex gap-3">
-            <input
-              className="input"
-              type="password"
-              inputMode="numeric"
-              placeholder="PIN baru (opsyenal)"
-              value={newPin}
-              onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
-            />
-            <input
-              className="input"
-              type="password"
-              inputMode="numeric"
-              placeholder="Sahkan PIN baru"
-              value={newPinConfirm}
-              onChange={(e) => setNewPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 6))}
-            />
+        {editingCreds ? (
+          <>
+            <div className="mb-3 flex items-center justify-between">
+              <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+                <LockIcon className="h-4 w-4" />
+                Log masuk
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  setEditingCreds(false);
+                  setCredError(null);
+                  setNewPin("");
+                  setNewPinConfirm("");
+                  setForm((f) => ({ ...f, username: therapist.username ?? "" }));
+                }}
+                className="text-xs font-semibold text-gray-400"
+              >
+                Batal
+              </button>
+            </div>
+            <div className="flex flex-col gap-3">
+              <input
+                className="input"
+                placeholder="Username"
+                value={form.username}
+                onChange={(e) => setForm({ ...form, username: e.target.value.trim() })}
+                autoCapitalize="none"
+              />
+              <div className="flex gap-3">
+                <input
+                  className="input"
+                  type="password"
+                  inputMode="numeric"
+                  placeholder="PIN baru (opsyenal)"
+                  value={newPin}
+                  onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                />
+                <input
+                  className="input"
+                  type="password"
+                  inputMode="numeric"
+                  placeholder="Sahkan PIN baru"
+                  value={newPinConfirm}
+                  onChange={(e) => setNewPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                />
+              </div>
+            </div>
+            <p className="mt-2 text-xs text-gray-500">Kosongkan PIN jika tidak mahu menukarnya. Simpan guna butang di bawah.</p>
+            {credError && <p className="mt-2 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{credError}</p>}
+          </>
+        ) : (
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+                <LockIcon className="h-4 w-4" />
+                Log masuk
+              </p>
+              <p className="mt-1 text-xs text-gray-500">
+                {therapist.username ? (
+                  <>Username: <span className="font-medium text-gray-600">{therapist.username}</span></>
+                ) : (
+                  "Belum ditetapkan"
+                )}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setEditingCreds(true)}
+              className="btn-ghost flex items-center gap-1 bg-white px-3 py-1.5 text-xs"
+            >
+              {therapist.username ? "Tukar" : "Tetapkan"}
+              <ChevronLeftIcon className="h-3 w-3 rotate-180" />
+            </button>
           </div>
-        </div>
-        <p className="mt-2 text-xs text-gray-500">Kosongkan PIN jika tidak mahu menukarnya.</p>
-        {credError && <p className="mt-2 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{credError}</p>}
+        )}
       </div>
 
       <button type="submit" className="btn-primary flex items-center justify-center gap-1.5" disabled={saving}>
