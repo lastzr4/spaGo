@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { StarIcon, MapPinIcon, LockIcon } from "@/components/icons";
+import { StarIcon, MapPinIcon, QrIcon, CashIcon } from "@/components/icons";
 
 type Service = { id: string; name: string; durationMinutes: number; price: string };
 type Therapist = {
@@ -14,6 +14,8 @@ type Therapist = {
   averageRating?: number | null;
   reviewCount?: number;
   depositRequired?: boolean;
+  depositAmount?: string | null;
+  paymentMethod?: "QR" | "CASH" | null;
 };
 
 export default function TherapistCard({ therapist, area, gender }: { therapist: Therapist; area: string; gender: string }) {
@@ -53,10 +55,16 @@ export default function TherapistCard({ therapist, area, gender }: { therapist: 
           {therapist.priceFrom && (
             <span className="text-[13px] font-semibold text-brand-700">Dari RM{Number(therapist.priceFrom).toFixed(0)}</span>
           )}
-          {therapist.depositRequired && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500">
-              <LockIcon className="h-2.5 w-2.5" />
-              Deposit
+        </div>
+        <div className="mt-1.5">
+          {therapist.depositRequired && therapist.depositAmount ? (
+            <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-600">
+              {therapist.paymentMethod === "CASH" ? <CashIcon className="h-3 w-3" /> : <QrIcon className="h-3 w-3" />}
+              Deposit RM{Number(therapist.depositAmount).toFixed(0)} &middot; {therapist.paymentMethod === "CASH" ? "Tunai" : "QR"}
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-400">
+              Tiada deposit diperlukan
             </span>
           )}
         </div>

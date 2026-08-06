@@ -69,6 +69,8 @@ export default async function TherapistsPage({
                       averageRating,
                       reviewCount,
                       depositRequired: t.depositRequired,
+                      depositAmount: t.depositAmount ? t.depositAmount.toString() : null,
+                      paymentMethod: t.paymentMethod,
                     }}
                   />
                 </div>

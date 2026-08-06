@@ -211,3 +211,24 @@ export function PaletteIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function QrIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="3.5" y="3.5" width="6" height="6" rx="1" />
+      <rect x="14.5" y="3.5" width="6" height="6" rx="1" />
+      <rect x="3.5" y="14.5" width="6" height="6" rx="1" />
+      <path d="M14.5 14.5h3v3h-3zM20 14.5v2M17.5 20h2.5" />
+    </svg>
+  );
+}
+
+export function CashIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="2.5" y="6.5" width="19" height="11" rx="2" />
+      <circle cx="12" cy="12" r="2.5" />
+      <path d="M5.5 9v0M18.5 15v0" />
+    </svg>
+  );
+}

@@ -4,7 +4,7 @@ import PromoBookingFlow from "@/components/PromoBookingFlow";
 import ReviewSection from "@/components/ReviewSection";
 import TopBar from "@/components/TopBar";
 import Footer from "@/components/Footer";
-import { StarIcon, MapPinIcon } from "@/components/icons";
+import { StarIcon, MapPinIcon, QrIcon, CashIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -59,13 +59,25 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
               <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">{therapist.coverageAreas.join(", ")}</span>
             </p>
-            {average !== null && (
-              <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-yellow-50 px-2 py-0.5 text-[12px] font-semibold text-yellow-600">
-                <StarIcon filled className="h-3 w-3" />
-                {average.toFixed(1)}
-                <span className="font-normal text-yellow-500/70">({reviews.length} ulasan)</span>
-              </span>
-            )}
+            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+              {average !== null && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-yellow-50 px-2 py-0.5 text-[12px] font-semibold text-yellow-600">
+                  <StarIcon filled className="h-3 w-3" />
+                  {average.toFixed(1)}
+                  <span className="font-normal text-yellow-500/70">({reviews.length} ulasan)</span>
+                </span>
+              )}
+              {therapist.depositRequired && therapist.depositAmount ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-600">
+                  {therapist.paymentMethod === "CASH" ? <CashIcon className="h-3 w-3" /> : <QrIcon className="h-3 w-3" />}
+                  Deposit RM{Number(therapist.depositAmount).toFixed(0)} &middot; {therapist.paymentMethod === "CASH" ? "Tunai" : "QR"}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-400">
+                  Tiada deposit diperlukan
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
