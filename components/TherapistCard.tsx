@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { StarIcon, MapPinIcon } from "@/components/icons";
+import { StarIcon, MapPinIcon, LockIcon } from "@/components/icons";
 
 type Service = { id: string; name: string; durationMinutes: number; price: string };
 type Therapist = {
@@ -13,6 +13,7 @@ type Therapist = {
   priceFrom: string | null;
   averageRating?: number | null;
   reviewCount?: number;
+  depositRequired?: boolean;
 };
 
 export default function TherapistCard({ therapist, area, gender }: { therapist: Therapist; area: string; gender: string }) {
@@ -51,6 +52,12 @@ export default function TherapistCard({ therapist, area, gender }: { therapist: 
           )}
           {therapist.priceFrom && (
             <span className="text-[13px] font-semibold text-brand-700">Dari RM{Number(therapist.priceFrom).toFixed(0)}</span>
+          )}
+          {therapist.depositRequired && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-500">
+              <LockIcon className="h-2.5 w-2.5" />
+              Deposit
+            </span>
           )}
         </div>
       </div>

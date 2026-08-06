@@ -93,6 +93,11 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
               startTime: s.startTime,
               endTime: s.endTime,
             }))}
+            depositRequired={therapist.depositRequired}
+            depositAmount={therapist.depositAmount ? therapist.depositAmount.toString() : null}
+            paymentMethod={therapist.paymentMethod}
+            qrCodeUrl={therapist.qrCodeUrl}
+            extraChargesNote={therapist.extraChargesNote}
           />
         </div>
 

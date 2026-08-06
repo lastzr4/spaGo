@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { buildWhatsAppBookingMessage, buildWhatsAppLink } from "@/lib/whatsapp";
-import { CheckCircleIcon, SendIcon, CalendarIcon } from "@/components/icons";
+import { CheckCircleIcon, SendIcon, CalendarIcon, ImageOffIcon } from "@/components/icons";
 
 type Service = { id: string; name: string; durationMinutes: number; price: string; photoUrl?: string | null };
 type Slot = { id: string; date: string; startTime: string; endTime: string };
@@ -21,12 +21,22 @@ export default function BookingFlow({
   services,
   slots,
   customerGender,
+  depositRequired = false,
+  depositAmount = null,
+  paymentMethod = null,
+  qrCodeUrl = null,
+  extraChargesNote = null,
 }: {
   therapistId: string;
   therapistPhone: string;
   services: Service[];
   slots: Slot[];
   customerGender: "MALE" | "FEMALE";
+  depositRequired?: boolean;
+  depositAmount?: string | null;
+  paymentMethod?: "QR" | "CASH" | null;
+  qrCodeUrl?: string | null;
+  extraChargesNote?: string | null;
 }) {
   const [serviceId, setServiceId] = useState(services[0]?.id ?? "");
   const [slotId, setSlotId] = useState("");
@@ -35,6 +45,7 @@ export default function BookingFlow({
   const [address, setAddress] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [depositConfirmed, setDepositConfirmed] = useState(false);
 
   const slotsByDate = useMemo(() => {
     const map: Record<string, Slot[]> = {};
@@ -91,6 +102,12 @@ export default function BookingFlow({
         date: selectedSlot?.date.slice(0, 10) ?? "",
         startTime: selectedSlot?.startTime ?? "",
         address,
+        depositInfo: depositRequired && depositAmount
+          ? paymentMethod === "CASH"
+            ? `RM${Number(depositAmount).toFixed(0)} (tunai, akan dibayar semasa tiba)`
+            : `RM${Number(depositAmount).toFixed(0)} (QR, sudah dibayar)`
+          : undefined,
+        extraChargesNote: extraChargesNote || undefined,
       });
       const link = buildWhatsAppLink(therapistPhone, message);
       window.location.href = link;
@@ -110,6 +127,12 @@ export default function BookingFlow({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 pb-24">
+      {extraChargesNote && (
+        <p className="rounded-2xl bg-yellow-50 px-4 py-3 text-[13px] font-medium text-yellow-700">
+          Caj tambahan mungkin dikenakan: {extraChargesNote}
+        </p>
+      )}
+
       <div>
         <h2 className="mb-3 text-[15px] font-bold text-brand-900">Pilih servis</h2>
         <div className="flex flex-col gap-2.5">
@@ -204,12 +227,58 @@ export default function BookingFlow({
         <textarea className="input" placeholder="Alamat penuh untuk urutan" value={address} onChange={(e) => setAddress(e.target.value)} rows={3} required />
       </div>
 
+      {depositRequired && depositAmount && (
+        <div className="rounded-2xl border border-brand-100 bg-brand-50/60 p-4">
+          <h2 className="mb-1 text-[15px] font-bold text-brand-900">Deposit diperlukan</h2>
+          <p className="mb-3 text-sm text-gray-600">
+            Terapis ini perlukan deposit <span className="font-semibold text-brand-700">RM{Number(depositAmount).toFixed(0)}</span> sebelum tempahan disahkan.
+          </p>
+
+          {paymentMethod === "QR" ? (
+            <div className="mb-3 flex flex-col items-center gap-2">
+              {qrCodeUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={qrCodeUrl} alt="Kod QR pembayaran" className="h-48 w-48 rounded-xl border border-black/[0.06] object-cover" />
+              ) : (
+                <div className="flex h-48 w-48 flex-col items-center justify-center gap-1 rounded-xl bg-white text-brand-300">
+                  <ImageOffIcon className="h-8 w-8" />
+                  <span className="text-xs">Kod QR belum dimuat naik</span>
+                </div>
+              )}
+              <p className="text-center text-xs text-gray-500">Imbas kod QR di atas untuk bayar deposit.</p>
+            </div>
+          ) : (
+            <p className="mb-3 rounded-xl bg-white px-3.5 py-2.5 text-sm text-gray-600">
+              Bayar deposit secara tunai terus kepada terapis semasa sesi.
+            </p>
+          )}
+
+          <label className="flex items-start gap-2.5 rounded-xl bg-white px-3.5 py-3">
+            <input
+              type="checkbox"
+              checked={depositConfirmed}
+              onChange={(e) => setDepositConfirmed(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-brand-600"
+            />
+            <span className="text-sm text-gray-700">
+              {paymentMethod === "CASH"
+                ? <>Saya faham deposit RM{Number(depositAmount).toFixed(0)} perlu dibayar tunai semasa terapis tiba.</>
+                : <>Saya telah bayar deposit RM{Number(depositAmount).toFixed(0)} melalui QR di atas.</>}
+            </span>
+          </label>
+        </div>
+      )}
+
       {error && (
         <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{error}</p>
       )}
 
       <div className="safe-bottom fixed inset-x-0 bottom-0 z-20 mx-auto max-w-md border-t border-black/[0.05] bg-white/90 px-5 pb-4 pt-3 backdrop-blur-md sm:max-w-lg">
-        <button type="submit" className="btn-primary flex items-center justify-center gap-2" disabled={submitting || !slotId}>
+        <button
+          type="submit"
+          className="btn-primary flex items-center justify-center gap-2"
+          disabled={submitting || !slotId || (depositRequired && !depositConfirmed)}
+        >
           {submitting ? "Menghantar..." : (
             <>
               Tempah & Hantar ke WhatsApp

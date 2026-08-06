@@ -14,7 +14,17 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
   if (!therapist) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const body = await req.json();
-  const { name, phone, gender, clientGenderPolicy, coverageAreas, bio, active, photoUrl, username, pin } = body ?? {};
+  const {
+    name, phone, gender, clientGenderPolicy, coverageAreas, bio, active, photoUrl, username, pin,
+    depositRequired, depositAmount, paymentMethod, qrCodeUrl, extraChargesNote,
+  } = body ?? {};
+
+  if (paymentMethod !== undefined && paymentMethod !== null && paymentMethod !== "QR" && paymentMethod !== "CASH") {
+    return NextResponse.json({ error: "PAYMENT_METHOD_INVALID" }, { status: 400 });
+  }
+  if (depositAmount !== undefined && depositAmount !== null && (isNaN(Number(depositAmount)) || Number(depositAmount) < 0)) {
+    return NextResponse.json({ error: "DEPOSIT_AMOUNT_INVALID" }, { status: 400 });
+  }
 
   if (username !== undefined && username !== therapist.username) {
     if (!isValidUsername(username)) {
@@ -43,6 +53,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
       ...(photoUrl !== undefined ? { photoUrl } : {}),
       ...(username !== undefined ? { username } : {}),
       ...(pin !== undefined && pin !== "" ? { pinHash: hashPin(pin) } : {}),
+      ...(depositRequired !== undefined ? { depositRequired } : {}),
+      ...(depositAmount !== undefined ? { depositAmount: depositAmount === null ? null : Number(depositAmount) } : {}),
+      ...(paymentMethod !== undefined ? { paymentMethod } : {}),
+      ...(qrCodeUrl !== undefined ? { qrCodeUrl } : {}),
+      ...(extraChargesNote !== undefined ? { extraChargesNote } : {}),
     },
   });
 

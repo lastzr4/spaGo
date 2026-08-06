@@ -32,6 +32,11 @@ export default async function DashboardHomePage({ params }: { params: { token: s
               active: therapist.active,
               photoUrl: therapist.photoUrl,
               username: therapist.username,
+              depositRequired: therapist.depositRequired,
+              depositAmount: therapist.depositAmount ? therapist.depositAmount.toString() : null,
+              paymentMethod: therapist.paymentMethod,
+              qrCodeUrl: therapist.qrCodeUrl,
+              extraChargesNote: therapist.extraChargesNote,
             }}
           />
         </div>

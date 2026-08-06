@@ -5,15 +5,20 @@ export function buildWhatsAppBookingMessage(params: {
   date: string;
   startTime: string;
   address: string;
+  depositInfo?: string;
+  extraChargesNote?: string;
 }) {
-  const { customerName, serviceName, durationMinutes, date, startTime, address } = params;
-  return [
+  const { customerName, serviceName, durationMinutes, date, startTime, address, depositInfo, extraChargesNote } = params;
+  const lines = [
     `Salam SpaGo! Tempahan Baru daripada ${customerName}.`,
     `Servis: ${serviceName} (${durationMinutes} min).`,
     `Tarikh: ${date}, ${startTime}.`,
     `Alamat: ${address}.`,
-    `Status: Menunggu Pengesahan.`,
-  ].join("\n");
+  ];
+  if (depositInfo) lines.push(`Deposit: ${depositInfo}.`);
+  if (extraChargesNote) lines.push(`Caj tambahan: ${extraChargesNote}.`);
+  lines.push(`Status: Menunggu Pengesahan.`);
+  return lines.join("\n");
 }
 
 export function normalizePhoneForWhatsApp(phone: string) {

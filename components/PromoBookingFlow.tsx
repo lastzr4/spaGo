@@ -12,12 +12,22 @@ export default function PromoBookingFlow({
   services,
   slots,
   defaultGender,
+  depositRequired = false,
+  depositAmount = null,
+  paymentMethod = null,
+  qrCodeUrl = null,
+  extraChargesNote = null,
 }: {
   therapistId: string;
   therapistPhone: string;
   services: Service[];
   slots: Slot[];
   defaultGender: "MALE" | "FEMALE";
+  depositRequired?: boolean;
+  depositAmount?: string | null;
+  paymentMethod?: "QR" | "CASH" | null;
+  qrCodeUrl?: string | null;
+  extraChargesNote?: string | null;
 }) {
   const [gender, setGender] = useState<"MALE" | "FEMALE">(defaultGender);
 
@@ -48,6 +58,11 @@ export default function PromoBookingFlow({
         services={services}
         slots={slots}
         customerGender={gender}
+        depositRequired={depositRequired}
+        depositAmount={depositAmount}
+        paymentMethod={paymentMethod}
+        qrCodeUrl={qrCodeUrl}
+        extraChargesNote={extraChargesNote}
       />
     </div>
   );

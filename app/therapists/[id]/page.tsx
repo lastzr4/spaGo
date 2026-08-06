@@ -96,6 +96,11 @@ export default async function TherapistDetailPage({
               startTime: s.startTime,
               endTime: s.endTime,
             }))}
+            depositRequired={therapist.depositRequired}
+            depositAmount={therapist.depositAmount ? therapist.depositAmount.toString() : null}
+            paymentMethod={therapist.paymentMethod}
+            qrCodeUrl={therapist.qrCodeUrl}
+            extraChargesNote={therapist.extraChargesNote}
           />
         </div>
 

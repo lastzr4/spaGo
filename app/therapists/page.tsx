@@ -68,6 +68,7 @@ export default async function TherapistsPage({
                       priceFrom: t.services.length ? t.services[0].price.toString() : null,
                       averageRating,
                       reviewCount,
+                      depositRequired: t.depositRequired,
                     }}
                   />
                 </div>

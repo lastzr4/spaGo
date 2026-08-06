@@ -55,19 +55,21 @@ type DemoTherapistTemplate = {
   clientGenderPolicy: ClientGenderPolicy;
   areas: [string, string];
   reviewCount: number;
+  deposit?: { amount: number; method: "QR" | "CASH" };
+  extraChargesNote?: string;
 };
 
 const THERAPIST_POOL: DemoTherapistTemplate[] = [
-  { name: "Aina Zulkifli", gender: "FEMALE", clientGenderPolicy: "FEMALE_ONLY", areas: ["Shah Alam", "Petaling Jaya"], reviewCount: 4 },
-  { name: "Farah Adila", gender: "FEMALE", clientGenderPolicy: "FEMALE_ONLY", areas: ["Bangi", "Kajang"], reviewCount: 0 },
-  { name: "Siti Nurhaliza", gender: "FEMALE", clientGenderPolicy: "BOTH", areas: ["Puchong", "Subang Jaya"], reviewCount: 5 },
-  { name: "Amirul Hakim", gender: "MALE", clientGenderPolicy: "MALE_ONLY", areas: ["Cheras", "Kuala Lumpur"], reviewCount: 3 },
+  { name: "Aina Zulkifli", gender: "FEMALE", clientGenderPolicy: "FEMALE_ONLY", areas: ["Shah Alam", "Petaling Jaya"], reviewCount: 4, deposit: { amount: 30, method: "QR" } },
+  { name: "Farah Adila", gender: "FEMALE", clientGenderPolicy: "FEMALE_ONLY", areas: ["Bangi", "Kajang"], reviewCount: 0, extraChargesNote: "RM10 caj minyak untuk kawasan jauh" },
+  { name: "Siti Nurhaliza", gender: "FEMALE", clientGenderPolicy: "BOTH", areas: ["Puchong", "Subang Jaya"], reviewCount: 5, deposit: { amount: 50, method: "QR" } },
+  { name: "Amirul Hakim", gender: "MALE", clientGenderPolicy: "MALE_ONLY", areas: ["Cheras", "Kuala Lumpur"], reviewCount: 3, deposit: { amount: 20, method: "CASH" } },
   { name: "Danish Iskandar", gender: "MALE", clientGenderPolicy: "MALE_ONLY", areas: ["Ampang", "Setapak"], reviewCount: 0 },
-  { name: "Nadia Rahman", gender: "FEMALE", clientGenderPolicy: "FEMALE_ONLY", areas: ["Klang", "Shah Alam"], reviewCount: 2 },
-  { name: "Haziq Rosli", gender: "MALE", clientGenderPolicy: "BOTH", areas: ["Cyberjaya", "Putrajaya"], reviewCount: 3 },
-  { name: "Mira Syafiqah", gender: "FEMALE", clientGenderPolicy: "FEMALE_ONLY", areas: ["Kepong", "Kuala Lumpur"], reviewCount: 0 },
+  { name: "Nadia Rahman", gender: "FEMALE", clientGenderPolicy: "FEMALE_ONLY", areas: ["Klang", "Shah Alam"], reviewCount: 2, deposit: { amount: 30, method: "QR" }, extraChargesNote: "RM5 caj parking" },
+  { name: "Haziq Rosli", gender: "MALE", clientGenderPolicy: "BOTH", areas: ["Cyberjaya", "Putrajaya"], reviewCount: 3, extraChargesNote: "Caj tol akan dikira berasingan" },
+  { name: "Mira Syafiqah", gender: "FEMALE", clientGenderPolicy: "FEMALE_ONLY", areas: ["Kepong", "Kuala Lumpur"], reviewCount: 0, deposit: { amount: 40, method: "CASH" } },
   { name: "Firdaus Azman", gender: "MALE", clientGenderPolicy: "MALE_ONLY", areas: ["Rawang", "Kepong"], reviewCount: 4 },
-  { name: "Elisya Batrisyia", gender: "FEMALE", clientGenderPolicy: "BOTH", areas: ["Kajang", "Bangi"], reviewCount: 2 },
+  { name: "Elisya Batrisyia", gender: "FEMALE", clientGenderPolicy: "BOTH", areas: ["Kajang", "Bangi"], reviewCount: 2, deposit: { amount: 25, method: "QR" } },
 ];
 
 function pick<T>(arr: T[], seed: number): T {
@@ -88,6 +90,10 @@ function profilePhotoUrl(gender: Gender, seed: number): string {
 
 function servicePhotoUrl(seed: string): string {
   return `https://picsum.photos/seed/${seed}/400/300`;
+}
+
+function demoQrCodeUrl(seed: string): string {
+  return `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=SpaGo-Demo-${encodeURIComponent(seed)}`;
 }
 
 export async function seedDemoData() {
@@ -136,6 +142,11 @@ export async function seedDemoData() {
         bio: pick(BIO_POOL, i),
         photoUrl: profilePhotoUrl(t.gender, i),
         isDemo: true,
+        depositRequired: Boolean(t.deposit),
+        depositAmount: t.deposit ? t.deposit.amount : null,
+        paymentMethod: t.deposit ? t.deposit.method : null,
+        qrCodeUrl: t.deposit?.method === "QR" ? demoQrCodeUrl(slug) : null,
+        extraChargesNote: t.extraChargesNote ?? null,
         services: { create: services },
         slots: { create: slotDates },
       },

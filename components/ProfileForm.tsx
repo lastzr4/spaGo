@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AREAS } from "@/lib/areas";
 import { fileToCompressedDataUrl } from "@/lib/image";
-import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon, LockIcon, ChevronLeftIcon } from "@/components/icons";
+import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon, LockIcon, ChevronLeftIcon, ImageOffIcon } from "@/components/icons";
 
 type Props = {
   token: string;
@@ -18,16 +18,28 @@ type Props = {
     active: boolean;
     photoUrl: string | null;
     username: string | null;
+    depositRequired: boolean;
+    depositAmount: string | null;
+    paymentMethod: "QR" | "CASH" | null;
+    qrCodeUrl: string | null;
+    extraChargesNote: string | null;
   };
 };
 
 export default function ProfileForm({ token, slug, therapist }: Props) {
-  const [form, setForm] = useState({ ...therapist, username: therapist.username ?? "" });
+  const [form, setForm] = useState({
+    ...therapist,
+    username: therapist.username ?? "",
+    depositAmount: therapist.depositAmount ?? "",
+    paymentMethod: therapist.paymentMethod ?? "QR",
+    extraChargesNote: therapist.extraChargesNote ?? "",
+  });
   const [newPin, setNewPin] = useState("");
   const [newPinConfirm, setNewPinConfirm] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [uploadingQr, setUploadingQr] = useState(false);
   const [copied, setCopied] = useState(false);
   const [credError, setCredError] = useState<string | null>(null);
   const [editingCreds, setEditingCreds] = useState(false);
@@ -58,6 +70,18 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
       setForm((f) => ({ ...f, photoUrl: dataUrl }));
     } finally {
       setUploadingPhoto(false);
+    }
+  }
+
+  async function handleQrPhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingQr(true);
+    try {
+      const dataUrl = await fileToCompressedDataUrl(file, { maxWidth: 700, maxHeight: 700, quality: 0.85 });
+      setForm((f) => ({ ...f, qrCodeUrl: dataUrl }));
+    } finally {
+      setUploadingQr(false);
     }
   }
 
@@ -92,6 +116,10 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
     const body: Record<string, unknown> = { ...form };
     if (!form.username) delete body.username;
     if (newPin) body.pin = newPin;
+    body.depositAmount = form.depositAmount === "" ? null : Number(form.depositAmount);
+    if (!form.depositRequired) {
+      body.paymentMethod = null;
+    }
 
     const res = await fetch(`/api/dashboard/${token}`, {
       method: "PATCH",
@@ -284,6 +312,84 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
             </button>
           </div>
         )}
+      </div>
+
+      <div className="rounded-2xl bg-brand-50/60 p-4">
+        <p className="mb-1 text-[15px] font-bold text-brand-900">Bayaran &amp; Deposit</p>
+        <p className="mb-3 text-xs text-gray-500">Tetapkan jika anda perlukan deposit sebelum tempahan disahkan, dan caj tambahan (jika ada).</p>
+
+        <label className="mb-3 flex items-center justify-between rounded-xl bg-white px-4 py-3">
+          <span className="text-sm font-medium text-gray-700">Perlukan deposit?</span>
+          <input
+            type="checkbox"
+            checked={form.depositRequired}
+            onChange={(e) => setForm({ ...form, depositRequired: e.target.checked })}
+            className="h-4 w-4 accent-brand-600"
+          />
+        </label>
+
+        {form.depositRequired && (
+          <div className="mb-3 flex flex-col gap-3 animate-fade-in">
+            <input
+              className="input"
+              type="number"
+              min="0"
+              placeholder="Jumlah deposit (RM)"
+              value={form.depositAmount}
+              onChange={(e) => setForm({ ...form, depositAmount: e.target.value })}
+            />
+
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-brand-900">Kaedah bayaran</label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, paymentMethod: "QR" })}
+                  className={`chip justify-center py-2.5 ${form.paymentMethod === "QR" ? "chip-active" : ""}`}
+                >
+                  QR (disyorkan)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForm({ ...form, paymentMethod: "CASH" })}
+                  className={`chip justify-center py-2.5 ${form.paymentMethod === "CASH" ? "chip-active" : ""}`}
+                >
+                  Tunai
+                </button>
+              </div>
+            </div>
+
+            {form.paymentMethod === "QR" && (
+              <div className="animate-fade-in">
+                <label className="mb-2 block text-sm font-semibold text-brand-900">Kod QR</label>
+                <div className="flex items-center gap-3">
+                  {form.qrCodeUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={form.qrCodeUrl} alt="Kod QR" className="h-20 w-20 rounded-xl border border-black/[0.06] object-cover" />
+                  ) : (
+                    <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-white text-brand-300">
+                      <ImageOffIcon className="h-6 w-6" />
+                    </div>
+                  )}
+                  <label className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-brand-600">
+                    <CameraIcon className="h-4 w-4" />
+                    {uploadingQr ? "Memuat naik..." : form.qrCodeUrl ? "Tukar kod QR" : "Muat naik kod QR"}
+                    <input type="file" accept="image/*" className="hidden" onChange={handleQrPhoto} disabled={uploadingQr} />
+                  </label>
+                </div>
+                <p className="mt-2 text-xs text-gray-400">Kod QR ini akan ditunjukkan kepada pelanggan semasa tempahan.</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        <textarea
+          className="input"
+          placeholder="Caj tambahan, cth: RM10 minyak/tol/parking (opsyenal)"
+          value={form.extraChargesNote}
+          onChange={(e) => setForm({ ...form, extraChargesNote: e.target.value })}
+          rows={2}
+        />
       </div>
 
       <button type="submit" className="btn-primary flex items-center justify-center gap-1.5" disabled={saving}>

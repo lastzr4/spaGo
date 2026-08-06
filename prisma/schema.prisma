@@ -31,6 +31,11 @@ enum BookingStatus {
   COMPLETED
 }
 
+enum PaymentMethod {
+  QR
+  CASH
+}
+
 model Therapist {
   id                  String              @id @default(cuid())
   dashboardToken      String              @unique @default(cuid())
@@ -46,6 +51,11 @@ model Therapist {
   photoUrl            String?
   active              Boolean             @default(true)
   isDemo              Boolean             @default(false)
+  depositRequired     Boolean             @default(false)
+  depositAmount       Decimal?            @db.Decimal(10, 2)
+  paymentMethod       PaymentMethod?
+  qrCodeUrl           String?
+  extraChargesNote    String?
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
 
