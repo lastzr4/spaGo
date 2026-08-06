@@ -34,7 +34,7 @@ enum BookingStatus {
 model Therapist {
   id                  String              @id @default(cuid())
   dashboardToken      String              @unique @default(cuid())
-  slug                String              @unique
+  slug                String?             @unique
   name                String
   phone               String
   gender              Gender

@@ -7,7 +7,7 @@ import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon } from "@/com
 
 type Props = {
   token: string;
-  slug: string;
+  slug: string | null;
   therapist: {
     name: string;
     phone: string;
@@ -27,9 +27,14 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const promoUrl = typeof window !== "undefined" ? `${window.location.origin}/t/${slug}` : `/t/${slug}`;
+  const promoUrl = slug
+    ? typeof window !== "undefined"
+      ? `${window.location.origin}/t/${slug}`
+      : `/t/${slug}`
+    : null;
 
   async function handleCopy() {
+    if (!promoUrl) return;
     try {
       await navigator.clipboard.writeText(promoUrl);
       setCopied(true);
@@ -79,22 +84,28 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
           <LinkIcon className="h-4 w-4" />
           Pautan promosi anda
         </p>
-        <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3 py-2.5">
-          <span className="flex-1 truncate text-[13px] text-gray-600">{promoUrl}</span>
-          <button type="button" onClick={handleCopy} className="btn-ghost shrink-0 bg-brand-50 px-2.5 py-1.5 text-xs">
-            <CopyIcon className="h-3.5 w-3.5" />
-            {copied ? "Disalin!" : "Salin"}
-          </button>
-        </div>
-        <a
-          href={`https://wa.me/?text=${encodeURIComponent(`Tempah urut dengan saya di sini: ${promoUrl}`)}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600"
-        >
-          <SendIcon className="h-3 w-3" />
-          Kongsi ke WhatsApp
-        </a>
+        {promoUrl ? (
+          <>
+            <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3 py-2.5">
+              <span className="flex-1 truncate text-[13px] text-gray-600">{promoUrl}</span>
+              <button type="button" onClick={handleCopy} className="btn-ghost shrink-0 bg-brand-50 px-2.5 py-1.5 text-xs">
+                <CopyIcon className="h-3.5 w-3.5" />
+                {copied ? "Disalin!" : "Salin"}
+              </button>
+            </div>
+            <a
+              href={`https://wa.me/?text=${encodeURIComponent(`Tempah urut dengan saya di sini: ${promoUrl}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600"
+            >
+              <SendIcon className="h-3 w-3" />
+              Kongsi ke WhatsApp
+            </a>
+          </>
+        ) : (
+          <p className="text-[13px] text-gray-400">Pautan sedang dijana, sila muat semula sebentar lagi.</p>
+        )}
       </div>
 
       <form onSubmit={handleSave} className="flex flex-col gap-5">
