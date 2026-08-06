@@ -1,8 +1,9 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import BookingFlow from "@/components/BookingFlow";
 import ReviewSection from "@/components/ReviewSection";
+import TopBar from "@/components/TopBar";
+import { StarIcon, MapPinIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -42,69 +43,75 @@ export default async function TherapistDetailPage({
   const average = reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : null;
 
   return (
-    <main className="flex flex-1 flex-col px-6 py-8">
-      <Link href={`/therapists?area=${encodeURIComponent(searchParams.area ?? "")}&gender=${customerGender}`} className="mb-4 text-sm text-brand-600">
-        &larr; Kembali ke senarai
-      </Link>
-
-      <div className="mb-6 flex items-center gap-4">
-        {therapist.photoUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={therapist.photoUrl} alt={therapist.name} className="h-16 w-16 shrink-0 rounded-full object-cover" />
-        ) : (
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xl font-semibold text-brand-700">
-            {therapist.name.charAt(0).toUpperCase()}
-          </div>
-        )}
-        <div>
-          <h1 className="text-xl font-semibold text-brand-900">{therapist.name}</h1>
-          <p className="text-sm text-gray-500">{therapist.coverageAreas.join(", ")}</p>
-          {average !== null && (
-            <p className="text-xs text-yellow-500">
-              {"★".repeat(Math.round(average))}
-              <span className="text-gray-300">{"★".repeat(5 - Math.round(average))}</span>{" "}
-              <span className="text-gray-400">{average.toFixed(1)} ({reviews.length})</span>
-            </p>
+    <>
+      <TopBar title={therapist.name} backHref={`/therapists?area=${encodeURIComponent(searchParams.area ?? "")}&gender=${customerGender}`} />
+      <main className="flex-1 overflow-y-auto px-5 py-5">
+        <div className="mb-5 flex animate-fade-in items-center gap-4">
+          {therapist.photoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={therapist.photoUrl} alt={therapist.name} className="avatar-ring h-20 w-20 shrink-0 rounded-3xl object-cover" />
+          ) : (
+            <div className="avatar-ring flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-400 to-brand-600 text-2xl font-bold text-white">
+              {therapist.name.charAt(0).toUpperCase()}
+            </div>
           )}
+          <div className="min-w-0 flex-1">
+            <h1 className="truncate text-lg font-bold text-brand-900">{therapist.name}</h1>
+            <p className="mt-0.5 flex items-center gap-1 text-[13px] text-gray-500">
+              <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
+              <span className="truncate">{therapist.coverageAreas.join(", ")}</span>
+            </p>
+            {average !== null && (
+              <span className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-yellow-50 px-2 py-0.5 text-[12px] font-semibold text-yellow-600">
+                <StarIcon filled className="h-3 w-3" />
+                {average.toFixed(1)}
+                <span className="font-normal text-yellow-500/70">({reviews.length} ulasan)</span>
+              </span>
+            )}
+          </div>
         </div>
-      </div>
 
-      {therapist.bio && <p className="mb-6 text-sm text-gray-600">{therapist.bio}</p>}
+        {therapist.bio && (
+          <p className="mb-5 animate-fade-in rounded-2xl bg-brand-50/60 px-4 py-3 text-[13px] leading-relaxed text-gray-600">
+            {therapist.bio}
+          </p>
+        )}
 
-      <div className="card">
-        <BookingFlow
-          therapistId={therapist.id}
-          therapistPhone={therapist.phone}
-          customerGender={customerGender}
-          services={therapist.services.map((s) => ({
-            id: s.id,
-            name: s.name,
-            durationMinutes: s.durationMinutes,
-            price: s.price.toString(),
-            photoUrl: s.photoUrl,
-          }))}
-          slots={slots.map((s) => ({
-            id: s.id,
-            date: s.date.toISOString(),
-            startTime: s.startTime,
-            endTime: s.endTime,
-          }))}
-        />
-      </div>
+        <div className="animate-fade-in">
+          <BookingFlow
+            therapistId={therapist.id}
+            therapistPhone={therapist.phone}
+            customerGender={customerGender}
+            services={therapist.services.map((s) => ({
+              id: s.id,
+              name: s.name,
+              durationMinutes: s.durationMinutes,
+              price: s.price.toString(),
+              photoUrl: s.photoUrl,
+            }))}
+            slots={slots.map((s) => ({
+              id: s.id,
+              date: s.date.toISOString(),
+              startTime: s.startTime,
+              endTime: s.endTime,
+            }))}
+          />
+        </div>
 
-      <div className="mt-8">
-        <ReviewSection
-          therapistId={therapist.id}
-          initialReviews={reviews.map((r) => ({
-            id: r.id,
-            customerName: r.customerName,
-            rating: r.rating,
-            comment: r.comment,
-            createdAt: r.createdAt.toISOString(),
-          }))}
-          initialAverage={average}
-        />
-      </div>
-    </main>
+        <div className="mt-8 animate-fade-in border-t border-black/[0.05] pt-6">
+          <ReviewSection
+            therapistId={therapist.id}
+            initialReviews={reviews.map((r) => ({
+              id: r.id,
+              customerName: r.customerName,
+              rating: r.rating,
+              comment: r.comment,
+              createdAt: r.createdAt.toISOString(),
+            }))}
+            initialAverage={average}
+          />
+        </div>
+      </main>
+    </>
   );
 }

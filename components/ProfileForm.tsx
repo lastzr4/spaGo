@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AREAS } from "@/lib/areas";
 import { fileToCompressedDataUrl } from "@/lib/image";
+import { CameraIcon, CheckCircleIcon } from "@/components/icons";
 
 type Props = {
   token: string;
@@ -58,17 +59,18 @@ export default function ProfileForm({ token, therapist }: Props) {
   }
 
   return (
-    <form onSubmit={handleSave} className="flex flex-col gap-4">
+    <form onSubmit={handleSave} className="flex flex-col gap-5">
       <div className="flex items-center gap-4">
         {form.photoUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={form.photoUrl} alt="Profil" className="h-16 w-16 rounded-full object-cover" />
+          <img src={form.photoUrl} alt="Profil" className="avatar-ring h-20 w-20 rounded-3xl object-cover" />
         ) : (
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-100 text-xl font-semibold text-brand-700">
+          <div className="avatar-ring flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-400 to-brand-600 text-2xl font-bold text-white">
             {form.name.charAt(0).toUpperCase() || "?"}
           </div>
         )}
-        <label className="cursor-pointer text-sm font-medium text-brand-600">
+        <label className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-brand-600">
+          <CameraIcon className="h-4 w-4" />
           {uploadingPhoto ? "Memuat naik..." : "Tukar foto profil"}
           <input type="file" accept="image/*" className="hidden" onChange={handlePhoto} disabled={uploadingPhoto} />
         </label>
@@ -78,7 +80,7 @@ export default function ProfileForm({ token, therapist }: Props) {
       <input className="input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="No. WhatsApp" />
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-brand-900">Pelanggan yang diterima</label>
+        <label className="mb-2 block text-sm font-semibold text-brand-900">Pelanggan yang diterima</label>
         <select
           className="input"
           value={form.clientGenderPolicy}
@@ -91,14 +93,14 @@ export default function ProfileForm({ token, therapist }: Props) {
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-brand-900">Kawasan liputan</label>
+        <label className="mb-2 block text-sm font-semibold text-brand-900">Kawasan liputan</label>
         <div className="flex flex-wrap gap-2">
           {AREAS.map((a) => (
             <button
               type="button"
               key={a}
               onClick={() => toggleArea(a)}
-              className={`rounded-full border px-3 py-1.5 text-sm ${form.coverageAreas.includes(a) ? "border-brand-600 bg-brand-50 text-brand-700" : "border-black/10 bg-white text-gray-600"}`}
+              className={`chip ${form.coverageAreas.includes(a) ? "chip-active" : ""}`}
             >
               {a}
             </button>
@@ -108,13 +110,14 @@ export default function ProfileForm({ token, therapist }: Props) {
 
       <textarea className="input" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} placeholder="Ringkasan" rows={3} />
 
-      <label className="flex items-center gap-2 text-sm text-gray-600">
-        <input type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} />
+      <label className="flex items-center gap-2.5 rounded-2xl bg-brand-50/60 px-4 py-3 text-sm font-medium text-gray-600">
+        <input type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} className="h-4 w-4 accent-brand-600" />
         Profil aktif (kelihatan kepada pelanggan)
       </label>
 
-      <button type="submit" className="btn-primary" disabled={saving}>
-        {saving ? "Menyimpan..." : saved ? "Disimpan ✓" : "Simpan"}
+      <button type="submit" className="btn-primary flex items-center justify-center gap-1.5" disabled={saving}>
+        {saved && <CheckCircleIcon filled className="h-4 w-4" />}
+        {saving ? "Menyimpan..." : saved ? "Disimpan" : "Simpan"}
       </button>
     </form>
   );

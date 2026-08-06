@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import ReviewForm from "@/components/ReviewForm";
+import { StarIcon, PlusIcon } from "@/components/icons";
 
 type Review = { id: string; customerName: string; rating: number; comment: string | null; createdAt: string };
 
 function Stars({ rating }: { rating: number }) {
   return (
-    <span className="text-yellow-400">
-      {"★".repeat(rating)}
-      <span className="text-gray-300">{"★".repeat(5 - rating)}</span>
+    <span className="flex items-center gap-0.5 text-yellow-400">
+      {[1, 2, 3, 4, 5].map((n) => (
+        <StarIcon key={n} filled={n <= rating} className={`h-3.5 w-3.5 ${n > rating ? "text-gray-300" : ""}`} />
+      ))}
     </span>
   );
 }
@@ -42,35 +44,41 @@ export default function ReviewSection({
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="font-semibold text-brand-900">Ulasan Pelanggan</h2>
+          <h2 className="text-[15px] font-bold text-brand-900">Ulasan Pelanggan</h2>
           {average !== null ? (
-            <p className="text-sm text-gray-500">
-              <Stars rating={Math.round(average)} /> {average.toFixed(1)} ({reviews.length} ulasan)
+            <p className="mt-1 flex items-center gap-1.5 text-sm text-gray-500">
+              <Stars rating={Math.round(average)} />
+              {average.toFixed(1)} ({reviews.length} ulasan)
             </p>
           ) : (
-            <p className="text-sm text-gray-500">Belum ada ulasan lagi.</p>
+            <p className="mt-1 text-sm text-gray-500">Belum ada ulasan lagi.</p>
           )}
         </div>
-        <button type="button" onClick={() => setShowForm((s) => !s)} className="text-sm font-medium text-brand-600">
-          {showForm ? "Tutup" : "+ Tulis Ulasan"}
+        <button
+          type="button"
+          onClick={() => setShowForm((s) => !s)}
+          className="btn-ghost flex items-center gap-1 bg-brand-50"
+        >
+          {!showForm && <PlusIcon className="h-3.5 w-3.5" />}
+          {showForm ? "Tutup" : "Tulis Ulasan"}
         </button>
       </div>
 
       {showForm && (
-        <div className="card">
+        <div className="card animate-fade-in">
           <ReviewForm therapistId={therapistId} onSubmitted={refreshReviews} />
         </div>
       )}
 
       {reviews.length > 0 && (
         <div className="flex flex-col gap-3">
-          {reviews.map((r) => (
-            <div key={r.id} className="card">
+          {reviews.map((r, i) => (
+            <div key={r.id} className="card animate-fade-in" style={{ animationDelay: `${i * 40}ms` }}>
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-brand-900">{r.customerName}</p>
+                <p className="text-sm font-semibold text-brand-900">{r.customerName}</p>
                 <Stars rating={r.rating} />
               </div>
-              {r.comment && <p className="mt-1 text-sm text-gray-600">{r.comment}</p>}
+              {r.comment && <p className="mt-1.5 text-sm leading-relaxed text-gray-600">{r.comment}</p>}
             </div>
           ))}
         </div>

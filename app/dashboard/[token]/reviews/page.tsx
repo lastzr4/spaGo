@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import { getTherapistByToken } from "@/lib/dashboard";
 import { prisma } from "@/lib/prisma";
-import DashboardNav from "@/components/DashboardNav";
+import TopBar from "@/components/TopBar";
+import BottomTabBar from "@/components/BottomTabBar";
 import ReviewModeration from "@/components/ReviewModeration";
 
 export const dynamic = "force-dynamic";
@@ -16,20 +17,22 @@ export default async function DashboardReviewsPage({ params }: { params: { token
   });
 
   return (
-    <main className="flex flex-1 flex-col px-6 py-8">
-      <h1 className="mb-6 text-xl font-semibold text-brand-900">Ulasan Pelanggan</h1>
-      <DashboardNav token={params.token} active="reviews" />
-      <ReviewModeration
-        token={params.token}
-        initialReviews={reviews.map((r) => ({
-          id: r.id,
-          customerName: r.customerName,
-          rating: r.rating,
-          comment: r.comment,
-          hidden: r.hidden,
-          createdAt: r.createdAt.toISOString(),
-        }))}
-      />
-    </main>
+    <>
+      <TopBar title="Ulasan Pelanggan" />
+      <main className="flex-1 overflow-y-auto px-5 py-5">
+        <ReviewModeration
+          token={params.token}
+          initialReviews={reviews.map((r) => ({
+            id: r.id,
+            customerName: r.customerName,
+            rating: r.rating,
+            comment: r.comment,
+            hidden: r.hidden,
+            createdAt: r.createdAt.toISOString(),
+          }))}
+        />
+      </main>
+      <BottomTabBar token={params.token} />
+    </>
   );
 }
