@@ -82,6 +82,14 @@ function usernameFromName(name: string): string {
   return `demo_${name.toLowerCase().replace(/[^a-z0-9]+/g, "")}`.slice(0, 20);
 }
 
+function profilePhotoUrl(gender: Gender, seed: number): string {
+  return `https://xsgames.co/randomusers/avatar.php?g=${gender === "MALE" ? "male" : "female"}&key=${seed}`;
+}
+
+function servicePhotoUrl(seed: string): string {
+  return `https://picsum.photos/seed/${seed}/400/300`;
+}
+
 export async function seedDemoData() {
   const demoPinHash = hashPin("1234");
   const created: string[] = [];
@@ -100,6 +108,7 @@ export async function seedDemoData() {
         durationMinutes: tmpl.durationMinutes,
         price: randInt(min, max),
         active: true,
+        photoUrl: servicePhotoUrl(`spago-${slug}-${idx}`),
       };
     });
 
@@ -125,6 +134,7 @@ export async function seedDemoData() {
         clientGenderPolicy: t.clientGenderPolicy,
         coverageAreas: t.areas,
         bio: pick(BIO_POOL, i),
+        photoUrl: profilePhotoUrl(t.gender, i),
         isDemo: true,
         services: { create: services },
         slots: { create: slotDates },
