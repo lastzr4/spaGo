@@ -3,12 +3,16 @@ import { getTherapistByToken } from "@/lib/dashboard";
 import TopBar from "@/components/TopBar";
 import BottomTabBar from "@/components/BottomTabBar";
 import ProfileForm from "@/components/ProfileForm";
+import DashboardStats from "@/components/DashboardStats";
+import { getDashboardStats } from "@/lib/dashboardStats";
 
 export const dynamic = "force-dynamic";
 
 export default async function DashboardHomePage({ params }: { params: { token: string } }) {
   const therapist = await getTherapistByToken(params.token);
   if (!therapist) notFound();
+
+  const stats = await getDashboardStats(therapist.id);
 
   return (
     <>
@@ -18,6 +22,12 @@ export default async function DashboardHomePage({ params }: { params: { token: s
           Hai, <span className="font-semibold text-brand-900">{therapist.name}</span> 👋
         </p>
 
+        <h2 className="mb-3 text-[13px] font-bold uppercase tracking-wide text-gray-400">Ringkasan</h2>
+        <div className="mb-6 animate-fade-in">
+          <DashboardStats {...stats} />
+        </div>
+
+        <h2 className="mb-3 text-[13px] font-bold uppercase tracking-wide text-gray-400">Profil Saya</h2>
         <div className="card animate-fade-in">
           <ProfileForm
             token={params.token}

@@ -232,3 +232,21 @@ export function CashIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function ClockIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3.5 2" />
+    </svg>
+  );
+}
+
+export function WalletIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M3.5 7.5A2 2 0 0 1 5.5 5.5h11a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2v-9z" />
+      <path d="M15.5 12.5h3a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-3a1.5 1.5 0 0 1 0-3z" />
+    </svg>
+  );
+}
