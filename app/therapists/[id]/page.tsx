@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import BookingFlow from "@/components/BookingFlow";
+import ReviewSection from "@/components/ReviewSection";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +35,12 @@ export default async function TherapistDetailPage({
 
   const customerGender = (searchParams.gender as "MALE" | "FEMALE") ?? "FEMALE";
 
+  const reviews = await prisma.review.findMany({
+    where: { therapistId: therapist.id, hidden: false },
+    orderBy: { createdAt: "desc" },
+  });
+  const average = reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : null;
+
   return (
     <main className="flex flex-1 flex-col px-6 py-8">
       <Link href={`/therapists?area=${encodeURIComponent(searchParams.area ?? "")}&gender=${customerGender}`} className="mb-4 text-sm text-brand-600">
@@ -41,12 +48,24 @@ export default async function TherapistDetailPage({
       </Link>
 
       <div className="mb-6 flex items-center gap-4">
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xl font-semibold text-brand-700">
-          {therapist.name.charAt(0).toUpperCase()}
-        </div>
+        {therapist.photoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={therapist.photoUrl} alt={therapist.name} className="h-16 w-16 shrink-0 rounded-full object-cover" />
+        ) : (
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-brand-100 text-xl font-semibold text-brand-700">
+            {therapist.name.charAt(0).toUpperCase()}
+          </div>
+        )}
         <div>
           <h1 className="text-xl font-semibold text-brand-900">{therapist.name}</h1>
           <p className="text-sm text-gray-500">{therapist.coverageAreas.join(", ")}</p>
+          {average !== null && (
+            <p className="text-xs text-yellow-500">
+              {"★".repeat(Math.round(average))}
+              <span className="text-gray-300">{"★".repeat(5 - Math.round(average))}</span>{" "}
+              <span className="text-gray-400">{average.toFixed(1)} ({reviews.length})</span>
+            </p>
+          )}
         </div>
       </div>
 
@@ -62,6 +81,7 @@ export default async function TherapistDetailPage({
             name: s.name,
             durationMinutes: s.durationMinutes,
             price: s.price.toString(),
+            photoUrl: s.photoUrl,
           }))}
           slots={slots.map((s) => ({
             id: s.id,
@@ -69,6 +89,20 @@ export default async function TherapistDetailPage({
             startTime: s.startTime,
             endTime: s.endTime,
           }))}
+        />
+      </div>
+
+      <div className="mt-8">
+        <ReviewSection
+          therapistId={therapist.id}
+          initialReviews={reviews.map((r) => ({
+            id: r.id,
+            customerName: r.customerName,
+            rating: r.rating,
+            comment: r.comment,
+            createdAt: r.createdAt.toISOString(),
+          }))}
+          initialAverage={average}
         />
       </div>
     </main>

@@ -18,7 +18,10 @@ export default async function TherapistsPage({
     ? (
         await prisma.therapist.findMany({
           where: { active: true, coverageAreas: { has: area } },
-          include: { services: { where: { active: true }, orderBy: { price: "asc" } } },
+          include: {
+            services: { where: { active: true }, orderBy: { price: "asc" } },
+            reviews: { where: { hidden: false }, select: { rating: true } },
+          },
           orderBy: { createdAt: "desc" },
         })
       ).filter((t) => isMatch(gender, t.gender, t.clientGenderPolicy))
@@ -40,27 +43,35 @@ export default async function TherapistsPage({
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          {therapists.map((t) => (
-            <TherapistCard
-              key={t.id}
-              area={area}
-              gender={gender}
-              therapist={{
-                id: t.id,
-                name: t.name,
-                gender: t.gender,
-                bio: t.bio,
-                coverageAreas: t.coverageAreas,
-                services: t.services.map((s) => ({
-                  id: s.id,
-                  name: s.name,
-                  durationMinutes: s.durationMinutes,
-                  price: s.price.toString(),
-                })),
-                priceFrom: t.services.length ? t.services[0].price.toString() : null,
-              }}
-            />
-          ))}
+          {therapists.map((t) => {
+            const reviewCount = t.reviews.length;
+            const averageRating =
+              reviewCount > 0 ? t.reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount : null;
+            return (
+              <TherapistCard
+                key={t.id}
+                area={area}
+                gender={gender}
+                therapist={{
+                  id: t.id,
+                  name: t.name,
+                  gender: t.gender,
+                  bio: t.bio,
+                  photoUrl: t.photoUrl,
+                  coverageAreas: t.coverageAreas,
+                  services: t.services.map((s) => ({
+                    id: s.id,
+                    name: s.name,
+                    durationMinutes: s.durationMinutes,
+                    price: s.price.toString(),
+                  })),
+                  priceFrom: t.services.length ? t.services[0].price.toString() : null,
+                  averageRating,
+                  reviewCount,
+                }}
+              />
+            );
+          })}
         </div>
       )}
     </main>

@@ -13,7 +13,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
   if (!therapist) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const body = await req.json();
-  const { name, phone, gender, clientGenderPolicy, coverageAreas, bio, active } = body ?? {};
+  const { name, phone, gender, clientGenderPolicy, coverageAreas, bio, active, photoUrl } = body ?? {};
 
   const updated = await prisma.therapist.update({
     where: { id: therapist.id },
@@ -25,6 +25,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
       ...(coverageAreas !== undefined ? { coverageAreas } : {}),
       ...(bio !== undefined ? { bio } : {}),
       ...(active !== undefined ? { active } : {}),
+      ...(photoUrl !== undefined ? { photoUrl } : {}),
     },
   });
 

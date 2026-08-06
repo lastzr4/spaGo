@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AREAS } from "@/lib/areas";
+import { fileToCompressedDataUrl } from "@/lib/image";
 
 type Props = {
   token: string;
@@ -13,6 +14,7 @@ type Props = {
     coverageAreas: string[];
     bio: string;
     active: boolean;
+    photoUrl: string | null;
   };
 };
 
@@ -20,6 +22,19 @@ export default function ProfileForm({ token, therapist }: Props) {
   const [form, setForm] = useState(therapist);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+
+  async function handlePhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingPhoto(true);
+    try {
+      const dataUrl = await fileToCompressedDataUrl(file, { maxWidth: 500, maxHeight: 500 });
+      setForm((f) => ({ ...f, photoUrl: dataUrl }));
+    } finally {
+      setUploadingPhoto(false);
+    }
+  }
 
   function toggleArea(a: string) {
     setForm((f) => ({
@@ -44,6 +59,21 @@ export default function ProfileForm({ token, therapist }: Props) {
 
   return (
     <form onSubmit={handleSave} className="flex flex-col gap-4">
+      <div className="flex items-center gap-4">
+        {form.photoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={form.photoUrl} alt="Profil" className="h-16 w-16 rounded-full object-cover" />
+        ) : (
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-100 text-xl font-semibold text-brand-700">
+            {form.name.charAt(0).toUpperCase() || "?"}
+          </div>
+        )}
+        <label className="cursor-pointer text-sm font-medium text-brand-600">
+          {uploadingPhoto ? "Memuat naik..." : "Tukar foto profil"}
+          <input type="file" accept="image/*" className="hidden" onChange={handlePhoto} disabled={uploadingPhoto} />
+        </label>
+      </div>
+
       <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nama" />
       <input className="input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="No. WhatsApp" />
 

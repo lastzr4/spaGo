@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
         name: s.name,
         durationMinutes: s.durationMinutes,
         price: s.price,
+        photoUrl: s.photoUrl,
       })),
       priceFrom: t.services.length ? t.services[0].price : null,
     })),

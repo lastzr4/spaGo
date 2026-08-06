@@ -14,13 +14,20 @@ export async function POST(req: NextRequest, { params }: { params: { token: stri
   if (!therapist) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const body = await req.json();
-  const { name, durationMinutes, price, description } = body ?? {};
+  const { name, durationMinutes, price, description, photoUrl } = body ?? {};
   if (!name || !durationMinutes || price === undefined) {
     return NextResponse.json({ error: "name, durationMinutes, price required" }, { status: 400 });
   }
 
   const service = await prisma.service.create({
-    data: { therapistId: therapist.id, name, durationMinutes, price, description: description ?? null },
+    data: {
+      therapistId: therapist.id,
+      name,
+      durationMinutes,
+      price,
+      description: description ?? null,
+      photoUrl: photoUrl ?? null,
+    },
   });
 
   return NextResponse.json({ service }, { status: 201 });

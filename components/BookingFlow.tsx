@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { buildWhatsAppBookingMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 
-type Service = { id: string; name: string; durationMinutes: number; price: string };
+type Service = { id: string; name: string; durationMinutes: number; price: string; photoUrl?: string | null };
 type Slot = { id: string; date: string; startTime: string; endTime: string };
 
 export default function BookingFlow({
@@ -104,15 +104,21 @@ export default function BookingFlow({
               type="button"
               key={s.id}
               onClick={() => setServiceId(s.id)}
-              className={`flex items-center justify-between rounded-xl border px-4 py-3 text-left ${
+              className={`flex items-center gap-3 rounded-xl border px-4 py-3 text-left ${
                 serviceId === s.id ? "border-brand-600 bg-brand-50" : "border-black/10 bg-white"
               }`}
             >
-              <span>
-                <span className="block font-medium text-brand-900">{s.name}</span>
-                <span className="block text-xs text-gray-500">{s.durationMinutes} minit</span>
+              {s.photoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={s.photoUrl} alt={s.name} className="h-12 w-12 shrink-0 rounded-lg object-cover" />
+              ) : null}
+              <span className="flex flex-1 items-center justify-between">
+                <span>
+                  <span className="block font-medium text-brand-900">{s.name}</span>
+                  <span className="block text-xs text-gray-500">{s.durationMinutes} minit</span>
+                </span>
+                <span className="font-medium text-brand-700">RM{Number(s.price).toFixed(0)}</span>
               </span>
-              <span className="font-medium text-brand-700">RM{Number(s.price).toFixed(0)}</span>
             </button>
           ))}
         </div>

@@ -48,6 +48,7 @@ model Therapist {
   services            Service[]
   slots               Slot[]
   bookings            Booking[]
+  reviews             Review[]
 }
 
 model Service {
@@ -58,6 +59,7 @@ model Service {
   durationMinutes Int
   price           Decimal   @db.Decimal(10, 2)
   description     String?
+  photoUrl        String?
   active          Boolean   @default(true)
   createdAt       DateTime  @default(now())
 
@@ -97,6 +99,22 @@ model Booking {
   outcallFee      Decimal       @default(0) @db.Decimal(10, 2)
   status          BookingStatus @default(PENDING)
   createdAt       DateTime      @default(now())
+  review          Review?
+
+  @@index([therapistId])
+}
+
+model Review {
+  id            String    @id @default(cuid())
+  therapistId   String
+  therapist     Therapist @relation(fields: [therapistId], references: [id], onDelete: Cascade)
+  bookingId     String?   @unique
+  booking       Booking?  @relation(fields: [bookingId], references: [id])
+  customerName  String
+  rating        Int
+  comment       String?
+  hidden        Boolean   @default(false)
+  createdAt     DateTime  @default(now())
 
   @@index([therapistId])
 }

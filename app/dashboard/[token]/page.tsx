@@ -27,6 +27,7 @@ export default async function DashboardHomePage({ params }: { params: { token: s
             coverageAreas: therapist.coverageAreas,
             bio: therapist.bio ?? "",
             active: therapist.active,
+            photoUrl: therapist.photoUrl,
           }}
         />
       </div>

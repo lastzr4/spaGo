@@ -1,11 +1,12 @@
 import Link from "next/link";
 
-export default function DashboardNav({ token, active }: { token: string; active: "home" | "services" | "slots" | "bookings" }) {
+export default function DashboardNav({ token, active }: { token: string; active: "home" | "services" | "slots" | "bookings" | "reviews" }) {
   const items = [
     { key: "home", label: "Profil", href: `/dashboard/${token}` },
     { key: "services", label: "Servis", href: `/dashboard/${token}/services` },
     { key: "slots", label: "Slot", href: `/dashboard/${token}/slots` },
     { key: "bookings", label: "Tempahan", href: `/dashboard/${token}/bookings` },
+    { key: "reviews", label: "Ulasan", href: `/dashboard/${token}/reviews` },
   ] as const;
 
   return (

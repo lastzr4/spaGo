@@ -10,7 +10,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
   if (!service || service.therapistId !== therapist.id) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const body = await req.json();
-  const { name, durationMinutes, price, description, active } = body ?? {};
+  const { name, durationMinutes, price, description, active, photoUrl } = body ?? {};
 
   const updated = await prisma.service.update({
     where: { id: params.serviceId },
@@ -20,6 +20,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
       ...(price !== undefined ? { price } : {}),
       ...(description !== undefined ? { description } : {}),
       ...(active !== undefined ? { active } : {}),
+      ...(photoUrl !== undefined ? { photoUrl } : {}),
     },
   });
 
