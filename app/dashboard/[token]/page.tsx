@@ -31,6 +31,7 @@ export default async function DashboardHomePage({ params }: { params: { token: s
               bio: therapist.bio ?? "",
               active: therapist.active,
               photoUrl: therapist.photoUrl,
+              username: therapist.username,
             }}
           />
         </div>

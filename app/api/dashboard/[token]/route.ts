@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getTherapistByToken } from "@/lib/dashboard";
+import { hashPin, isValidUsername, isValidPin } from "@/lib/pin";
 
 export async function GET(_req: NextRequest, { params }: { params: { token: string } }) {
   const therapist = await getTherapistByToken(params.token);
@@ -13,7 +14,21 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
   if (!therapist) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const body = await req.json();
-  const { name, phone, gender, clientGenderPolicy, coverageAreas, bio, active, photoUrl } = body ?? {};
+  const { name, phone, gender, clientGenderPolicy, coverageAreas, bio, active, photoUrl, username, pin } = body ?? {};
+
+  if (username !== undefined && username !== therapist.username) {
+    if (!isValidUsername(username)) {
+      return NextResponse.json({ error: "USERNAME_INVALID" }, { status: 400 });
+    }
+    const taken = await prisma.therapist.findUnique({ where: { username }, select: { id: true } });
+    if (taken && taken.id !== therapist.id) {
+      return NextResponse.json({ error: "USERNAME_TAKEN" }, { status: 409 });
+    }
+  }
+
+  if (pin !== undefined && pin !== "" && !isValidPin(pin)) {
+    return NextResponse.json({ error: "PIN_INVALID" }, { status: 400 });
+  }
 
   const updated = await prisma.therapist.update({
     where: { id: therapist.id },
@@ -26,6 +41,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
       ...(bio !== undefined ? { bio } : {}),
       ...(active !== undefined ? { active } : {}),
       ...(photoUrl !== undefined ? { photoUrl } : {}),
+      ...(username !== undefined ? { username } : {}),
+      ...(pin !== undefined && pin !== "" ? { pinHash: hashPin(pin) } : {}),
     },
   });
 

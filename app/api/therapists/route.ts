@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isMatch } from "@/lib/gender";
 import { generateUniqueSlug } from "@/lib/slug";
+import { hashPin, isValidUsername, isValidPin } from "@/lib/pin";
 import type { Gender } from "@prisma/client";
 
 // GET /api/therapists?area=Bangi&gender=FEMALE
@@ -47,16 +48,31 @@ export async function GET(req: NextRequest) {
 // POST /api/therapists - therapist self-registration
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { name, phone, gender, clientGenderPolicy, coverageAreas, bio } = body ?? {};
+  const { name, phone, gender, clientGenderPolicy, coverageAreas, bio, username, pin } = body ?? {};
 
-  if (!name || !phone || !gender || !coverageAreas?.length) {
-    return NextResponse.json({ error: "name, phone, gender, coverageAreas are required" }, { status: 400 });
+  if (!name || !phone || !gender || !coverageAreas?.length || !username || !pin) {
+    return NextResponse.json(
+      { error: "name, phone, gender, coverageAreas, username, pin are required" },
+      { status: 400 }
+    );
   }
   if (gender !== "MALE" && gender !== "FEMALE") {
     return NextResponse.json({ error: "gender must be MALE or FEMALE" }, { status: 400 });
   }
+  if (!isValidUsername(username)) {
+    return NextResponse.json({ error: "USERNAME_INVALID" }, { status: 400 });
+  }
+  if (!isValidPin(pin)) {
+    return NextResponse.json({ error: "PIN_INVALID" }, { status: 400 });
+  }
+
+  const existingUsername = await prisma.therapist.findUnique({ where: { username }, select: { id: true } });
+  if (existingUsername) {
+    return NextResponse.json({ error: "USERNAME_TAKEN" }, { status: 409 });
+  }
 
   const slug = await generateUniqueSlug(name);
+  const pinHash = hashPin(pin);
 
   const therapist = await prisma.therapist.create({
     data: {
@@ -64,6 +80,8 @@ export async function POST(req: NextRequest) {
       phone,
       gender,
       slug,
+      username,
+      pinHash,
       clientGenderPolicy: clientGenderPolicy ?? "FEMALE_ONLY",
       coverageAreas,
       bio: bio ?? null,

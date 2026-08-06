@@ -35,6 +35,8 @@ model Therapist {
   id                  String              @id @default(cuid())
   dashboardToken      String              @unique @default(cuid())
   slug                String?             @unique
+  username            String?             @unique
+  pinHash             String?
   name                String
   phone               String
   gender              Gender

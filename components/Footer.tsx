@@ -7,8 +7,12 @@ export default function Footer() {
 
   return (
     <div className="mt-6 flex animate-fade-in items-center justify-center gap-3 pb-8 text-xs">
+      <Link href="/dashboard/login" className="font-semibold" style={{ color: "var(--brand, #7a51c9)" }}>
+        Log Masuk
+      </Link>
+      <span className="text-gray-300">&middot;</span>
       <Link href="/dashboard/register" className="font-semibold" style={{ color: "var(--brand, #7a51c9)" }}>
-        Terapis
+        Daftar Terapis
       </Link>
       {authed && (
         <>

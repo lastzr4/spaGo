@@ -2,8 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { AREAS } from "@/lib/areas";
 import TopBar from "@/components/TopBar";
+
+const ERROR_MESSAGES: Record<string, string> = {
+  USERNAME_INVALID: "Username mesti 4-20 aksara (huruf, nombor, garis bawah sahaja).",
+  USERNAME_TAKEN: "Username ini sudah digunakan. Sila pilih yang lain.",
+  PIN_INVALID: "PIN mesti 4-6 digit nombor sahaja.",
+};
 
 export default function TherapistRegisterPage() {
   const router = useRouter();
@@ -13,6 +20,9 @@ export default function TherapistRegisterPage() {
   const [clientGenderPolicy, setClientGenderPolicy] = useState<"FEMALE_ONLY" | "MALE_ONLY" | "BOTH">("FEMALE_ONLY");
   const [areas, setAreas] = useState<string[]>([]);
   const [bio, setBio] = useState("");
+  const [username, setUsername] = useState("");
+  const [pin, setPin] = useState("");
+  const [pinConfirm, setPinConfirm] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,8 +33,16 @@ export default function TherapistRegisterPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!name || !phone || !gender || areas.length === 0) {
+    if (!name || !phone || !gender || areas.length === 0 || !username || !pin) {
       setError("Sila lengkapkan semua maklumat wajib.");
+      return;
+    }
+    if (!/^[0-9]{4,6}$/.test(pin)) {
+      setError("PIN mesti 4-6 digit nombor sahaja.");
+      return;
+    }
+    if (pin !== pinConfirm) {
+      setError("PIN tidak sepadan. Sila cuba lagi.");
       return;
     }
     setSubmitting(true);
@@ -32,11 +50,11 @@ export default function TherapistRegisterPage() {
       const res = await fetch("/api/therapists", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, gender, clientGenderPolicy, coverageAreas: areas, bio }),
+        body: JSON.stringify({ name, phone, gender, clientGenderPolicy, coverageAreas: areas, bio, username, pin }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError("Pendaftaran gagal. Sila cuba lagi.");
+        setError(ERROR_MESSAGES[data.error] ?? "Pendaftaran gagal. Sila cuba lagi.");
         setSubmitting(false);
         return;
       }
@@ -52,7 +70,7 @@ export default function TherapistRegisterPage() {
       <TopBar title="Daftar Terapis" backHref="/" />
       <main className="flex-1 overflow-y-auto px-5 py-6">
         <p className="mb-6 animate-fade-in text-sm text-gray-500">
-          Selepas daftar, anda akan dapat pautan dashboard peribadi — simpan pautan ini, ia digunakan untuk log masuk.
+          Selepas daftar, anda boleh log masuk bila-bila masa dengan username &amp; PIN yang anda tetapkan di bawah.
         </p>
 
         <form onSubmit={handleSubmit} className="flex animate-fade-in flex-col gap-5">
@@ -62,8 +80,8 @@ export default function TherapistRegisterPage() {
           <div>
             <label className="mb-2 block text-sm font-semibold text-brand-900">Jantina anda</label>
             <div className="grid grid-cols-2 gap-3">
-              <button type="button" onClick={() => setGender("FEMALE")} className={`chip justify-center py-3 ${gender === "FEMALE" ? "border-brand-600 bg-brand-50 text-brand-700" : "border-black/10 bg-white text-gray-600"}`}>Wanita</button>
-              <button type="button" onClick={() => setGender("MALE")} className={`chip justify-center py-3 ${gender === "MALE" ? "border-brand-600 bg-brand-50 text-brand-700" : "border-black/10 bg-white text-gray-600"}`}>Lelaki</button>
+              <button type="button" onClick={() => setGender("FEMALE")} className={`chip justify-center py-3 ${gender === "FEMALE" ? "chip-active" : ""}`}>Wanita</button>
+              <button type="button" onClick={() => setGender("MALE")} className={`chip justify-center py-3 ${gender === "MALE" ? "chip-active" : ""}`}>Lelaki</button>
             </div>
           </div>
 
@@ -85,7 +103,7 @@ export default function TherapistRegisterPage() {
                   type="button"
                   key={a}
                   onClick={() => toggleArea(a)}
-                  className={`chip ${areas.includes(a) ? "border-brand-600 bg-brand-50 text-brand-700" : "border-black/10 bg-white text-gray-600"}`}
+                  className={`chip ${areas.includes(a) ? "chip-active" : ""}`}
                 >
                   {a}
                 </button>
@@ -95,11 +113,53 @@ export default function TherapistRegisterPage() {
 
           <textarea className="input" placeholder="Ringkasan pengalaman / kepakaran (opsyenal)" value={bio} onChange={(e) => setBio(e.target.value)} rows={3} />
 
-          {error && <p className="text-sm text-red-600">{error}</p>}
+          <div className="rounded-2xl bg-brand-50/60 p-4">
+            <p className="mb-3 text-sm font-semibold text-brand-900">Maklumat log masuk</p>
+            <div className="flex flex-col gap-3">
+              <input
+                className="input"
+                placeholder="Username (4-20 aksara)"
+                value={username}
+                onChange={(e) => setUsername(e.target.value.trim())}
+                autoCapitalize="none"
+                required
+              />
+              <div className="flex gap-3">
+                <input
+                  className="input"
+                  type="password"
+                  inputMode="numeric"
+                  placeholder="PIN (4-6 digit)"
+                  value={pin}
+                  onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  required
+                />
+                <input
+                  className="input"
+                  type="password"
+                  inputMode="numeric"
+                  placeholder="Sahkan PIN"
+                  value={pinConfirm}
+                  onChange={(e) => setPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                  required
+                />
+              </div>
+            </div>
+            <p className="mt-2 text-xs text-gray-500">Guna username &amp; PIN ini untuk log masuk ke dashboard anda kemudian.</p>
+          </div>
+
+          {error && <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{error}</p>}
 
           <button type="submit" className="btn-primary" disabled={submitting}>
             {submitting ? "Mendaftar..." : "Daftar"}
           </button>
+
+          <p className="text-center text-sm text-gray-500">
+            Dah ada akaun?{" "}
+            <Link href="/dashboard/login" className="font-semibold text-brand-600">
+              Log masuk
+            </Link>
+          </p>
         </form>
       </main>
     </>

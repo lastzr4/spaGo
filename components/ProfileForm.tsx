@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AREAS } from "@/lib/areas";
 import { fileToCompressedDataUrl } from "@/lib/image";
-import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon } from "@/components/icons";
+import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon, LockIcon } from "@/components/icons";
 
 type Props = {
   token: string;
@@ -17,15 +17,19 @@ type Props = {
     bio: string;
     active: boolean;
     photoUrl: string | null;
+    username: string | null;
   };
 };
 
 export default function ProfileForm({ token, slug, therapist }: Props) {
-  const [form, setForm] = useState(therapist);
+  const [form, setForm] = useState({ ...therapist, username: therapist.username ?? "" });
+  const [newPin, setNewPin] = useState("");
+  const [newPinConfirm, setNewPinConfirm] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [credError, setCredError] = useState<string | null>(null);
 
   const promoUrl = slug
     ? typeof window !== "undefined"
@@ -65,16 +69,53 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
+    setCredError(null);
+
+    if (form.username && !/^[a-zA-Z0-9_]{4,20}$/.test(form.username)) {
+      setCredError("Username mesti 4-20 aksara (huruf, nombor, garis bawah sahaja).");
+      return;
+    }
+    if (newPin || newPinConfirm) {
+      if (!/^[0-9]{4,6}$/.test(newPin)) {
+        setCredError("PIN mesti 4-6 digit nombor sahaja.");
+        return;
+      }
+      if (newPin !== newPinConfirm) {
+        setCredError("PIN baru tidak sepadan.");
+        return;
+      }
+    }
+
     setSaving(true);
     setSaved(false);
-    await fetch(`/api/dashboard/${token}`, {
+    const body: Record<string, unknown> = { ...form };
+    if (!form.username) delete body.username;
+    if (newPin) body.pin = newPin;
+
+    const res = await fetch(`/api/dashboard/${token}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      body: JSON.stringify(body),
     });
+
     setSaving(false);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2000);
+    if (res.ok) {
+      setSaved(true);
+      setNewPin("");
+      setNewPinConfirm("");
+      setTimeout(() => setSaved(false), 2000);
+    } else {
+      const data = await res.json().catch(() => null);
+      setCredError(
+        data?.error === "USERNAME_TAKEN"
+          ? "Username ini sudah digunakan."
+          : data?.error === "USERNAME_INVALID"
+            ? "Username mesti 4-20 aksara (huruf, nombor, garis bawah sahaja)."
+            : data?.error === "PIN_INVALID"
+              ? "PIN mesti 4-6 digit nombor sahaja."
+              : "Gagal menyimpan. Sila cuba lagi."
+      );
+    }
   }
 
   return (
@@ -163,6 +204,42 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
         <input type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} className="h-4 w-4 accent-brand-600" />
         Profil aktif (kelihatan kepada pelanggan)
       </label>
+
+      <div className="rounded-2xl bg-brand-50/60 p-4">
+        <p className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+          <LockIcon className="h-4 w-4" />
+          Log masuk
+        </p>
+        <div className="flex flex-col gap-3">
+          <input
+            className="input"
+            placeholder="Username"
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value.trim() })}
+            autoCapitalize="none"
+          />
+          <div className="flex gap-3">
+            <input
+              className="input"
+              type="password"
+              inputMode="numeric"
+              placeholder="PIN baru (opsyenal)"
+              value={newPin}
+              onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            />
+            <input
+              className="input"
+              type="password"
+              inputMode="numeric"
+              placeholder="Sahkan PIN baru"
+              value={newPinConfirm}
+              onChange={(e) => setNewPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            />
+          </div>
+        </div>
+        <p className="mt-2 text-xs text-gray-500">Kosongkan PIN jika tidak mahu menukarnya.</p>
+        {credError && <p className="mt-2 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{credError}</p>}
+      </div>
 
       <button type="submit" className="btn-primary flex items-center justify-center gap-1.5" disabled={saving}>
         {saved && <CheckCircleIcon filled className="h-4 w-4" />}
