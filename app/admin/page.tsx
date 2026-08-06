@@ -16,7 +16,13 @@ export default async function AdminPage() {
 
   return (
     <main className="flex-1 overflow-y-auto">
-      <AdminSettingsForm initialThemeColor={settings.themeColor} initialBackgroundColor={settings.backgroundColor} />
+      <AdminSettingsForm
+        initialThemeColor={settings.themeColor}
+        initialBackgroundColor={settings.backgroundColor}
+        initialHeroTitle={settings.heroTitle}
+        initialHeroSubtitle={settings.heroSubtitle}
+        initialHeroBackgroundImage={settings.heroBackgroundImage}
+      />
     </main>
   );
 }

@@ -121,8 +121,11 @@ model Review {
 }
 
 model SiteSettings {
-  id              String   @id @default("singleton")
-  themeColor      String   @default("#7a51c9")
-  backgroundColor String   @default("#faf9fc")
-  updatedAt       DateTime @updatedAt
+  id                  String   @id @default("singleton")
+  themeColor          String   @default("#7a51c9")
+  backgroundColor     String   @default("#faf9fc")
+  heroTitle           String   @default("Urut rumah, ditempah terus.")
+  heroSubtitle        String   @default("Cari terapis mobile berhampiran anda dan tempah terus ke WhatsApp — tanpa PM, tanpa tunggu.")
+  heroBackgroundImage String?
+  updatedAt           DateTime @updatedAt
 }

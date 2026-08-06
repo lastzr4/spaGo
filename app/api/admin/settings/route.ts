@@ -18,15 +18,40 @@ export async function PATCH(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const themeColor = body?.themeColor;
   const backgroundColor = body?.backgroundColor;
+  const heroTitle = typeof body?.heroTitle === "string" ? body.heroTitle.slice(0, 120) : undefined;
+  const heroSubtitle = typeof body?.heroSubtitle === "string" ? body.heroSubtitle.slice(0, 300) : undefined;
+  // heroBackgroundImage: string (data URL) to set, "" / null to clear, undefined to leave unchanged
+  const heroBackgroundImage =
+    body?.heroBackgroundImage === null || body?.heroBackgroundImage === ""
+      ? null
+      : typeof body?.heroBackgroundImage === "string"
+        ? body.heroBackgroundImage
+        : undefined;
 
   if (!HEX_RE.test(themeColor ?? "") || !HEX_RE.test(backgroundColor ?? "")) {
     return NextResponse.json({ error: "INVALID_COLOR" }, { status: 400 });
   }
+  if (!heroTitle || !heroSubtitle) {
+    return NextResponse.json({ error: "MISSING_HERO_TEXT" }, { status: 400 });
+  }
 
   const settings = await prisma.siteSettings.upsert({
     where: { id: "singleton" },
-    create: { id: "singleton", themeColor, backgroundColor },
-    update: { themeColor, backgroundColor },
+    create: {
+      id: "singleton",
+      themeColor,
+      backgroundColor,
+      heroTitle,
+      heroSubtitle,
+      heroBackgroundImage: heroBackgroundImage ?? null,
+    },
+    update: {
+      themeColor,
+      backgroundColor,
+      heroTitle,
+      heroSubtitle,
+      ...(heroBackgroundImage !== undefined ? { heroBackgroundImage } : {}),
+    },
   });
 
   return NextResponse.json({ settings });
