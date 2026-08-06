@@ -22,7 +22,7 @@ export default function AreaGenderForm() {
       <div>
         <label className="mb-2 block text-sm font-semibold text-brand-900">Kawasan anda</label>
         <div className="relative">
-          <MapPinIcon className="pointer-events-none absolute left-4 top-1/2 h-4.5 w-4.5 -translate-y-1/2 text-brand-300" />
+          <MapPinIcon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-300" />
           <select
             className="input appearance-none pl-11"
             value={area}
