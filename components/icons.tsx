@@ -250,3 +250,39 @@ export function WalletIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function InstagramIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="3.5" y="3.5" width="17" height="17" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17" cy="7" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
+export function TiktokIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M14 3v10.5a3.5 3.5 0 1 1-3.5-3.5" />
+      <path d="M14 3c0 3 2.5 5 5 5" />
+    </svg>
+  );
+}
+
+export function ThreadsIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9 9.5c0-1.4 1.3-2.5 3-2.5s3 1.3 3 3.2c0 3.3-2.5 4.3-3.5 4.3-1.4 0-2.5-.8-2.5-2 0-1.3 1.4-2 3-2 1.8 0 3.2.8 3.2 2.6 0 2-1.8 3.4-4 3.4" />
+    </svg>
+  );
+}
+
+export function SocialXIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M5 5l14 14M19 5L5 19" />
+    </svg>
+  );
+}

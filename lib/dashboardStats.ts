@@ -32,3 +32,20 @@ export async function getDashboardStats(therapistId: string) {
     reviewCount: reviews,
   };
 }
+
+export async function getNextUpcomingBooking(therapistId: string) {
+  const booking = await prisma.booking.findFirst({
+    where: { therapistId, status: "CONFIRMED", slot: { date: { gte: new Date() } } },
+    include: { service: { select: { name: true } }, slot: true },
+    orderBy: { slot: { date: "asc" } },
+  });
+
+  if (!booking) return null;
+
+  return {
+    customerName: booking.customerName,
+    serviceName: booking.service.name,
+    date: booking.slot.date.toISOString().slice(0, 10),
+    startTime: booking.slot.startTime,
+  };
+}

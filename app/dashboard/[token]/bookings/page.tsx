@@ -32,6 +32,7 @@ export default async function BookingsPage({ params }: { params: { token: string
             serviceName: b.service.name,
             date: b.slot.date.toISOString().slice(0, 10),
             startTime: b.slot.startTime,
+            endTime: b.slot.endTime,
           }))}
         />
       </main>

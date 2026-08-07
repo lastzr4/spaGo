@@ -17,6 +17,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
   const {
     name, phone, gender, clientGenderPolicy, coverageAreas, bio, active, photoUrl, username, pin,
     depositRequired, depositAmount, paymentMethod, qrCodeUrl, extraChargesNote,
+    socialInstagram, socialTiktok, socialThreads, socialX,
   } = body ?? {};
 
   if (paymentMethod !== undefined && paymentMethod !== null && paymentMethod !== "QR" && paymentMethod !== "CASH") {
@@ -58,6 +59,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
       ...(paymentMethod !== undefined ? { paymentMethod } : {}),
       ...(qrCodeUrl !== undefined ? { qrCodeUrl } : {}),
       ...(extraChargesNote !== undefined ? { extraChargesNote } : {}),
+      ...(socialInstagram !== undefined ? { socialInstagram: socialInstagram || null } : {}),
+      ...(socialTiktok !== undefined ? { socialTiktok: socialTiktok || null } : {}),
+      ...(socialThreads !== undefined ? { socialThreads: socialThreads || null } : {}),
+      ...(socialX !== undefined ? { socialX: socialX || null } : {}),
     },
   });
 

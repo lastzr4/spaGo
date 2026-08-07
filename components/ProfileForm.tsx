@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AREAS } from "@/lib/areas";
 import { fileToCompressedDataUrl } from "@/lib/image";
-import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon, LockIcon, ChevronLeftIcon, ImageOffIcon } from "@/components/icons";
+import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon, LockIcon, ChevronLeftIcon, ImageOffIcon, InstagramIcon, TiktokIcon, ThreadsIcon, SocialXIcon } from "@/components/icons";
 
 type Props = {
   token: string;
@@ -23,6 +23,10 @@ type Props = {
     paymentMethod: "QR" | "CASH" | null;
     qrCodeUrl: string | null;
     extraChargesNote: string | null;
+    socialInstagram: string | null;
+    socialTiktok: string | null;
+    socialThreads: string | null;
+    socialX: string | null;
   };
 };
 
@@ -33,6 +37,10 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
     depositAmount: therapist.depositAmount ?? "",
     paymentMethod: therapist.paymentMethod ?? "QR",
     extraChargesNote: therapist.extraChargesNote ?? "",
+    socialInstagram: therapist.socialInstagram ?? "",
+    socialTiktok: therapist.socialTiktok ?? "",
+    socialThreads: therapist.socialThreads ?? "",
+    socialX: therapist.socialX ?? "",
   });
   const [newPin, setNewPin] = useState("");
   const [newPinConfirm, setNewPinConfirm] = useState("");
@@ -390,6 +398,49 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
           onChange={(e) => setForm({ ...form, extraChargesNote: e.target.value })}
           rows={2}
         />
+      </div>
+
+      <div className="rounded-2xl bg-brand-50/60 p-4">
+        <p className="mb-1 text-[15px] font-bold text-brand-900">Media Sosial</p>
+        <p className="mb-3 text-xs text-gray-500">Opsyenal. Bantu pelanggan buat semakan sendiri (due diligence) tentang anda selain ulasan SpaGo.</p>
+        <div className="flex flex-col gap-2.5">
+          <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
+            <InstagramIcon className="h-4 w-4 shrink-0 text-gray-400" />
+            <input
+              className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
+              placeholder="Instagram (@username)"
+              value={form.socialInstagram}
+              onChange={(e) => setForm({ ...form, socialInstagram: e.target.value })}
+            />
+          </div>
+          <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
+            <TiktokIcon className="h-4 w-4 shrink-0 text-gray-400" />
+            <input
+              className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
+              placeholder="TikTok (@username)"
+              value={form.socialTiktok}
+              onChange={(e) => setForm({ ...form, socialTiktok: e.target.value })}
+            />
+          </div>
+          <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
+            <ThreadsIcon className="h-4 w-4 shrink-0 text-gray-400" />
+            <input
+              className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
+              placeholder="Threads (@username)"
+              value={form.socialThreads}
+              onChange={(e) => setForm({ ...form, socialThreads: e.target.value })}
+            />
+          </div>
+          <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
+            <SocialXIcon className="h-4 w-4 shrink-0 text-gray-400" />
+            <input
+              className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
+              placeholder="X / Twitter (@username)"
+              value={form.socialX}
+              onChange={(e) => setForm({ ...form, socialX: e.target.value })}
+            />
+          </div>
+        </div>
       </div>
 
       <button type="submit" className="btn-primary flex items-center justify-center gap-1.5" disabled={saving}>

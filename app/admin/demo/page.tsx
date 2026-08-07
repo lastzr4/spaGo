@@ -1,22 +1,21 @@
 import { isAdminAuthed } from "@/lib/adminAuth";
-import { getPlatformStats } from "@/lib/adminStats";
 import AdminLoginForm from "@/components/AdminLoginForm";
 import AdminNav from "@/components/AdminNav";
-import AdminOverviewStats from "@/components/AdminOverviewStats";
+import DemoDataPanel from "@/components/DemoDataPanel";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminOverviewPage() {
+export default function AdminDemoPage() {
   if (!isAdminAuthed()) {
     return <AdminLoginForm />;
   }
 
-  const stats = await getPlatformStats();
-
   return (
     <main className="flex-1 overflow-y-auto">
       <AdminNav />
-      <AdminOverviewStats {...stats} />
+      <div className="px-5 py-5">
+        <DemoDataPanel />
+      </div>
     </main>
   );
 }

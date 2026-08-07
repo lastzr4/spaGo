@@ -4,7 +4,8 @@ import TopBar from "@/components/TopBar";
 import BottomTabBar from "@/components/BottomTabBar";
 import ProfileForm from "@/components/ProfileForm";
 import DashboardStats from "@/components/DashboardStats";
-import { getDashboardStats } from "@/lib/dashboardStats";
+import { getDashboardStats, getNextUpcomingBooking } from "@/lib/dashboardStats";
+import { CalendarIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,10 @@ export default async function DashboardHomePage({ params }: { params: { token: s
   const therapist = await getTherapistByToken(params.token);
   if (!therapist) notFound();
 
-  const stats = await getDashboardStats(therapist.id);
+  const [stats, nextBooking] = await Promise.all([
+    getDashboardStats(therapist.id),
+    getNextUpcomingBooking(therapist.id),
+  ]);
 
   return (
     <>
@@ -26,6 +30,21 @@ export default async function DashboardHomePage({ params }: { params: { token: s
         <div className="mb-6 animate-fade-in">
           <DashboardStats {...stats} />
         </div>
+
+        {nextBooking && (
+          <div className="mb-6 flex animate-fade-in items-center gap-3 rounded-2xl border border-brand-100 bg-brand-50/60 p-4">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-brand-600">
+              <CalendarIcon className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-brand-500">Tempahan Seterusnya</p>
+              <p className="truncate text-sm font-semibold text-brand-900">
+                {nextBooking.customerName} &middot; {nextBooking.serviceName}
+              </p>
+              <p className="text-xs text-gray-500">{nextBooking.date}, {nextBooking.startTime}</p>
+            </div>
+          </div>
+        )}
 
         <h2 className="mb-3 text-[13px] font-bold uppercase tracking-wide text-gray-400">Profil Saya</h2>
         <div className="card animate-fade-in">
@@ -47,6 +66,10 @@ export default async function DashboardHomePage({ params }: { params: { token: s
               paymentMethod: therapist.paymentMethod,
               qrCodeUrl: therapist.qrCodeUrl,
               extraChargesNote: therapist.extraChargesNote,
+              socialInstagram: therapist.socialInstagram,
+              socialTiktok: therapist.socialTiktok,
+              socialThreads: therapist.socialThreads,
+              socialX: therapist.socialX,
             }}
           />
         </div>

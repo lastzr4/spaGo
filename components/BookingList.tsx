@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CalendarIcon, CheckCircleIcon, XIcon } from "@/components/icons";
+import { buildGoogleCalendarLink } from "@/lib/googleCalendar";
 
 type Booking = {
   id: string;
@@ -12,6 +13,7 @@ type Booking = {
   serviceName: string;
   date: string;
   startTime: string;
+  endTime: string;
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -101,6 +103,25 @@ export default function BookingList({ token, initialBookings }: { token: string;
                 Batal
               </button>
             </div>
+          )}
+
+          {b.status === "CONFIRMED" && (
+            <a
+              href={buildGoogleCalendarLink({
+                title: `SpaGo: ${b.serviceName} - ${b.customerName}`,
+                description: `Tempahan SpaGo\nPelanggan: ${b.customerName}\nTelefon: ${b.customerPhone}\nServis: ${b.serviceName}`,
+                location: b.customerAddress,
+                date: b.date,
+                startTime: b.startTime,
+                endTime: b.endTime,
+              })}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 flex items-center justify-center gap-1.5 rounded-xl border border-black/[0.06] px-3 py-2 text-xs font-semibold text-gray-500 active:scale-[0.97]"
+            >
+              <CalendarIcon className="h-3.5 w-3.5" />
+              Tambah ke Google Calendar
+            </a>
           )}
         </div>
       ))}

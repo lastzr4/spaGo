@@ -56,6 +56,10 @@ model Therapist {
   paymentMethod       PaymentMethod?
   qrCodeUrl           String?
   extraChargesNote    String?
+  socialInstagram     String?
+  socialTiktok        String?
+  socialThreads       String?
+  socialX             String?
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
 

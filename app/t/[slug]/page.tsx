@@ -4,6 +4,7 @@ import PromoBookingFlow from "@/components/PromoBookingFlow";
 import ReviewSection from "@/components/ReviewSection";
 import TopBar from "@/components/TopBar";
 import Footer from "@/components/Footer";
+import SocialLinks from "@/components/SocialLinks";
 import { StarIcon, MapPinIcon, QrIcon, CashIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
@@ -79,6 +80,15 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
               )}
             </div>
           </div>
+        </div>
+
+        <div className="mb-5 animate-fade-in">
+          <SocialLinks
+            instagram={therapist.socialInstagram}
+            tiktok={therapist.socialTiktok}
+            threads={therapist.socialThreads}
+            x={therapist.socialX}
+          />
         </div>
 
         {therapist.bio && (

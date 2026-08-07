@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { PaletteIcon, CheckCircleIcon, LogOutIcon, CameraIcon, XIcon } from "@/components/icons";
+import { PaletteIcon, CheckCircleIcon, CameraIcon, XIcon } from "@/components/icons";
 import { fileToCompressedDataUrl } from "@/lib/image";
 
 export default function AdminSettingsForm({
@@ -57,17 +57,11 @@ export default function AdminSettingsForm({
 
   return (
     <div className="flex flex-col gap-6 px-5 py-5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
-            <PaletteIcon className="h-5 w-5" />
-          </div>
-          <h1 className="text-lg font-bold text-brand-900">Tetapan Laman</h1>
+      <div className="flex items-center gap-2">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
+          <PaletteIcon className="h-5 w-5" />
         </div>
-        <a href="/api/admin/logout" className="btn-ghost flex items-center gap-1 bg-brand-50">
-          <LogOutIcon className="h-3.5 w-3.5" />
-          Log Keluar
-        </a>
+        <h1 className="text-lg font-bold text-brand-900">Tetapan Laman</h1>
       </div>
 
       <form onSubmit={handleSave} className="flex flex-col gap-5">
