@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { TrashIcon, CheckCircleIcon, XIcon, LinkIcon } from "@/components/icons";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 type Therapist = {
   id: string;
@@ -20,6 +21,7 @@ export default function AdminTherapistList({ initialTherapists }: { initialThera
   const [therapists, setTherapists] = useState(initialTherapists);
   const [busy, setBusy] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<Therapist | null>(null);
 
   async function toggleActive(t: Therapist) {
     setBusy(t.id);
@@ -35,13 +37,13 @@ export default function AdminTherapistList({ initialTherapists }: { initialThera
   }
 
   async function removeTherapist(t: Therapist) {
-    if (!confirm(`Padam ${t.name}? Semua servis, slot, tempahan dan ulasan mereka turut dipadam.`)) return;
     setBusy(t.id);
     const res = await fetch(`/api/admin/therapists/${t.id}`, { method: "DELETE" });
     if (res.ok) {
       setTherapists((list) => list.filter((x) => x.id !== t.id));
     }
     setBusy(null);
+    setPendingDelete(null);
   }
 
   async function copyLink(t: Therapist) {
@@ -63,7 +65,22 @@ export default function AdminTherapistList({ initialTherapists }: { initialThera
     );
   }
 
+  const deleteDialog = (
+    <ConfirmDialog
+      open={pendingDelete !== null}
+      title={`Padam ${pendingDelete?.name ?? ""}?`}
+      message="Semua servis, slot, tempahan dan ulasan mereka turut dipadam. Tindakan ini tidak boleh dibatalkan."
+      confirmLabel="Padam"
+      danger
+      busy={busy === pendingDelete?.id}
+      onConfirm={() => pendingDelete && removeTherapist(pendingDelete)}
+      onCancel={() => setPendingDelete(null)}
+    />
+  );
+
   return (
+    <>
+    {deleteDialog}
     <div className="flex flex-col gap-3">
       {therapists.map((t, i) => (
         <div key={t.id} className={`card animate-fade-in ${!t.active ? "opacity-60" : ""}`} style={{ animationDelay: `${i * 30}ms` }}>
@@ -101,7 +118,7 @@ export default function AdminTherapistList({ initialTherapists }: { initialThera
             </button>
             <button
               type="button"
-              onClick={() => removeTherapist(t)}
+              onClick={() => setPendingDelete(t)}
               disabled={busy === t.id}
               className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-red-50 px-3 py-2 text-xs font-semibold text-red-500 active:scale-[0.97] disabled:opacity-40"
             >
@@ -112,5 +129,6 @@ export default function AdminTherapistList({ initialTherapists }: { initialThera
         </div>
       ))}
     </div>
+    </>
   );
 }

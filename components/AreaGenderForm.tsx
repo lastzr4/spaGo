@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { AREAS } from "@/lib/areas";
 import { MapPinIcon } from "@/components/icons";
+import SegmentedToggle from "@/components/SegmentedToggle";
 
 export default function AreaGenderForm() {
   const router = useRouter();
@@ -39,30 +40,14 @@ export default function AreaGenderForm() {
 
       <div>
         <label className="mb-2 block text-sm font-semibold text-brand-900">Servis untuk</label>
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={() => setGender("FEMALE")}
-            className={`chip justify-center py-3.5 text-[15px] ${
-              gender === "FEMALE"
-                ? "border-brand-600 bg-brand-50 text-brand-700 shadow-[0_0_0_1px_theme(colors.brand.600)]"
-                : "border-black/10 bg-white text-gray-600"
-            }`}
-          >
-            Wanita
-          </button>
-          <button
-            type="button"
-            onClick={() => setGender("MALE")}
-            className={`chip justify-center py-3.5 text-[15px] ${
-              gender === "MALE"
-                ? "border-brand-600 bg-brand-50 text-brand-700 shadow-[0_0_0_1px_theme(colors.brand.600)]"
-                : "border-black/10 bg-white text-gray-600"
-            }`}
-          >
-            Lelaki
-          </button>
-        </div>
+        <SegmentedToggle
+          options={[
+            { value: "FEMALE" as const, label: "Wanita" },
+            { value: "MALE" as const, label: "Lelaki" },
+          ]}
+          value={gender}
+          onChange={setGender}
+        />
         {gender === "MALE" && (
           <p className="mt-2 animate-fade-in text-xs text-gray-500">Pelanggan lelaki hanya dipadankan dengan terapis lelaki.</p>
         )}

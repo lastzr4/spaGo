@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { StarIcon } from "@/components/icons";
+import Confetti from "@/components/Confetti";
 
 export default function ReviewForm({ therapistId, onSubmitted }: { therapistId: string; onSubmitted?: () => void }) {
   const [rating, setRating] = useState(5);
@@ -36,7 +37,12 @@ export default function ReviewForm({ therapistId, onSubmitted }: { therapistId: 
   }
 
   if (done) {
-    return <p className="animate-fade-in text-sm font-medium text-brand-700">Terima kasih atas ulasan anda!</p>;
+    return (
+      <div className="relative animate-fade-in">
+        <Confetti count={26} />
+        <p className="text-sm font-medium text-brand-700">Terima kasih atas ulasan anda!</p>
+      </div>
+    );
   }
 
   return (

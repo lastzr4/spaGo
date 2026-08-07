@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AREAS } from "@/lib/areas";
 import TopBar from "@/components/TopBar";
+import SegmentedToggle from "@/components/SegmentedToggle";
 
 const ERROR_MESSAGES: Record<string, string> = {
   USERNAME_INVALID: "Username mesti 4-20 aksara (huruf, nombor, garis bawah sahaja).",
@@ -79,10 +80,14 @@ export default function TherapistRegisterPage() {
 
           <div>
             <label className="mb-2 block text-sm font-semibold text-brand-900">Jantina anda</label>
-            <div className="grid grid-cols-2 gap-3">
-              <button type="button" onClick={() => setGender("FEMALE")} className={`chip justify-center py-3 ${gender === "FEMALE" ? "chip-active" : ""}`}>Wanita</button>
-              <button type="button" onClick={() => setGender("MALE")} className={`chip justify-center py-3 ${gender === "MALE" ? "chip-active" : ""}`}>Lelaki</button>
-            </div>
+            <SegmentedToggle
+              options={[
+                { value: "FEMALE" as const, label: "Wanita" },
+                { value: "MALE" as const, label: "Lelaki" },
+              ]}
+              value={gender}
+              onChange={setGender}
+            />
           </div>
 
           <div>

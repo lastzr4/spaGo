@@ -6,6 +6,7 @@ import { isFavorite, toggleFavorite, type FavoriteTherapist } from "@/lib/favori
 
 export default function FavoriteButton({ therapist }: { therapist: FavoriteTherapist }) {
   const [favorited, setFavorited] = useState(false);
+  const [pop, setPop] = useState(false);
 
   useEffect(() => {
     setFavorited(isFavorite(therapist.id));
@@ -19,16 +20,25 @@ export default function FavoriteButton({ therapist }: { therapist: FavoriteThera
     e.stopPropagation();
     const next = toggleFavorite(therapist);
     setFavorited(next);
+    if (next) {
+      setPop(true);
+      setTimeout(() => setPop(false), 450);
+    }
   }
 
   return (
     <button
       type="button"
       onClick={handleToggle}
-      className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-brand-600 transition-transform active:scale-90"
+      className={`flex h-8 w-8 items-center justify-center rounded-full transition-transform active:scale-90 ${
+        favorited ? "bg-red-50" : "bg-brand-50"
+      }`}
       aria-label={favorited ? "Buang dari kegemaran" : "Simpan sebagai kegemaran"}
     >
-      <HeartIcon filled={favorited} className={`h-4 w-4 ${favorited ? "text-red-500" : ""}`} />
+      <HeartIcon
+        filled={favorited}
+        className={`h-4 w-4 ${favorited ? "text-red-500" : "text-brand-600"} ${pop ? "animate-heart-pop" : ""}`}
+      />
     </button>
   );
 }

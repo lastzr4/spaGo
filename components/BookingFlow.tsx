@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { buildWhatsAppBookingMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import { CheckCircleIcon, SendIcon, CalendarIcon, ImageOffIcon } from "@/components/icons";
+import Confetti from "@/components/Confetti";
 
 type Service = { id: string; name: string; durationMinutes: number; price: string; photoUrl?: string | null };
 type Slot = { id: string; date: string; startTime: string; endTime: string };
@@ -46,6 +47,7 @@ export default function BookingFlow({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [depositConfirmed, setDepositConfirmed] = useState(false);
+  const [justBooked, setJustBooked] = useState(false);
 
   const slotsByDate = useMemo(() => {
     const map: Record<string, Slot[]> = {};
@@ -110,7 +112,10 @@ export default function BookingFlow({
         extraChargesNote: extraChargesNote || undefined,
       });
       const link = buildWhatsAppLink(therapistPhone, message);
-      window.location.href = link;
+      setJustBooked(true);
+      setTimeout(() => {
+        window.location.href = link;
+      }, 1100);
     } catch {
       setError("Tempahan gagal. Sila cuba lagi.");
       setSubmitting(false);
@@ -121,6 +126,19 @@ export default function BookingFlow({
     return (
       <div className="card flex flex-col items-center gap-1 py-8 text-center">
         <p className="text-sm font-medium text-gray-600">Terapis ini belum menetapkan sebarang servis.</p>
+      </div>
+    );
+  }
+
+  if (justBooked) {
+    return (
+      <div className="flex flex-col items-center justify-center gap-3 py-24 text-center animate-fade-in">
+        <Confetti />
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
+          <CheckCircleIcon filled className="h-8 w-8" />
+        </div>
+        <p className="text-[15px] font-bold text-brand-900">Tempahan dihantar!</p>
+        <p className="max-w-[240px] text-sm text-gray-500">Membuka WhatsApp untuk sahkan dengan terapis...</p>
       </div>
     );
   }

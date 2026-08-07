@@ -35,10 +35,10 @@ body {
 
 .btn-primary {
   @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-[15px] font-semibold text-white shadow-[0_8px_20px_-6px_rgba(98,63,163,0.55)] transition-all duration-150 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40 disabled:shadow-none;
-  background-color: var(--brand, #7a51c9);
+  background-image: linear-gradient(135deg, var(--brand, #7a51c9), color-mix(in srgb, var(--brand, #7a51c9) 65%, #ff5fa2));
 }
 .btn-primary:active {
-  filter: brightness(0.88);
+  filter: brightness(0.9);
 }
 
 .btn-secondary {
@@ -91,4 +91,50 @@ body {
 }
 .nav-active-dot {
   background-color: var(--brand, #7a51c9) !important;
+}
+
+@keyframes heart-pop {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.4) rotate(-6deg); }
+  55% { transform: scale(0.92) rotate(3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+.animate-heart-pop {
+  animation: heart-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-6px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(160px) rotate(600deg); opacity: 0; }
+}
+.confetti-piece {
+  position: absolute;
+  top: 0;
+  border-radius: 2px;
+  animation: confetti-fall 1.15s ease-in forwards;
+}
+
+@keyframes toggle-slide {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+.segmented-thumb {
+  transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modal-in {
+  0% { opacity: 0; transform: scale(0.92) translateY(8px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-modal-in {
+  animation: modal-in 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes count-glow {
+  0% { text-shadow: 0 0 0 rgba(122, 81, 201, 0); }
+  40% { text-shadow: 0 0 14px rgba(122, 81, 201, 0.35); }
+  100% { text-shadow: 0 0 0 rgba(122, 81, 201, 0); }
+}
+.animate-count-glow {
+  animation: count-glow 0.6s ease-out;
 }

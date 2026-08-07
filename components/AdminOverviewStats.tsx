@@ -1,4 +1,5 @@
 import { UserIcon, WalletIcon, ClockIcon, CheckCircleIcon, ClipboardListIcon, MessageSquareIcon } from "@/components/icons";
+import CountUp from "@/components/CountUp";
 
 export default function AdminOverviewStats({
   totalTherapists,
@@ -20,20 +21,30 @@ export default function AdminOverviewStats({
   totalReviews: number;
 }) {
   const stats = [
-    { key: "therapists", label: "Jumlah Terapis", value: `${totalTherapists} (${activeTherapists} aktif)`, Icon: UserIcon, accent: "bg-brand-50 text-brand-600" },
-    { key: "revenue", label: "Jumlah Terkumpul (Platform)", value: `RM${totalRevenue.toFixed(0)}`, Icon: WalletIcon, accent: "bg-emerald-50 text-emerald-600" },
-    { key: "pending", label: "Tempahan Menunggu", value: pendingBookings.toString(), Icon: ClockIcon, accent: "bg-amber-50 text-amber-600" },
-    { key: "completed", label: "Tempahan Selesai", value: completedBookings.toString(), Icon: CheckCircleIcon, accent: "bg-emerald-50 text-emerald-600" },
-    { key: "bookings", label: "Jumlah Tempahan", value: totalBookings.toString(), Icon: ClipboardListIcon, accent: "bg-brand-50 text-brand-600" },
-    { key: "reviews", label: "Jumlah Ulasan", value: totalReviews.toString(), Icon: MessageSquareIcon, accent: "bg-yellow-50 text-yellow-600" },
+    {
+      key: "therapists",
+      label: "Jumlah Terapis",
+      value: (
+        <>
+          <CountUp value={totalTherapists} /> <span className="text-sm font-semibold text-gray-400">({activeTherapists} aktif)</span>
+        </>
+      ),
+      Icon: UserIcon,
+      accent: "from-violet-400 to-purple-600",
+    },
+    { key: "revenue", label: "Jumlah Terkumpul (Platform)", value: <CountUp value={totalRevenue} prefix="RM" />, Icon: WalletIcon, accent: "from-emerald-400 to-teal-600" },
+    { key: "pending", label: "Tempahan Menunggu", value: <CountUp value={pendingBookings} />, Icon: ClockIcon, accent: "from-amber-400 to-orange-500" },
+    { key: "completed", label: "Tempahan Selesai", value: <CountUp value={completedBookings} />, Icon: CheckCircleIcon, accent: "from-emerald-400 to-green-600" },
+    { key: "bookings", label: "Jumlah Tempahan", value: <CountUp value={totalBookings} />, Icon: ClipboardListIcon, accent: "from-sky-400 to-blue-600" },
+    { key: "reviews", label: "Jumlah Ulasan", value: <CountUp value={totalReviews} />, Icon: MessageSquareIcon, accent: "from-pink-400 to-rose-600" },
   ] as const;
 
   return (
     <div className="px-5 py-5">
       <div className="grid grid-cols-2 gap-3">
         {stats.map((s, i) => (
-          <div key={s.key} className="card animate-fade-in" style={{ animationDelay: `${i * 40}ms` }}>
-            <div className={`mb-2 flex h-9 w-9 items-center justify-center rounded-xl ${s.accent}`}>
+          <div key={s.key} className="card card-tap animate-fade-in" style={{ animationDelay: `${i * 40}ms` }}>
+            <div className={`mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-[0_4px_12px_-4px_rgba(0,0,0,0.35)] ${s.accent}`}>
               <s.Icon className="h-4 w-4" />
             </div>
             <p className="text-lg font-bold text-brand-900">{s.value}</p>
