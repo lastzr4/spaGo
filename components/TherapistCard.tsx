@@ -26,13 +26,7 @@ export default function TherapistCard({ therapist, area, gender }: { therapist: 
       href={`/therapists/${therapist.id}?area=${encodeURIComponent(area)}&gender=${gender}`}
       className="card card-tap relative flex gap-3.5"
     >
-      <div
-        className="absolute right-3 top-3 z-10"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        }}
-      >
+      <div className="absolute right-3 top-3 z-10">
         <FavoriteButton
           therapist={{
             id: therapist.id,

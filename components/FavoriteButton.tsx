@@ -11,7 +11,12 @@ export default function FavoriteButton({ therapist }: { therapist: FavoriteThera
     setFavorited(isFavorite(therapist.id));
   }, [therapist.id]);
 
-  function handleToggle() {
+  function handleToggle(e: React.MouseEvent) {
+    // TherapistCard wraps this in a <Link>; stop the click from also
+    // triggering navigation. Must live here (a Client Component) since
+    // Server Components can't carry their own onClick handlers.
+    e.preventDefault();
+    e.stopPropagation();
     const next = toggleFavorite(therapist);
     setFavorited(next);
   }
