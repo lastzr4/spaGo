@@ -71,6 +71,7 @@ export default async function TherapistsPage({
                       depositRequired: t.depositRequired,
                       depositAmount: t.depositAmount ? t.depositAmount.toString() : null,
                       paymentMethod: t.paymentMethod,
+                      slug: t.slug,
                     }}
                   />
                 </div>

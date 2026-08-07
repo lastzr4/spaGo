@@ -18,6 +18,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
     name, phone, gender, clientGenderPolicy, coverageAreas, bio, active, photoUrl, username, pin,
     depositRequired, depositAmount, paymentMethod, qrCodeUrl, extraChargesNote,
     socialInstagram, socialTiktok, socialThreads, socialX,
+    specialties, yearsExperience, workingHoursNote, galleryPhotos,
   } = body ?? {};
 
   if (paymentMethod !== undefined && paymentMethod !== null && paymentMethod !== "QR" && paymentMethod !== "CASH") {
@@ -63,6 +64,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
       ...(socialTiktok !== undefined ? { socialTiktok: socialTiktok || null } : {}),
       ...(socialThreads !== undefined ? { socialThreads: socialThreads || null } : {}),
       ...(socialX !== undefined ? { socialX: socialX || null } : {}),
+      ...(specialties !== undefined ? { specialties } : {}),
+      ...(yearsExperience !== undefined ? { yearsExperience: yearsExperience === null || yearsExperience === "" ? null : Number(yearsExperience) } : {}),
+      ...(workingHoursNote !== undefined ? { workingHoursNote } : {}),
+      ...(galleryPhotos !== undefined ? { galleryPhotos: Array.isArray(galleryPhotos) ? galleryPhotos.slice(0, 6) : [] } : {}),
     },
   });
 

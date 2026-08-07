@@ -25,7 +25,7 @@ export default function TopBar({
         <span className="h-9 w-9 shrink-0" />
       )}
       <h1 className="flex-1 truncate text-center text-[15px] font-semibold text-brand-900">{title}</h1>
-      <div className="flex h-9 w-9 shrink-0 items-center justify-end">{right}</div>
+      <div className="flex min-w-9 shrink-0 items-center justify-end gap-1.5">{right}</div>
     </header>
   );
 }

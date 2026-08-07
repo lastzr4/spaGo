@@ -70,6 +70,10 @@ export default async function DashboardHomePage({ params }: { params: { token: s
               socialTiktok: therapist.socialTiktok,
               socialThreads: therapist.socialThreads,
               socialX: therapist.socialX,
+              specialties: therapist.specialties,
+              yearsExperience: therapist.yearsExperience,
+              workingHoursNote: therapist.workingHoursNote,
+              galleryPhotos: therapist.galleryPhotos,
             }}
           />
         </div>

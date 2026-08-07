@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AREAS } from "@/lib/areas";
 import { fileToCompressedDataUrl } from "@/lib/image";
-import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon, LockIcon, ChevronLeftIcon, ImageOffIcon, InstagramIcon, TiktokIcon, ThreadsIcon, SocialXIcon } from "@/components/icons";
+import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon, LockIcon, ChevronLeftIcon, ImageOffIcon, InstagramIcon, TiktokIcon, ThreadsIcon, SocialXIcon, PlusIcon, XIcon, ClockIcon, StarIcon } from "@/components/icons";
 
 type Props = {
   token: string;
@@ -27,6 +27,10 @@ type Props = {
     socialTiktok: string | null;
     socialThreads: string | null;
     socialX: string | null;
+    specialties: string[];
+    yearsExperience: number | null;
+    workingHoursNote: string | null;
+    galleryPhotos: string[];
   };
 };
 
@@ -41,7 +45,11 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
     socialTiktok: therapist.socialTiktok ?? "",
     socialThreads: therapist.socialThreads ?? "",
     socialX: therapist.socialX ?? "",
+    yearsExperience: therapist.yearsExperience?.toString() ?? "",
+    workingHoursNote: therapist.workingHoursNote ?? "",
   });
+  const [specialtyInput, setSpecialtyInput] = useState("");
+  const [uploadingGallery, setUploadingGallery] = useState(false);
   const [newPin, setNewPin] = useState("");
   const [newPinConfirm, setNewPinConfirm] = useState("");
   const [saving, setSaving] = useState(false);
@@ -93,6 +101,37 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
     }
   }
 
+  function addSpecialty() {
+    const value = specialtyInput.trim();
+    if (!value || form.specialties.includes(value) || form.specialties.length >= 8) {
+      setSpecialtyInput("");
+      return;
+    }
+    setForm((f) => ({ ...f, specialties: [...f.specialties, value] }));
+    setSpecialtyInput("");
+  }
+
+  function removeSpecialty(tag: string) {
+    setForm((f) => ({ ...f, specialties: f.specialties.filter((t) => t !== tag) }));
+  }
+
+  async function handleGalleryPhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || form.galleryPhotos.length >= 6) return;
+    setUploadingGallery(true);
+    try {
+      const dataUrl = await fileToCompressedDataUrl(file, { maxWidth: 900, maxHeight: 900 });
+      setForm((f) => ({ ...f, galleryPhotos: [...f.galleryPhotos, dataUrl] }));
+    } finally {
+      setUploadingGallery(false);
+      e.target.value = "";
+    }
+  }
+
+  function removeGalleryPhoto(index: number) {
+    setForm((f) => ({ ...f, galleryPhotos: f.galleryPhotos.filter((_, i) => i !== index) }));
+  }
+
   function toggleArea(a: string) {
     setForm((f) => ({
       ...f,
@@ -128,6 +167,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
     if (!form.depositRequired) {
       body.paymentMethod = null;
     }
+    body.yearsExperience = form.yearsExperience === "" ? null : Number(form.yearsExperience);
 
     const res = await fetch(`/api/dashboard/${token}`, {
       method: "PATCH",
@@ -237,6 +277,89 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
       </div>
 
       <textarea className="input" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} placeholder="Ringkasan" rows={3} />
+
+      <div className="rounded-2xl bg-brand-50/60 p-4">
+        <p className="mb-1 flex items-center gap-1.5 text-[15px] font-bold text-brand-900">
+          <StarIcon className="h-4 w-4" />
+          Kepakaran &amp; Pengalaman
+        </p>
+        <p className="mb-3 text-xs text-gray-500">Tag kepakaran membantu pelanggan cepat nampak kelebihan anda.</p>
+
+        <div className="mb-3 flex flex-wrap gap-2">
+          {form.specialties.map((tag) => (
+            <span key={tag} className="chip chip-active flex items-center gap-1 pr-1.5">
+              {tag}
+              <button type="button" onClick={() => removeSpecialty(tag)} className="flex h-4 w-4 items-center justify-center rounded-full bg-white/60">
+                <XIcon className="h-2.5 w-2.5" />
+              </button>
+            </span>
+          ))}
+        </div>
+        <div className="mb-3 flex gap-2">
+          <input
+            className="input"
+            placeholder="cth: Deep Tissue, Prenatal"
+            value={specialtyInput}
+            onChange={(e) => setSpecialtyInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addSpecialty();
+              }
+            }}
+          />
+          <button type="button" onClick={addSpecialty} className="btn-secondary shrink-0 px-4">
+            <PlusIcon className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="flex gap-3">
+          <input
+            className="input"
+            type="number"
+            min="0"
+            placeholder="Tahun pengalaman"
+            value={form.yearsExperience}
+            onChange={(e) => setForm({ ...form, yearsExperience: e.target.value })}
+          />
+        </div>
+        <div className="mt-3 flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
+          <ClockIcon className="h-4 w-4 shrink-0 text-gray-400" />
+          <input
+            className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
+            placeholder="Waktu beroperasi, cth: Isnin-Jumaat 9am-8pm"
+            value={form.workingHoursNote}
+            onChange={(e) => setForm({ ...form, workingHoursNote: e.target.value })}
+          />
+        </div>
+      </div>
+
+      <div className="rounded-2xl bg-brand-50/60 p-4">
+        <p className="mb-1 text-[15px] font-bold text-brand-900">Galeri Foto</p>
+        <p className="mb-3 text-xs text-gray-500">Tambah sehingga 6 foto (tempat kerja, suasana, dll) untuk pelanggan lihat.</p>
+        <div className="flex flex-wrap gap-2.5">
+          {form.galleryPhotos.map((url, i) => (
+            <div key={i} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={url} alt={`Galeri ${i + 1}`} className="h-full w-full object-cover" />
+              <button
+                type="button"
+                onClick={() => removeGalleryPhoto(i)}
+                className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-black/50 text-white"
+              >
+                <XIcon className="h-3 w-3" />
+              </button>
+            </div>
+          ))}
+          {form.galleryPhotos.length < 6 && (
+            <label className="flex h-20 w-20 shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-brand-200 bg-white text-brand-400">
+              <CameraIcon className="h-5 w-5" />
+              <span className="text-[10px] font-medium">{uploadingGallery ? "..." : "Tambah"}</span>
+              <input type="file" accept="image/*" className="hidden" onChange={handleGalleryPhoto} disabled={uploadingGallery} />
+            </label>
+          )}
+        </div>
+      </div>
 
       <label className="flex items-center gap-2.5 rounded-2xl bg-brand-50/60 px-4 py-3 text-sm font-medium text-gray-600">
         <input type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} className="h-4 w-4 accent-brand-600" />

@@ -6,7 +6,11 @@ export default function Footer() {
   const authed = isAdminAuthed();
 
   return (
-    <div className="mt-6 flex animate-fade-in items-center justify-center gap-3 pb-8 text-xs">
+    <div className="mt-6 flex flex-wrap animate-fade-in items-center justify-center gap-3 pb-8 text-xs">
+      <Link href="/favorites" className="font-semibold" style={{ color: "var(--brand, #7a51c9)" }}>
+        Kegemaran
+      </Link>
+      <span className="text-gray-300">&middot;</span>
       <Link href="/dashboard/login" className="font-semibold" style={{ color: "var(--brand, #7a51c9)" }}>
         Log Masuk
       </Link>

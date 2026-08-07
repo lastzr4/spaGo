@@ -286,3 +286,39 @@ export function SocialXIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function ShareIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="18" cy="5.5" r="2.5" />
+      <circle cx="6" cy="12" r="2.5" />
+      <circle cx="18" cy="18.5" r="2.5" />
+      <path d="M8.2 10.7l7.6-4.2M8.2 13.3l7.6 4.2" />
+    </svg>
+  );
+}
+
+export function AwardIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="12" cy="8.5" r="5" />
+      <path d="M8.5 13l-1.8 7 5.3-2.6 5.3 2.6-1.8-7" />
+    </svg>
+  );
+}
+
+export function SparkleIcon(props: IconProps) {
+  return (
+    <svg {...base} fill="currentColor" stroke="none" {...props}>
+      <path d="M12 2l1.8 5.6L19.5 9l-5.7 1.4L12 16l-1.8-5.6L4.5 9l5.7-1.4L12 2z" />
+    </svg>
+  );
+}
+
+export function HeartIcon({ filled, ...props }: IconProps & { filled?: boolean }) {
+  return (
+    <svg {...base} fill={filled ? "currentColor" : "none"} {...props}>
+      <path d="M12 20s-7-4.4-9.5-8.8C.7 8 2 4.5 5.3 4c2-.3 3.8.6 4.7 2.2A5 5 0 0 1 14.7 4c3.3.5 4.6 4 3 7.2C15.2 15.6 12 20 12 20z" />
+    </svg>
+  );
+}

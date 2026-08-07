@@ -60,6 +60,10 @@ model Therapist {
   socialTiktok        String?
   socialThreads       String?
   socialX             String?
+  specialties         String[]            @default([])
+  yearsExperience     Int?
+  workingHoursNote    String?
+  galleryPhotos       String[]            @default([])
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
 

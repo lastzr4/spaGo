@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { StarIcon, MapPinIcon, QrIcon, CashIcon } from "@/components/icons";
+import FavoriteButton from "@/components/FavoriteButton";
 
 type Service = { id: string; name: string; durationMinutes: number; price: string };
 type Therapist = {
@@ -16,14 +17,34 @@ type Therapist = {
   depositRequired?: boolean;
   depositAmount?: string | null;
   paymentMethod?: "QR" | "CASH" | null;
+  slug?: string | null;
 };
 
 export default function TherapistCard({ therapist, area, gender }: { therapist: Therapist; area: string; gender: string }) {
   return (
     <Link
       href={`/therapists/${therapist.id}?area=${encodeURIComponent(area)}&gender=${gender}`}
-      className="card card-tap flex gap-3.5"
+      className="card card-tap relative flex gap-3.5"
     >
+      <div
+        className="absolute right-3 top-3 z-10"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+      >
+        <FavoriteButton
+          therapist={{
+            id: therapist.id,
+            name: therapist.name,
+            gender: therapist.gender,
+            photoUrl: therapist.photoUrl ?? null,
+            coverageAreas: therapist.coverageAreas,
+            priceFrom: therapist.priceFrom,
+            slug: therapist.slug ?? null,
+          }}
+        />
+      </div>
       {therapist.photoUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={therapist.photoUrl} alt={therapist.name} className="avatar-ring h-16 w-16 shrink-0 rounded-2xl object-cover" />
@@ -33,7 +54,7 @@ export default function TherapistCard({ therapist, area, gender }: { therapist: 
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex items-start justify-between gap-2 pr-8">
           <h3 className="truncate font-semibold text-brand-900">{therapist.name}</h3>
           <span className="shrink-0 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-semibold text-brand-600">
             {therapist.gender === "FEMALE" ? "Wanita" : "Lelaki"}

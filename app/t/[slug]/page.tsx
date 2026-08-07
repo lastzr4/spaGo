@@ -5,6 +5,10 @@ import ReviewSection from "@/components/ReviewSection";
 import TopBar from "@/components/TopBar";
 import Footer from "@/components/Footer";
 import SocialLinks from "@/components/SocialLinks";
+import TherapistExtras from "@/components/TherapistExtras";
+import TherapistBadges from "@/components/TherapistBadges";
+import ShareButton from "@/components/ShareButton";
+import FavoriteButton from "@/components/FavoriteButton";
 import { StarIcon, MapPinIcon, QrIcon, CashIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
@@ -40,7 +44,26 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
 
   return (
     <>
-      <TopBar title={therapist.name} backHref="/" />
+      <TopBar
+        title={therapist.name}
+        backHref="/"
+        right={
+          <>
+            <FavoriteButton
+              therapist={{
+                id: therapist.id,
+                name: therapist.name,
+                gender: therapist.gender,
+                photoUrl: therapist.photoUrl,
+                coverageAreas: therapist.coverageAreas,
+                priceFrom: therapist.services[0]?.price.toString() ?? null,
+                slug: therapist.slug,
+              }}
+            />
+            <ShareButton title={therapist.name} url={typeof window !== "undefined" ? window.location.href : ""} />
+          </>
+        }
+      />
       <main className="flex-1 overflow-y-auto px-5 py-5">
         <div className="mb-5 flex animate-fade-in items-center gap-4">
           {therapist.photoUrl ? (
@@ -61,6 +84,7 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
               <span className="truncate">{therapist.coverageAreas.join(", ")}</span>
             </p>
             <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+              <TherapistBadges averageRating={average} reviewCount={reviews.length} createdAt={therapist.createdAt.toISOString()} />
               {average !== null && (
                 <span className="inline-flex items-center gap-1 rounded-full bg-yellow-50 px-2 py-0.5 text-[12px] font-semibold text-yellow-600">
                   <StarIcon filled className="h-3 w-3" />
@@ -82,7 +106,7 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
           </div>
         </div>
 
-        <div className="mb-5 animate-fade-in">
+        <div className="mb-3 animate-fade-in">
           <SocialLinks
             instagram={therapist.socialInstagram}
             tiktok={therapist.socialTiktok}
@@ -90,6 +114,13 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
             x={therapist.socialX}
           />
         </div>
+
+        <TherapistExtras
+          specialties={therapist.specialties}
+          yearsExperience={therapist.yearsExperience}
+          workingHoursNote={therapist.workingHoursNote}
+          galleryPhotos={therapist.galleryPhotos}
+        />
 
         {therapist.bio && (
           <p className="mb-5 animate-fade-in rounded-2xl bg-brand-50/60 px-4 py-3 text-[13px] leading-relaxed text-gray-600">
