@@ -1,6 +1,7 @@
 import AreaGenderForm from "@/components/AreaGenderForm";
 import Footer from "@/components/Footer";
 import { getSiteSettings } from "@/lib/siteSettings";
+import { Liquid } from "@/components/canvasui/Liquid";
 
 export const dynamic = "force-dynamic";
 
@@ -26,13 +27,23 @@ export default async function HomePage() {
             <div className="absolute -bottom-16 -left-10 h-48 w-48 rounded-full bg-white/10" />
           </>
         )}
-        <div className="relative animate-fade-in">
+        {/* Liquid needs a floor height to lay out against (see Liquid.tsx
+            comment) — 200px comfortably fits the badge + title + subtitle at
+            their default length, and grows if admin-edited text runs long. */}
+        <Liquid
+          className="relative animate-fade-in"
+          style={{ minHeight: 200 }}
+          color={[0.48, 0.32, 0.79]}
+          intensity={2.4}
+          distortion={0.5}
+          blend={6}
+        >
           <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide backdrop-blur-sm">
             SpaGo
           </span>
           <h1 className="mt-3 whitespace-pre-line text-[28px] font-bold leading-tight">{settings.heroTitle}</h1>
           <p className="mt-2 max-w-[280px] text-sm text-white/85">{settings.heroSubtitle}</p>
-        </div>
+        </Liquid>
       </div>
 
       <div className="relative -mt-8 flex-1 px-5">
