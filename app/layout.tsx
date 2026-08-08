@@ -45,7 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         }}
       >
         <ServiceWorkerRegister />
-        <div className="relative mx-auto flex min-h-screen max-w-md flex-col shadow-2xl sm:max-w-lg" style={{ background: "var(--app-bg)" }}>
+        <div className="app-shell relative mx-auto flex max-w-md flex-col shadow-2xl sm:max-w-lg" style={{ background: "var(--app-bg)" }}>
           {children}
         </div>
       </body>

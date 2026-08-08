@@ -13,6 +13,11 @@ html, body {
   overflow-x: hidden;
 }
 
+.app-shell {
+  height: 100vh;
+  height: 100dvh;
+}
+
 body {
   color: #1d1230;
   background: var(--app-bg, #faf9fc);
