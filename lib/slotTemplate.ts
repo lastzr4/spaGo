@@ -18,7 +18,7 @@ function addDays(d: Date, n: number) {
 
 function endTimeFor(t: string) {
   const [h, m] = t.split(":").map(Number);
-  return `${String(h + 1).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  return `${String((h + 1) % 24).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
 }
 
 // Extends a therapist's template-generated slots forward to cover a rolling window.

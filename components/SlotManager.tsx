@@ -104,7 +104,7 @@ export default function SlotManager({
         date,
         times: times.map((t) => {
           const [h, m] = t.split(":").map(Number);
-          const endH = m === 0 ? h + 1 : h + 1;
+          const endH = (h + 1) % 24;
           return { startTime: t, endTime: `${String(endH).padStart(2, "0")}:${String(m).padStart(2, "0")}` };
         }),
       }),

@@ -4,14 +4,14 @@
 
 export const TIME_GROUPS: { label: string; times: string[] }[] = [
   { label: "Pagi", times: ["09:00", "10:00", "11:00"] },
-  { label: "Petang", times: ["13:00", "14:00", "15:00", "16:00", "17:00"] },
-  { label: "Malam", times: ["19:00", "20:00"] },
+  { label: "Petang", times: ["12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00"] },
+  { label: "Malam", times: ["19:00", "20:00", "21:00", "22:00", "23:00"] },
 ];
 
 export function timeOfDay(t: string) {
   const h = Number(t.split(":")[0]);
   if (h < 12) return "pagi";
-  if (h < 18) return "petang";
+  if (h < 19) return "petang";
   return "malam";
 }
 
