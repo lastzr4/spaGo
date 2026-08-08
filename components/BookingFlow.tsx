@@ -51,6 +51,9 @@ export default function BookingFlow({
   const [justBooked, setJustBooked] = useState(false);
   const [detailsRevealed, setDetailsRevealed] = useState(false);
   const detailsRef = useRef<HTMLDivElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  const addressRef = useRef<HTMLTextAreaElement>(null);
 
   const slotsByDate = useMemo(() => {
     const map: Record<string, Slot[]> = {};
@@ -78,6 +81,9 @@ export default function BookingFlow({
     setError(null);
     if (!serviceId || !slotId || !name || !phone || !address) {
       setError("Sila lengkapkan semua maklumat.");
+      const target = !name ? nameRef.current : !phone ? phoneRef.current : addressRef.current;
+      target?.scrollIntoView({ behavior: "smooth", block: "center" });
+      target?.focus({ preventScroll: true });
       return;
     }
     setSubmitting(true);
@@ -251,9 +257,9 @@ export default function BookingFlow({
       {detailsRevealed && (
       <div ref={detailsRef} className="flex animate-fade-in flex-col gap-3 scroll-mt-5">
         <h2 className="text-[15px] font-bold text-brand-900">Maklumat anda</h2>
-        <input className="input" placeholder="Nama penuh" value={name} onChange={(e) => setName(e.target.value)} required />
-        <input className="input" placeholder="No. telefon anda" value={phone} onChange={(e) => setPhone(e.target.value)} required />
-        <textarea className="input" placeholder="Alamat penuh untuk urutan" value={address} onChange={(e) => setAddress(e.target.value)} rows={3} required />
+        <input ref={nameRef} className="input" placeholder="Nama penuh" value={name} onChange={(e) => setName(e.target.value)} required />
+        <input ref={phoneRef} className="input" placeholder="No. telefon anda" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+        <textarea ref={addressRef} className="input" placeholder="Alamat penuh untuk urutan" value={address} onChange={(e) => setAddress(e.target.value)} rows={3} required />
       </div>
       )}
 
