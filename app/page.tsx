@@ -2,6 +2,7 @@ import AreaGenderForm from "@/components/AreaGenderForm";
 import Footer from "@/components/Footer";
 import { getSiteSettings } from "@/lib/siteSettings";
 import { Liquid } from "@/components/canvasui/Liquid";
+import { ParticleReveal } from "@/components/canvasui/ParticleReveal";
 
 export const dynamic = "force-dynamic";
 
@@ -48,7 +49,14 @@ export default async function HomePage() {
 
       <div className="relative -mt-8 flex-1 px-5">
         <div className="card animate-pop-in shadow-card-hover">
-          <AreaGenderForm />
+          {/* Same minHeight requirement as Liquid above — see
+              ParticleReveal.tsx comment. background="#ffffff" matches the
+              .card's own bg-white so the effect can tell form content apart
+              from empty card padding. Smaller radius than the library default
+              (500px) since this card is a small mobile-width element. */}
+          <ParticleReveal background="#ffffff" radius={170} scatter={18} smoothing={0.2} style={{ minHeight: 220 }}>
+            <AreaGenderForm />
+          </ParticleReveal>
         </div>
 
         <Footer />
