@@ -1,5 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { askClaude } from "@/lib/anthropic";
+
+// Light AI moderation — fails open (never blocks/hides on error, only on an explicit FLAG).
+async function isFlaggedByAi(comment: string): Promise<boolean> {
+  const result = await askClaude({
+    system: [
+      "Anda menyemak ulasan pelanggan untuk perkhidmatan urut/spa mudah alih di Malaysia.",
+      "Balas HANYA dengan satu perkataan: FLAG jika ulasan mengandungi bahasa lucah teruk, ugutan, kandungan seksual eksplisit, ujaran kebencian, spam/iklan tidak berkaitan, atau maklumat peribadi sensitif (nombor telefon/alamat orang lain).",
+      "Balas OK jika ulasan adalah maklum balas perkhidmatan biasa, walaupun negatif atau mengkritik.",
+      "Jangan tambah apa-apa penjelasan lain.",
+    ].join("\n"),
+    prompt: comment,
+    maxTokens: 5,
+  });
+  return result?.trim().toUpperCase().startsWith("FLAG") ?? false;
+}
 
 // GET /api/therapists/:id/reviews - public, visible reviews only
 export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
@@ -38,12 +54,17 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: "customerName and rating (1-5) required" }, { status: 400 });
   }
 
+  const trimmedComment = comment ? String(comment).slice(0, 500) : null;
+  const flagged = trimmedComment ? await isFlaggedByAi(trimmedComment) : false;
+
   const review = await prisma.review.create({
     data: {
       therapistId: params.id,
       customerName: String(customerName).slice(0, 80),
       rating: Math.round(rating),
-      comment: comment ? String(comment).slice(0, 500) : null,
+      comment: trimmedComment,
+      hidden: flagged,
+      aiFlagged: flagged,
     },
   });
 

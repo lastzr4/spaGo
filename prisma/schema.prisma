@@ -65,6 +65,8 @@ model Therapist {
   workingHoursNote    String?
   galleryPhotos       String[]            @default([])
   aiChatEnabled       Boolean             @default(true)
+  reviewSummary       String?
+  reviewSummaryUpdatedAt DateTime?
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
 
@@ -165,6 +167,7 @@ model Review {
   rating        Int
   comment       String?
   hidden        Boolean   @default(false)
+  aiFlagged     Boolean   @default(false)
   createdAt     DateTime  @default(now())
 
   @@index([therapistId])

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { StarIcon, TrashIcon, UndoIcon } from "@/components/icons";
+import { StarIcon, TrashIcon, UndoIcon, AlertTriangleIcon } from "@/components/icons";
 
-type Review = { id: string; customerName: string; rating: number; comment: string | null; hidden: boolean; createdAt: string };
+type Review = { id: string; customerName: string; rating: number; comment: string | null; hidden: boolean; aiFlagged?: boolean; createdAt: string };
 
 function Stars({ rating }: { rating: number }) {
   return (
@@ -50,6 +50,12 @@ export default function ReviewModeration({ token, initialReviews }: { token: str
             <p className="text-sm font-semibold text-brand-900">{r.customerName}</p>
             <Stars rating={r.rating} />
           </div>
+          {r.aiFlagged && (
+            <p className="mt-1.5 flex items-center gap-1 text-[11px] font-semibold text-amber-600">
+              <AlertTriangleIcon className="h-3 w-3" />
+              Ditanda AI — disembunyikan secara automatik untuk semakan
+            </p>
+          )}
           {r.comment && <p className="mt-1.5 text-sm leading-relaxed text-gray-600">{r.comment}</p>}
           <div className="mt-3 flex gap-4">
             <button onClick={() => toggleHidden(r)} className="flex items-center gap-1 text-xs font-semibold text-brand-600 active:opacity-60">

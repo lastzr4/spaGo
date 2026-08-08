@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { fileToCompressedDataUrl } from "@/lib/image";
-import { CameraIcon, PlusIcon, TrashIcon } from "@/components/icons";
+import { CameraIcon, PlusIcon, TrashIcon, SparkleIcon } from "@/components/icons";
 
 type Service = { id: string; name: string; durationMinutes: number; price: string; active: boolean; photoUrl?: string | null };
 
@@ -14,7 +14,29 @@ export default function ServiceManager({ token, initialServices }: { token: stri
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [uploadingFor, setUploadingFor] = useState<string | null>(null);
+  const [guidance, setGuidance] = useState<Record<string, string>>({});
+  const [guidanceLoading, setGuidanceLoading] = useState<string | null>(null);
   const newPhotoInputRef = useRef<HTMLInputElement>(null);
+
+  async function fetchGuidance(service: Service) {
+    setGuidanceLoading(service.id);
+    try {
+      const res = await fetch(`/api/dashboard/${token}/ai/pricing-guidance`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ serviceId: service.id }),
+      });
+      const data = await res.json().catch(() => null);
+      setGuidance((g) => ({
+        ...g,
+        [service.id]: data?.guidance ?? "Gagal menjana panduan harga. Sila cuba lagi.",
+      }));
+    } catch {
+      setGuidance((g) => ({ ...g, [service.id]: "Gagal menjana panduan harga. Sila cuba lagi." }));
+    } finally {
+      setGuidanceLoading(null);
+    }
+  }
 
   async function addService(e: React.FormEvent) {
     e.preventDefault();
@@ -96,36 +118,53 @@ export default function ServiceManager({ token, initialServices }: { token: stri
         {services.map((s, i) => (
           <div
             key={s.id}
-            className={`card flex items-center justify-between gap-3 animate-fade-in ${!s.active ? "opacity-50" : ""}`}
+            className={`card flex flex-col gap-2 animate-fade-in ${!s.active ? "opacity-50" : ""}`}
             style={{ animationDelay: `${i * 40}ms` }}
           >
-            <div className="flex min-w-0 items-center gap-3">
-              {s.photoUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={s.photoUrl} alt={s.name} className="h-14 w-14 shrink-0 rounded-2xl object-cover" />
-              ) : (
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-brand-300">
-                  <CameraIcon className="h-5 w-5" />
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-3">
+                {s.photoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={s.photoUrl} alt={s.name} className="h-14 w-14 shrink-0 rounded-2xl object-cover" />
+                ) : (
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-brand-300">
+                    <CameraIcon className="h-5 w-5" />
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <p className="truncate font-semibold text-brand-900">{s.name}</p>
+                  <p className="text-xs text-gray-500">{s.durationMinutes} minit &middot; RM{Number(s.price).toFixed(0)}</p>
+                  <label className="mt-1 inline-flex cursor-pointer items-center gap-1 text-xs font-semibold text-brand-600">
+                    <CameraIcon className="h-3 w-3" />
+                    {uploadingFor === s.id ? "Memuat naik..." : s.photoUrl ? "Tukar foto" : "Tambah foto"}
+                    <input type="file" accept="image/*" className="hidden" onChange={(e) => handleExistingPhoto(s, e)} disabled={uploadingFor === s.id} />
+                  </label>
                 </div>
-              )}
-              <div className="min-w-0">
-                <p className="truncate font-semibold text-brand-900">{s.name}</p>
-                <p className="text-xs text-gray-500">{s.durationMinutes} minit &middot; RM{Number(s.price).toFixed(0)}</p>
-                <label className="mt-1 inline-flex cursor-pointer items-center gap-1 text-xs font-semibold text-brand-600">
-                  <CameraIcon className="h-3 w-3" />
-                  {uploadingFor === s.id ? "Memuat naik..." : s.photoUrl ? "Tukar foto" : "Tambah foto"}
-                  <input type="file" accept="image/*" className="hidden" onChange={(e) => handleExistingPhoto(s, e)} disabled={uploadingFor === s.id} />
-                </label>
+              </div>
+              <div className="flex shrink-0 flex-col items-end gap-2">
+                <button onClick={() => toggleActive(s)} className="text-xs font-semibold text-brand-600 active:opacity-60">
+                  {s.active ? "Nyahaktif" : "Aktifkan"}
+                </button>
+                <button onClick={() => removeService(s.id)} className="flex items-center gap-1 text-xs font-semibold text-red-500 active:opacity-60">
+                  <TrashIcon className="h-3.5 w-3.5" />
+                  Buang
+                </button>
               </div>
             </div>
-            <div className="flex shrink-0 flex-col items-end gap-2">
-              <button onClick={() => toggleActive(s)} className="text-xs font-semibold text-brand-600 active:opacity-60">
-                {s.active ? "Nyahaktif" : "Aktifkan"}
+
+            <div className="border-t border-black/[0.04] pt-2">
+              <button
+                type="button"
+                onClick={() => fetchGuidance(s)}
+                disabled={guidanceLoading === s.id}
+                className="flex items-center gap-1.5 text-xs font-semibold text-brand-600 active:opacity-60 disabled:opacity-50"
+              >
+                <SparkleIcon className="h-3.5 w-3.5" />
+                {guidanceLoading === s.id ? "Menjana..." : guidance[s.id] ? "Jana semula panduan harga AI" : "Panduan harga AI"}
               </button>
-              <button onClick={() => removeService(s.id)} className="flex items-center gap-1 text-xs font-semibold text-red-500 active:opacity-60">
-                <TrashIcon className="h-3.5 w-3.5" />
-                Buang
-              </button>
+              {guidance[s.id] && (
+                <p className="mt-1.5 rounded-xl bg-brand-50/60 px-3 py-2 text-xs leading-relaxed text-gray-600">{guidance[s.id]}</p>
+              )}
             </div>
           </div>
         ))}

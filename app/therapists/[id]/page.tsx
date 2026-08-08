@@ -9,7 +9,7 @@ import TherapistExtras from "@/components/TherapistExtras";
 import TherapistBadges from "@/components/TherapistBadges";
 import ShareButton from "@/components/ShareButton";
 import FavoriteButton from "@/components/FavoriteButton";
-import { StarIcon, MapPinIcon, QrIcon, CashIcon } from "@/components/icons";
+import { StarIcon, MapPinIcon, QrIcon, CashIcon, SparkleIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -113,6 +113,13 @@ export default async function TherapistDetailPage({
               </span>
             )}
           </div>
+
+          {therapist.reviewSummary && (
+            <p className="mt-3 flex items-start gap-1.5 border-t border-black/[0.04] pt-3 text-[12.5px] italic leading-relaxed text-gray-500">
+              <SparkleIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-400" />
+              &ldquo;{therapist.reviewSummary}&rdquo;
+            </p>
+          )}
         </div>
 
         {hasSocial && (

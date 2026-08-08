@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import type Anthropic from "@anthropic-ai/sdk";
 import { prisma } from "@/lib/prisma";
+import { getAnthropicClient, AI_MODEL } from "@/lib/anthropic";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,6 @@ const TRIAL_DAYS = 30;
 const DAILY_MESSAGE_LIMIT = 40;
 const MAX_MESSAGE_LENGTH = 300;
 const MAX_HISTORY_TURNS = 6;
-const MODEL = "claude-haiku-4-5-20251001";
 
 function todayStrMYT() {
   // Malaysia-local date string so the daily cap resets at MYT midnight, not
@@ -40,7 +40,8 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
     return NextResponse.json({ error: "TRIAL_ENDED" }, { status: 403 });
   }
 
-  if (!process.env.ANTHROPIC_API_KEY) {
+  const client = getAnthropicClient();
+  if (!client) {
     return NextResponse.json({ error: "NOT_CONFIGURED" }, { status: 503 });
   }
 
@@ -86,15 +87,13 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
     depositLine,
   ].join("\n");
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
   try {
     const history = rawHistory
       .filter((h: any) => h && (h.role === "user" || h.role === "assistant") && typeof h.content === "string")
       .map((h: any) => ({ role: h.role as "user" | "assistant", content: String(h.content).slice(0, MAX_MESSAGE_LENGTH) }));
 
     const response = await client.messages.create({
-      model: MODEL,
+      model: AI_MODEL,
       max_tokens: 300,
       system: systemPrompt,
       messages: [...history, { role: "user", content: message }],

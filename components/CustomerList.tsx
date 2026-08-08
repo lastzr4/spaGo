@@ -10,6 +10,7 @@ import {
   SendIcon,
   AlertTriangleIcon,
   CheckCircleIcon,
+  SparkleIcon,
 } from "@/components/icons";
 
 export type CustomerRow = {
@@ -50,6 +51,37 @@ function CustomerCard({
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [aiDraft, setAiDraft] = useState<string | null>(null);
+  const [draftLoading, setDraftLoading] = useState(false);
+  const [draftError, setDraftError] = useState<string | null>(null);
+
+  async function generateDraft() {
+    setDraftLoading(true);
+    setDraftError(null);
+    try {
+      const res = await fetch(`/api/dashboard/${token}/ai/followup-message`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerName: customer.name,
+          lastServiceName: customer.lastServiceName,
+          daysSinceLast: customer.daysSinceLast,
+          note: customer.note ?? "",
+          referralCode: customer.referralCode,
+        }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.message) {
+        setDraftError("Gagal menjana mesej. Sila cuba lagi.");
+        return;
+      }
+      setAiDraft(data.message);
+    } catch {
+      setDraftError("Gagal menjana mesej. Sila cuba lagi.");
+    } finally {
+      setDraftLoading(false);
+    }
+  }
 
   async function saveNote() {
     setSaving(true);
@@ -81,7 +113,7 @@ function CustomerCard({
 
   const followUpLink = buildWhatsAppLink(
     customer.phone,
-    buildWhatsAppFollowUpMessage({ customerName: customer.name, therapistName, referralCode: customer.referralCode })
+    aiDraft ?? buildWhatsAppFollowUpMessage({ customerName: customer.name, therapistName, referralCode: customer.referralCode })
   );
 
   return (
@@ -157,15 +189,35 @@ function CustomerCard({
           </div>
 
           {customer.needsFollowUp && (
-            <a
-              href={followUpLink}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center justify-center gap-1.5 rounded-xl bg-green-500 py-2.5 text-sm font-semibold text-white active:scale-[0.98]"
-            >
-              <SendIcon className="h-4 w-4" />
-              Hantar follow-up WhatsApp
-            </a>
+            <div className="flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={generateDraft}
+                disabled={draftLoading}
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-brand-50 py-2 text-xs font-semibold text-brand-600 active:scale-[0.98] disabled:opacity-50"
+              >
+                <SparkleIcon className="h-3.5 w-3.5" />
+                {draftLoading ? "Menjana..." : aiDraft ? "Jana semula mesej AI" : "Jana mesej peribadi AI"}
+              </button>
+              {draftError && <p className="text-xs font-medium text-red-500">{draftError}</p>}
+              {aiDraft && (
+                <textarea
+                  value={aiDraft}
+                  onChange={(e) => setAiDraft(e.target.value)}
+                  rows={4}
+                  className="w-full resize-none rounded-xl border border-brand-200 bg-brand-50/40 px-3 py-2 text-sm outline-none focus:border-brand-400"
+                />
+              )}
+              <a
+                href={followUpLink}
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-green-500 py-2.5 text-sm font-semibold text-white active:scale-[0.98]"
+              >
+                <SendIcon className="h-4 w-4" />
+                Hantar follow-up WhatsApp
+              </a>
+            </div>
           )}
         </div>
       )}

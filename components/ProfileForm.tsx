@@ -3,7 +3,7 @@
 import { useState } from "react";
 import AreaPicker from "@/components/AreaPicker";
 import { fileToCompressedDataUrl } from "@/lib/image";
-import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon, LockIcon, ChevronLeftIcon, ImageOffIcon, InstagramIcon, TiktokIcon, ThreadsIcon, SocialXIcon, PlusIcon, XIcon, ClockIcon, StarIcon, UserIcon, MapPinIcon, WalletIcon } from "@/components/icons";
+import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon, LockIcon, ChevronLeftIcon, ImageOffIcon, InstagramIcon, TiktokIcon, ThreadsIcon, SocialXIcon, PlusIcon, XIcon, ClockIcon, StarIcon, UserIcon, MapPinIcon, WalletIcon, SparkleIcon } from "@/components/icons";
 
 type Props = {
   token: string;
@@ -65,6 +65,8 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
   const [copied, setCopied] = useState(false);
   const [credError, setCredError] = useState<string | null>(null);
   const [editingCreds, setEditingCreds] = useState(false);
+  const [polishingBio, setPolishingBio] = useState(false);
+  const [polishError, setPolishError] = useState<string | null>(null);
 
   // Collapsed-by-default sections: cleaner UI, less scrolling. Tap "Edit" to expand.
   const [editingProfile, setEditingProfile] = useState(false);
@@ -143,6 +145,29 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
 
   function removeGalleryPhoto(index: number) {
     setForm((f) => ({ ...f, galleryPhotos: f.galleryPhotos.filter((_, i) => i !== index) }));
+  }
+
+  async function polishBio() {
+    if (!form.bio.trim()) return;
+    setPolishingBio(true);
+    setPolishError(null);
+    try {
+      const res = await fetch(`/api/dashboard/${token}/ai/polish-bio`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: form.bio }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.result) {
+        setPolishError("Gagal menjana bio. Sila cuba lagi.");
+        return;
+      }
+      setForm((f) => ({ ...f, bio: data.result }));
+    } catch {
+      setPolishError("Gagal menjana bio. Sila cuba lagi.");
+    } finally {
+      setPolishingBio(false);
+    }
   }
 
   function toggleArea(a: string) {
@@ -345,6 +370,18 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
             </div>
 
             <textarea className="input" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} placeholder="Ringkasan" rows={3} />
+            <div className="-mt-2 flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={polishBio}
+                disabled={polishingBio || !form.bio.trim()}
+                className="flex items-center gap-1.5 text-xs font-semibold text-brand-600 active:opacity-60 disabled:opacity-40"
+              >
+                <SparkleIcon className="h-3.5 w-3.5" />
+                {polishingBio ? "Menjana..." : "Perbaiki dengan AI"}
+              </button>
+            </div>
+            {polishError && <p className="-mt-2 text-xs font-medium text-red-500">{polishError}</p>}
           </div>
         </div>
       ) : (
