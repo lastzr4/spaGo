@@ -93,7 +93,7 @@ export default function PinPadInput({
                     type="button"
                     onClick={() => press(key)}
                     aria-label="Padam"
-                    className="card-tap flex items-center justify-center rounded-2xl bg-gray-50 py-4 text-brand-900 active:bg-brand-50"
+                    className="card-tap flex aspect-square items-center justify-center rounded-full bg-gray-50 text-brand-900 active:bg-brand-50"
                   >
                     <BackspaceIcon className="h-5 w-5" />
                   </button>
@@ -102,7 +102,7 @@ export default function PinPadInput({
                     key={key}
                     type="button"
                     onClick={() => press(key)}
-                    className="card-tap rounded-2xl bg-gray-50 py-4 text-xl font-semibold text-brand-900 active:bg-brand-50"
+                    className="card-tap flex aspect-square items-center justify-center rounded-full bg-gray-50 text-xl font-semibold text-brand-900 active:bg-brand-50"
                   >
                     {key}
                   </button>
