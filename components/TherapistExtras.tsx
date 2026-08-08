@@ -1,4 +1,5 @@
 import { ClockIcon } from "@/components/icons";
+import GalleryViewer from "@/components/GalleryViewer";
 
 export default function TherapistExtras({
   specialties,
@@ -36,22 +37,7 @@ export default function TherapistExtras({
         </p>
       )}
 
-      {galleryPhotos.length > 0 && (
-        <div>
-          <h2 className="mb-2 text-[13px] font-bold uppercase tracking-wide text-gray-400">Galeri</h2>
-          <div className="scrollbar-none -mx-5 flex gap-2 overflow-x-auto px-5">
-            {galleryPhotos.map((url, i) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={i}
-                src={url}
-                alt={`Galeri ${i + 1}`}
-                className="h-24 w-24 shrink-0 rounded-2xl object-cover"
-              />
-            ))}
-          </div>
-        </div>
-      )}
+      {galleryPhotos.length > 0 && <GalleryViewer photos={galleryPhotos} />}
     </div>
   );
 }

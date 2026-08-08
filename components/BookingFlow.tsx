@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { buildWhatsAppBookingMessage, buildWhatsAppLink } from "@/lib/whatsapp";
-import { CheckCircleIcon, SendIcon, CalendarIcon, ImageOffIcon, AlertTriangleIcon } from "@/components/icons";
+import { CheckCircleIcon, SendIcon, CalendarIcon, AlertTriangleIcon, QrIcon, CashIcon } from "@/components/icons";
 import Confetti from "@/components/Confetti";
 
 type Service = { id: string; name: string; durationMinutes: number; price: string; photoUrl?: string | null };
@@ -47,6 +47,7 @@ export default function BookingFlow({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [depositConfirmed, setDepositConfirmed] = useState(false);
+  const [showQr, setShowQr] = useState(false);
   const [justBooked, setJustBooked] = useState(false);
 
   const slotsByDate = useMemo(() => {
@@ -106,8 +107,8 @@ export default function BookingFlow({
         address,
         depositInfo: depositRequired && depositAmount
           ? paymentMethod === "CASH"
-            ? `RM${Number(depositAmount).toFixed(0)} (tunai, akan dibayar semasa tiba)`
-            : `RM${Number(depositAmount).toFixed(0)} (QR, sudah dibayar)`
+            ? `RM${Number(depositAmount).toFixed(0)} (tunai semasa terapis tiba)`
+            : `RM${Number(depositAmount).toFixed(0)} (QR — butiran akan diberikan terapis)`
           : undefined,
         extraChargesNote: extraChargesNote || undefined,
       });
@@ -248,31 +249,39 @@ export default function BookingFlow({
 
       {depositRequired && depositAmount && (
         <div className="rounded-2xl border border-brand-100 bg-brand-50/60 p-4">
-          <h2 className="mb-1 text-[15px] font-bold text-brand-900">Deposit diperlukan</h2>
-          <p className="mb-3 text-sm text-gray-600">
-            Terapis ini perlukan deposit <span className="font-semibold text-brand-700">RM{Number(depositAmount).toFixed(0)}</span> sebelum tempahan disahkan.
-          </p>
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-brand-600">
+              {paymentMethod === "CASH" ? <CashIcon className="h-4 w-4" /> : <QrIcon className="h-4 w-4" />}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[15px] font-bold text-brand-900">Deposit RM{Number(depositAmount).toFixed(0)} diperlukan</p>
+              <p className="text-xs text-gray-500">
+                {paymentMethod === "CASH"
+                  ? "Dibayar tunai semasa terapis tiba."
+                  : "Butiran pembayaran akan diberikan terapis melalui WhatsApp selepas tempahan."}
+              </p>
+            </div>
+          </div>
 
-          {paymentMethod === "QR" ? (
-            <div className="mb-3 flex flex-col items-center gap-2">
-              {qrCodeUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={qrCodeUrl} alt="Kod QR pembayaran" className="h-48 w-48 rounded-xl border border-black/[0.06] object-cover" />
-              ) : (
-                <div className="flex h-48 w-48 flex-col items-center justify-center gap-1 rounded-xl bg-white text-brand-300">
-                  <ImageOffIcon className="h-8 w-8" />
-                  <span className="text-xs">Kod QR belum dimuat naik</span>
+          {paymentMethod === "QR" && qrCodeUrl && (
+            <>
+              <button
+                type="button"
+                onClick={() => setShowQr((v) => !v)}
+                className="btn-ghost mt-3 w-full justify-center bg-white text-xs"
+              >
+                {showQr ? "Sembunyikan kod QR" : "Lihat kod QR sekarang"}
+              </button>
+              {showQr && (
+                <div className="mt-3 flex flex-col items-center gap-2 animate-fade-in">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={qrCodeUrl} alt="Kod QR pembayaran" className="h-40 w-40 rounded-xl border border-black/[0.06] object-cover" />
                 </div>
               )}
-              <p className="text-center text-xs text-gray-500">Imbas kod QR di atas untuk bayar deposit.</p>
-            </div>
-          ) : (
-            <p className="mb-3 rounded-xl bg-white px-3.5 py-2.5 text-sm text-gray-600">
-              Bayar deposit secara tunai terus kepada terapis semasa sesi.
-            </p>
+            </>
           )}
 
-          <label className="flex items-start gap-2.5 rounded-xl bg-white px-3.5 py-3">
+          <label className="mt-3 flex items-start gap-2.5 rounded-xl bg-white px-3.5 py-3">
             <input
               type="checkbox"
               checked={depositConfirmed}
@@ -280,9 +289,7 @@ export default function BookingFlow({
               className="mt-0.5 h-4 w-4 shrink-0 accent-brand-600"
             />
             <span className="text-sm text-gray-700">
-              {paymentMethod === "CASH"
-                ? <>Saya faham deposit RM{Number(depositAmount).toFixed(0)} perlu dibayar tunai semasa terapis tiba.</>
-                : <>Saya telah bayar deposit RM{Number(depositAmount).toFixed(0)} melalui QR di atas.</>}
+              Saya faham deposit RM{Number(depositAmount).toFixed(0)} diperlukan sebelum tempahan disahkan terapis.
             </span>
           </label>
         </div>
