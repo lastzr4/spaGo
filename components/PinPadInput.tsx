@@ -83,7 +83,7 @@ export default function PinPadInput({
             </div>
             <p className="mb-6 text-center text-[11px] text-gray-400">Minimum {minLength} digit</p>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 justify-items-center gap-2 justify-center">
               {KEYS.map((key, i) =>
                 key === "" ? (
                   <span key={`blank-${i}`} />
@@ -93,16 +93,16 @@ export default function PinPadInput({
                     type="button"
                     onClick={() => press(key)}
                     aria-label="Padam"
-                    className="card-tap flex aspect-square items-center justify-center rounded-full bg-gray-50 text-brand-900 active:bg-brand-50"
+                    className="card-tap flex h-14 w-14 items-center justify-center rounded-full bg-gray-50 text-brand-900 active:bg-brand-50"
                   >
-                    <BackspaceIcon className="h-5 w-5" />
+                    <BackspaceIcon className="h-4 w-4" />
                   </button>
                 ) : (
                   <button
                     key={key}
                     type="button"
                     onClick={() => press(key)}
-                    className="card-tap flex aspect-square items-center justify-center rounded-full bg-gray-50 text-xl font-semibold text-brand-900 active:bg-brand-50"
+                    className="card-tap flex h-14 w-14 items-center justify-center rounded-full bg-gray-50 text-lg font-semibold text-brand-900 active:bg-brand-50"
                   >
                     {key}
                   </button>
