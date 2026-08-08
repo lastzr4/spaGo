@@ -170,7 +170,9 @@ export default function SlotManager({ token, initialSlots }: { token: string; in
                       onClick={() => setDetailSlot(s)}
                       className={`card-tap flex max-w-[170px] items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-medium ${BOOKING_CHIP_STYLE[s.booking.status] ?? STATUS_STYLE.BOOKED}`}
                     >
-                      <span className="shrink-0">{s.startTime}</span>
+                      <span className="shrink-0">
+                        {s.startTime} <span className="opacity-60">{timeOfDay(s.startTime)}</span>
+                      </span>
                       <span className="truncate font-semibold">{s.booking.customerName}</span>
                     </button>
                   );
@@ -182,7 +184,9 @@ export default function SlotManager({ token, initialSlots }: { token: string; in
                       past ? "border-black/[0.06] bg-gray-50 text-gray-300" : STATUS_STYLE[s.status]
                     }`}
                   >
-                    <span>{s.startTime}</span>
+                    <span>
+                      {s.startTime} <span className="opacity-60">{timeOfDay(s.startTime)}</span>
+                    </span>
                     <span className="text-[10px] uppercase opacity-70">{past ? "Lepas" : STATUS_LABEL[s.status]}</span>
                     {!past && (
                       <button onClick={() => blockSlot(s)} className="text-brand-400 active:opacity-60">
