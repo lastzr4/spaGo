@@ -34,7 +34,7 @@ export default async function DashboardHomePage({ params }: { params: { token: s
           <DashboardStats token={params.token} {...stats} />
         </div>
 
-        <UpcomingQueue bookings={upcomingQueue} />
+        <UpcomingQueue bookings={upcomingQueue} token={params.token} />
 
         <h2 className="mb-3 text-[13px] font-bold uppercase tracking-wide text-gray-400">Profil Saya</h2>
         <div className="card animate-fade-in">
