@@ -15,6 +15,7 @@ export default async function SlotsPage({ params }: { params: { token: string } 
   const [slots, pendingCount] = await Promise.all([
     prisma.slot.findMany({
       where: { therapistId: therapist.id, date: { gte: new Date(new Date().toISOString().slice(0, 10)) } },
+      include: { booking: { include: { service: { select: { name: true } } } } },
       orderBy: [{ date: "asc" }, { startTime: "asc" }],
     }),
     getPendingBookingCount(therapist.id),
@@ -26,7 +27,22 @@ export default async function SlotsPage({ params }: { params: { token: string } 
       <main className="flex-1 overflow-y-auto px-5 py-5">
         <SlotManager
           token={params.token}
-          initialSlots={slots.map((s) => ({ id: s.id, date: s.date.toISOString(), startTime: s.startTime, endTime: s.endTime, status: s.status }))}
+          initialSlots={slots.map((s) => ({
+            id: s.id,
+            date: s.date.toISOString(),
+            startTime: s.startTime,
+            endTime: s.endTime,
+            status: s.status,
+            booking: s.booking
+              ? {
+                  customerName: s.booking.customerName,
+                  customerPhone: s.booking.customerPhone,
+                  customerAddress: s.booking.customerAddress,
+                  serviceName: s.booking.service.name,
+                  status: s.booking.status,
+                }
+              : null,
+          }))}
         />
       </main>
       <BottomTabBar token={params.token} pendingCount={pendingCount} />
