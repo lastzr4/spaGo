@@ -16,7 +16,36 @@ export default function ServiceManager({ token, initialServices }: { token: stri
   const [uploadingFor, setUploadingFor] = useState<string | null>(null);
   const [guidance, setGuidance] = useState<Record<string, string>>({});
   const [guidanceLoading, setGuidanceLoading] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editDuration, setEditDuration] = useState("");
+  const [editPrice, setEditPrice] = useState("");
+  const [savingEdit, setSavingEdit] = useState(false);
   const newPhotoInputRef = useRef<HTMLInputElement>(null);
+
+  function startEdit(service: Service) {
+    setEditingId(service.id);
+    setEditName(service.name);
+    setEditDuration(String(service.durationMinutes));
+    setEditPrice(service.price);
+  }
+
+  async function saveEdit(service: Service) {
+    if (!editName.trim() || !editDuration || !editPrice) return;
+    setSavingEdit(true);
+    const res = await fetch(`/api/dashboard/${token}/services/${service.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: editName.trim(), durationMinutes: Number(editDuration), price: Number(editPrice) }),
+    });
+    if (res.ok) {
+      setServices((list) =>
+        list.map((s) => (s.id === service.id ? { ...s, name: editName.trim(), durationMinutes: Number(editDuration), price: editPrice } : s))
+      );
+      setEditingId(null);
+    }
+    setSavingEdit(false);
+  }
 
   async function fetchGuidance(service: Service) {
     setGuidanceLoading(service.id);
@@ -123,23 +152,76 @@ export default function ServiceManager({ token, initialServices }: { token: stri
           >
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
-                {s.photoUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={s.photoUrl} alt={s.name} className="h-14 w-14 shrink-0 rounded-2xl object-cover" />
-                ) : (
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-50 text-brand-300">
-                    <CameraIcon className="h-5 w-5" />
-                  </div>
-                )}
-                <div className="min-w-0">
-                  <p className="truncate font-semibold text-brand-900">{s.name}</p>
-                  <p className="text-xs text-gray-500">{s.durationMinutes} minit &middot; RM{Number(s.price).toFixed(0)}</p>
-                  <label className="mt-1 inline-flex cursor-pointer items-center gap-1 text-xs font-semibold text-brand-600">
+                <label className="card-tap relative shrink-0 cursor-pointer">
+                  {s.photoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={s.photoUrl} alt={s.name} className="h-14 w-14 rounded-2xl object-cover" />
+                  ) : (
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-300">
+                      <CameraIcon className="h-5 w-5" />
+                    </div>
+                  )}
+                  {uploadingFor === s.id && (
+                    <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/40">
+                      <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    </div>
+                  )}
+                  <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-brand-500 shadow-sm ring-1 ring-black/[0.06]">
                     <CameraIcon className="h-3 w-3" />
-                    {uploadingFor === s.id ? "Memuat naik..." : s.photoUrl ? "Tukar foto" : "Tambah foto"}
-                    <input type="file" accept="image/*" className="hidden" onChange={(e) => handleExistingPhoto(s, e)} disabled={uploadingFor === s.id} />
-                  </label>
-                </div>
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => handleExistingPhoto(s, e)}
+                    disabled={uploadingFor === s.id}
+                  />
+                </label>
+
+                {editingId === s.id ? (
+                  <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+                    <input
+                      className="w-full rounded-xl border border-gray-200 px-3 py-1.5 text-sm outline-none focus:border-brand-400"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      placeholder="Nama servis"
+                    />
+                    <div className="flex gap-2">
+                      <input
+                        className="w-full rounded-xl border border-gray-200 px-3 py-1.5 text-sm outline-none focus:border-brand-400"
+                        type="number"
+                        value={editDuration}
+                        onChange={(e) => setEditDuration(e.target.value)}
+                        placeholder="Minit"
+                      />
+                      <input
+                        className="w-full rounded-xl border border-gray-200 px-3 py-1.5 text-sm outline-none focus:border-brand-400"
+                        type="number"
+                        value={editPrice}
+                        onChange={(e) => setEditPrice(e.target.value)}
+                        placeholder="Harga (RM)"
+                      />
+                    </div>
+                    <div className="mt-0.5 flex gap-4">
+                      <button
+                        type="button"
+                        onClick={() => saveEdit(s)}
+                        disabled={savingEdit}
+                        className="text-xs font-semibold text-brand-600 active:opacity-60 disabled:opacity-50"
+                      >
+                        {savingEdit ? "Menyimpan..." : "Simpan"}
+                      </button>
+                      <button type="button" onClick={() => setEditingId(null)} className="text-xs font-semibold text-gray-400 active:opacity-60">
+                        Batal
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => startEdit(s)} className="min-w-0 flex-1 text-left">
+                    <p className="truncate font-semibold text-brand-900">{s.name}</p>
+                    <p className="text-xs text-gray-500">{s.durationMinutes} minit &middot; RM{Number(s.price).toFixed(0)}</p>
+                  </button>
+                )}
               </div>
               <div className="flex shrink-0 flex-col items-end gap-2">
                 <button onClick={() => toggleActive(s)} className="text-xs font-semibold text-brand-600 active:opacity-60">
