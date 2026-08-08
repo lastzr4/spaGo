@@ -38,7 +38,7 @@ export default function SegmentedToggle<T extends string>({
             width: `calc(${100 / n}% - 4px)`,
             transform: `translateX(calc(${activeIndex * 100}% + ${activeIndex * 4}px))`,
             backgroundImage:
-              "linear-gradient(135deg, var(--brand, #7a51c9), color-mix(in srgb, var(--brand, #7a51c9) 65%, #ff5fa2))",
+              "linear-gradient(135deg, var(--brand, #7a51c9), color-mix(in srgb, var(--brand, #7a51c9) 75%, black))",
           }}
         />
       )}

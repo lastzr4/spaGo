@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { buildWhatsAppBookingMessage, buildWhatsAppLink } from "@/lib/whatsapp";
-import { CheckCircleIcon, SendIcon, CalendarIcon, ImageOffIcon } from "@/components/icons";
+import { CheckCircleIcon, SendIcon, CalendarIcon, ImageOffIcon, AlertTriangleIcon } from "@/components/icons";
 import Confetti from "@/components/Confetti";
 
 type Service = { id: string; name: string; durationMinutes: number; price: string; photoUrl?: string | null };
@@ -146,9 +146,10 @@ export default function BookingFlow({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 pb-24">
       {extraChargesNote && (
-        <p className="rounded-2xl bg-yellow-50 px-4 py-3 text-[13px] font-medium text-yellow-700">
-          Caj tambahan mungkin dikenakan: {extraChargesNote}
-        </p>
+        <div className="flex items-start gap-2.5 rounded-2xl bg-amber-50 px-4 py-3 text-[13px] font-medium text-amber-700">
+          <AlertTriangleIcon className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
+          <span>Caj tambahan mungkin dikenakan: {extraChargesNote}</span>
+        </div>
       )}
 
       <div>

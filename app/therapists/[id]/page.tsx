@@ -47,6 +47,7 @@ export default async function TherapistDetailPage({
     orderBy: { createdAt: "desc" },
   });
   const average = reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : null;
+  const hasSocial = Boolean(therapist.socialInstagram || therapist.socialTiktok || therapist.socialThreads || therapist.socialX);
 
   return (
     <>
@@ -71,52 +72,60 @@ export default async function TherapistDetailPage({
         }
       />
       <main className="flex-1 overflow-y-auto px-5 py-5">
-        <div className="mb-5 flex animate-fade-in items-center gap-4">
-          {therapist.photoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={therapist.photoUrl} alt={therapist.name} className="avatar-ring h-20 w-20 shrink-0 rounded-3xl object-cover" />
-          ) : (
-            <div className="avatar-ring flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-400 to-brand-600 text-2xl font-bold text-white">
-              {therapist.name.charAt(0).toUpperCase()}
-            </div>
-          )}
-          <div className="min-w-0 flex-1">
-            <h1 className="truncate text-lg font-bold text-brand-900">{therapist.name}</h1>
-            <p className="mt-0.5 flex items-center gap-1 text-[13px] text-gray-500">
-              <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
-              <span className="truncate">{therapist.coverageAreas.join(", ")}</span>
-            </p>
-            <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-              <TherapistBadges averageRating={average} reviewCount={reviews.length} createdAt={therapist.createdAt.toISOString()} />
+        {/* Profile card — avatar, name, location, rating grouped together; meta badges
+            separated into their own row below a divider so they read as secondary info. */}
+        <div className="card mb-6 animate-fade-in">
+          <div className="flex items-center gap-4">
+            {therapist.photoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={therapist.photoUrl} alt={therapist.name} className="avatar-ring h-20 w-20 shrink-0 rounded-3xl object-cover" />
+            ) : (
+              <div className="avatar-ring flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-400 to-brand-600 text-2xl font-bold text-white">
+                {therapist.name.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
+              <h1 className="truncate text-lg font-bold text-brand-900">{therapist.name}</h1>
+              <p className="mt-0.5 flex items-center gap-1 text-[13px] text-gray-500">
+                <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
+                <span className="truncate">{therapist.coverageAreas.join(", ")}</span>
+              </p>
               {average !== null && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-yellow-50 px-2 py-0.5 text-[12px] font-semibold text-yellow-600">
-                  <StarIcon filled className="h-3 w-3" />
+                <p className="mt-1 flex items-center gap-1 text-[13px] font-semibold text-brand-900">
+                  <StarIcon filled className="h-3.5 w-3.5 text-yellow-400" />
                   {average.toFixed(1)}
-                  <span className="font-normal text-yellow-500/70">({reviews.length} ulasan)</span>
-                </span>
-              )}
-              {therapist.depositRequired && therapist.depositAmount ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-600">
-                  {therapist.paymentMethod === "CASH" ? <CashIcon className="h-3 w-3" /> : <QrIcon className="h-3 w-3" />}
-                  Deposit RM{Number(therapist.depositAmount).toFixed(0)} &middot; {therapist.paymentMethod === "CASH" ? "Tunai" : "QR"}
-                </span>
-              ) : (
-                <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-400">
-                  Tiada deposit diperlukan
-                </span>
+                  <span className="font-normal text-gray-400">({reviews.length} ulasan)</span>
+                </p>
               )}
             </div>
           </div>
+
+          <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-black/[0.04] pt-3">
+            <TherapistBadges averageRating={average} reviewCount={reviews.length} createdAt={therapist.createdAt.toISOString()} />
+            {therapist.depositRequired && therapist.depositAmount ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-600">
+                {therapist.paymentMethod === "CASH" ? <CashIcon className="h-3 w-3" /> : <QrIcon className="h-3 w-3" />}
+                Deposit RM{Number(therapist.depositAmount).toFixed(0)} &middot; {therapist.paymentMethod === "CASH" ? "Tunai" : "QR"}
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-400">
+                Tiada deposit diperlukan
+              </span>
+            )}
+          </div>
         </div>
 
-        <div className="mb-3 animate-fade-in">
-          <SocialLinks
-            instagram={therapist.socialInstagram}
-            tiktok={therapist.socialTiktok}
-            threads={therapist.socialThreads}
-            x={therapist.socialX}
-          />
-        </div>
+        {hasSocial && (
+          <div className="mb-6 animate-fade-in">
+            <h2 className="mb-2 text-[13px] font-bold uppercase tracking-wide text-gray-400">Ikuti</h2>
+            <SocialLinks
+              instagram={therapist.socialInstagram}
+              tiktok={therapist.socialTiktok}
+              threads={therapist.socialThreads}
+              x={therapist.socialX}
+            />
+          </div>
+        )}
 
         <TherapistExtras
           specialties={therapist.specialties}
@@ -126,7 +135,7 @@ export default async function TherapistDetailPage({
         />
 
         {therapist.bio && (
-          <p className="mb-5 animate-fade-in rounded-2xl bg-brand-50/60 px-4 py-3 text-[13px] leading-relaxed text-gray-600">
+          <p className="mb-6 animate-fade-in rounded-2xl bg-brand-50/60 px-4 py-3 text-[13px] leading-relaxed text-gray-600">
             {therapist.bio}
           </p>
         )}

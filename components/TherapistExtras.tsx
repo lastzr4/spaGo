@@ -15,7 +15,7 @@ export default function TherapistExtras({
   if (!hasContent) return null;
 
   return (
-    <div className="mb-5 flex animate-fade-in flex-col gap-3">
+    <div className="mb-6 flex animate-fade-in flex-col gap-3">
       {(specialties.length > 0 || yearsExperience != null) && (
         <div className="flex flex-wrap items-center gap-1.5">
           {specialties.map((tag) => (
@@ -37,16 +37,19 @@ export default function TherapistExtras({
       )}
 
       {galleryPhotos.length > 0 && (
-        <div className="scrollbar-none -mx-5 flex gap-2 overflow-x-auto px-5">
-          {galleryPhotos.map((url, i) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={i}
-              src={url}
-              alt={`Galeri ${i + 1}`}
-              className="h-24 w-24 shrink-0 rounded-2xl object-cover"
-            />
-          ))}
+        <div>
+          <h2 className="mb-2 text-[13px] font-bold uppercase tracking-wide text-gray-400">Galeri</h2>
+          <div className="scrollbar-none -mx-5 flex gap-2 overflow-x-auto px-5">
+            {galleryPhotos.map((url, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={i}
+                src={url}
+                alt={`Galeri ${i + 1}`}
+                className="h-24 w-24 shrink-0 rounded-2xl object-cover"
+              />
+            ))}
+          </div>
         </div>
       )}
     </div>
