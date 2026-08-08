@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { CalendarIcon, CheckCircleIcon, XIcon } from "@/components/icons";
 import { buildGoogleCalendarLink } from "@/lib/googleCalendar";
 
@@ -30,9 +31,31 @@ const STATUS_STYLE: Record<string, string> = {
   COMPLETED: "bg-emerald-50 text-emerald-600",
 };
 
+type StatusFilter = "ALL" | Booking["status"];
+
+const FILTERS: { value: StatusFilter; label: string }[] = [
+  { value: "ALL", label: "Semua" },
+  { value: "PENDING", label: "Menunggu" },
+  { value: "CONFIRMED", label: "Disahkan" },
+  { value: "COMPLETED", label: "Selesai" },
+  { value: "CANCELLED", label: "Dibatalkan" },
+];
+
 export default function BookingList({ token, initialBookings }: { token: string; initialBookings: Booking[] }) {
+  const searchParams = useSearchParams();
+  const initialStatus = searchParams.get("status");
   const [bookings, setBookings] = useState(initialBookings);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [filter, setFilter] = useState<StatusFilter>(
+    initialStatus && ["PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"].includes(initialStatus)
+      ? (initialStatus as StatusFilter)
+      : "ALL"
+  );
+
+  const filteredBookings = useMemo(
+    () => (filter === "ALL" ? bookings : bookings.filter((b) => b.status === filter)),
+    [bookings, filter]
+  );
 
   async function updateStatus(id: string, status: Booking["status"]) {
     setUpdating(id);
@@ -58,7 +81,31 @@ export default function BookingList({ token, initialBookings }: { token: string;
 
   return (
     <div className="flex flex-col gap-3">
-      {bookings.map((b, i) => (
+      <div className="scrollbar-none -mx-5 flex gap-2 overflow-x-auto px-5 pb-1">
+        {FILTERS.map((f) => {
+          const count = f.value === "ALL" ? bookings.length : bookings.filter((b) => b.status === f.value).length;
+          return (
+            <button
+              key={f.value}
+              type="button"
+              onClick={() => setFilter(f.value)}
+              className={`chip shrink-0 ${filter === f.value ? "chip-active" : ""}`}
+            >
+              {f.label}
+              <span className={`ml-0.5 text-[11px] ${filter === f.value ? "text-brand-500" : "text-gray-400"}`}>{count}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {filteredBookings.length === 0 && (
+        <div className="card flex flex-col items-center gap-2 py-10 text-center">
+          <CalendarIcon className="h-8 w-8 text-brand-200" />
+          <p className="text-sm text-gray-500">Tiada tempahan dalam kategori ini.</p>
+        </div>
+      )}
+
+      {filteredBookings.map((b, i) => (
         <div key={b.id} className="card animate-fade-in" style={{ animationDelay: `${i * 40}ms` }}>
           <div className="flex items-center justify-between">
             <p className="font-semibold text-brand-900">{b.customerName}</p>

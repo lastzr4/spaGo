@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { getTherapistByToken } from "@/lib/dashboard";
 import { prisma } from "@/lib/prisma";
@@ -21,20 +22,22 @@ export default async function BookingsPage({ params }: { params: { token: string
     <>
       <TopBar title="Tempahan" />
       <main className="flex-1 overflow-y-auto px-5 py-5">
-        <BookingList
-          token={params.token}
-          initialBookings={bookings.map((b) => ({
-            id: b.id,
-            customerName: b.customerName,
-            customerPhone: b.customerPhone,
-            customerAddress: b.customerAddress,
-            status: b.status,
-            serviceName: b.service.name,
-            date: b.slot.date.toISOString().slice(0, 10),
-            startTime: b.slot.startTime,
-            endTime: b.slot.endTime,
-          }))}
-        />
+        <Suspense fallback={null}>
+          <BookingList
+            token={params.token}
+            initialBookings={bookings.map((b) => ({
+              id: b.id,
+              customerName: b.customerName,
+              customerPhone: b.customerPhone,
+              customerAddress: b.customerAddress,
+              status: b.status,
+              serviceName: b.service.name,
+              date: b.slot.date.toISOString().slice(0, 10),
+              startTime: b.slot.startTime,
+              endTime: b.slot.endTime,
+            }))}
+          />
+        </Suspense>
       </main>
       <BottomTabBar token={params.token} />
     </>

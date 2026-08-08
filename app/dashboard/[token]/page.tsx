@@ -28,7 +28,7 @@ export default async function DashboardHomePage({ params }: { params: { token: s
 
         <h2 className="mb-3 text-[13px] font-bold uppercase tracking-wide text-gray-400">Ringkasan</h2>
         <div className="mb-6 animate-fade-in">
-          <DashboardStats {...stats} />
+          <DashboardStats token={params.token} {...stats} />
         </div>
 
         {nextBooking && (

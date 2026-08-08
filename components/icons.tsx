@@ -332,3 +332,11 @@ export function AlertTriangleIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function ChevronRightIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M9 18l6-6-6-6" />
+    </svg>
+  );
+}
