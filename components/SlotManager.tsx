@@ -184,7 +184,7 @@ export default function SlotManager({
     .sort((a, b) => (a.date.slice(0, 10) + a.startTime).localeCompare(b.date.slice(0, 10) + b.startTime));
   const visibleBookings = showAllBookings ? upcomingBookings : upcomingBookings.slice(0, 5);
 
-  function renderChip(s: Slot) {
+  function renderRow(s: Slot) {
     const past = isPastSlot(s.date, s.startTime);
     if (s.status === "BOOKED" && s.booking) {
       return (
@@ -192,32 +192,36 @@ export default function SlotManager({
           key={s.id}
           type="button"
           onClick={() => setDetailSlot(s)}
-          className={`card-tap flex max-w-[170px] items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-medium ${
+          className={`card-tap flex items-center justify-between gap-2 rounded-xl border px-3 py-2 text-xs font-medium ${
             BOOKING_CHIP_STYLE[s.booking.status] ?? STATUS_STYLE.BOOKED
           }`}
         >
-          <span className="shrink-0">{s.startTime}</span>
-          <span className="truncate font-semibold">{s.booking.customerName}</span>
+          <span className="font-semibold">{s.startTime}</span>
+          <span className="truncate">{s.booking.customerName}</span>
         </button>
       );
     }
     return (
       <div
         key={s.id}
-        className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-medium ${
+        className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2 text-xs font-medium ${
           past ? "border-black/[0.06] bg-gray-50 text-gray-300" : STATUS_STYLE[s.status]
         }`}
       >
-        <span>{s.startTime}</span>
-        {(past || s.status === "BLOCKED") && <span className="text-[10px] uppercase opacity-70">{past ? "Lepas" : "Ditutup"}</span>}
-        {!past && (
-          <button onClick={() => blockSlot(s)} className="text-brand-400 active:opacity-60">
-            {s.status === "BLOCKED" ? <UndoIcon className="h-3.5 w-3.5" /> : <XIcon className="h-3.5 w-3.5" />}
+        <span className="flex items-center gap-2">
+          {s.startTime}
+          {(past || s.status === "BLOCKED") && <span className="text-[10px] uppercase opacity-70">{past ? "Lepas" : "Ditutup"}</span>}
+        </span>
+        <span className="flex items-center gap-3">
+          {!past && (
+            <button onClick={() => blockSlot(s)} className="text-brand-400 active:opacity-60">
+              {s.status === "BLOCKED" ? <UndoIcon className="h-3.5 w-3.5" /> : <XIcon className="h-3.5 w-3.5" />}
+            </button>
+          )}
+          <button onClick={() => removeSlot(s.id)} className={`active:opacity-60 ${past ? "text-gray-300" : "text-red-400"}`}>
+            <TrashIcon className="h-3.5 w-3.5" />
           </button>
-        )}
-        <button onClick={() => removeSlot(s.id)} className={`active:opacity-60 ${past ? "text-gray-300" : "text-red-400"}`}>
-          <TrashIcon className="h-3.5 w-3.5" />
-        </button>
+        </span>
       </div>
     );
   }
@@ -273,12 +277,12 @@ export default function SlotManager({
           {selectedDaySlots.length === 0 ? (
             <p className="py-4 text-center text-xs text-gray-400">Tiada slot untuk hari ini.</p>
           ) : (
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               {(["pagi", "petang", "malam"] as const).map((tod) =>
                 byTod[tod].length === 0 ? null : (
-                  <div key={tod} className="flex flex-wrap items-center gap-2">
-                    <span className="w-11 shrink-0 text-[10px] font-semibold uppercase tracking-wide text-gray-300">{tod}</span>
-                    {byTod[tod].map((s) => renderChip(s))}
+                  <div key={tod} className="flex flex-col gap-1.5">
+                    <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-300">{tod}</span>
+                    <div className="flex flex-col gap-1.5">{byTod[tod].map((s) => renderRow(s))}</div>
                   </div>
                 )
               )}
