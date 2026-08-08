@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { AREAS_BY_STATE, STATES } from "@/lib/areas";
 import { ChevronLeftIcon, XIcon } from "@/components/icons";
+import StateFlag from "@/components/StateFlag";
 
 export default function AreaPicker({
   value,
@@ -66,6 +67,7 @@ export default function AreaPicker({
                 className="card-tap flex w-full items-center justify-between gap-2 px-3.5 py-2.5 text-left"
               >
                 <span className="flex items-center gap-2 text-sm font-semibold text-brand-900">
+                  <StateFlag state={state} />
                   {state}
                   {selectedCount > 0 && (
                     <span className="rounded-full bg-brand-50 px-1.5 py-0.5 text-[10px] font-bold text-brand-600">
