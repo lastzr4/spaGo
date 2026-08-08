@@ -33,3 +33,18 @@ export function buildWhatsAppLink(phone: string, message: string) {
   const number = normalizePhoneForWhatsApp(phone);
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
+
+export function buildWhatsAppReminderMessage(params: {
+  customerName: string;
+  serviceName: string;
+  startTime: string;
+  address: string;
+}) {
+  const { customerName, serviceName, startTime, address } = params;
+  return [
+    `Hai ${customerName}! Peringatan mesra dari SpaGo 😊`,
+    `Tempahan ${serviceName} anda dijadualkan jam ${startTime} sebentar lagi.`,
+    `Alamat: ${address}.`,
+    `Sila bersedia ya, jumpa sekejap lagi!`,
+  ].join("\n");
+}

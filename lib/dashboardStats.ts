@@ -38,18 +38,40 @@ export async function getPendingBookingCount(therapistId: string) {
 }
 
 export async function getNextUpcomingBooking(therapistId: string) {
-  const booking = await prisma.booking.findFirst({
-    where: { therapistId, status: "CONFIRMED", slot: { date: { gte: new Date() } } },
-    include: { service: { select: { name: true } }, slot: true },
-    orderBy: { slot: { date: "asc" } },
+  // Fetch a small window of candidates rather than just the first — the single
+  // nearest-by-date row could technically already be finished earlier today,
+  // so we walk forward until we find one that hasn't wrapped up yet.
+  const candidates = await prisma.booking.findMany({
+    where: {
+      therapistId,
+      status: "CONFIRMED",
+      slot: { date: { gte: new Date(new Date().toISOString().slice(0, 10)) } },
+    },
+    include: { service: { select: { name: true, durationMinutes: true } }, slot: true },
+    orderBy: [{ slot: { date: "asc" } }, { slot: { startTime: "asc" } }],
+    take: 5,
   });
 
-  if (!booking) return null;
-
-  return {
-    customerName: booking.customerName,
-    serviceName: booking.service.name,
-    date: booking.slot.date.toISOString().slice(0, 10),
-    startTime: booking.slot.startTime,
-  };
+  const now = Date.now();
+  for (const booking of candidates) {
+    const dateStr = booking.slot.date.toISOString().slice(0, 10);
+    // Slot times are stored as plain "HH:mm" and mean Malaysia time (UTC+8);
+    // anchor explicitly so this is correct regardless of the server's own TZ.
+    const slotInstant = new Date(`${dateStr}T${booking.slot.startTime}:00+08:00`);
+    const minutesUntil = Math.round((slotInstant.getTime() - now) / 60000);
+    if (minutesUntil >= -30) {
+      return {
+        id: booking.id,
+        customerName: booking.customerName,
+        customerPhone: booking.customerPhone,
+        customerAddress: booking.customerAddress,
+        serviceName: booking.service.name,
+        durationMinutes: booking.service.durationMinutes,
+        date: dateStr,
+        startTime: booking.slot.startTime,
+        minutesUntil,
+      };
+    }
+  }
+  return null;
 }
