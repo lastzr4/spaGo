@@ -20,7 +20,37 @@ type Slot = {
   booking?: BookingInfo | null;
 };
 
-const QUICK_TIMES = ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00", "17:00", "19:00", "20:00"];
+const TIME_GROUPS: { label: string; times: string[] }[] = [
+  { label: "Pagi", times: ["09:00", "10:00", "11:00"] },
+  { label: "Petang", times: ["13:00", "14:00", "15:00", "16:00", "17:00"] },
+  { label: "Malam", times: ["19:00", "20:00"] },
+];
+
+function timeOfDay(t: string) {
+  const h = Number(t.split(":")[0]);
+  if (h < 12) return "pagi";
+  if (h < 18) return "petang";
+  return "malam";
+}
+
+function todayStr() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+// Is this HH:MM already in the past, assuming the given calendar date is today?
+function isPastTime(t: string) {
+  const now = new Date();
+  const [h, m] = t.split(":").map(Number);
+  const slot = new Date();
+  slot.setHours(h, m, 0, 0);
+  return slot.getTime() < now.getTime();
+}
+
+// Is this date+time combo already in the past, right now?
+function isPastSlot(dateStr: string, time: string) {
+  const slot = new Date(`${dateStr.slice(0, 10)}T${time}:00`);
+  return slot.getTime() < Date.now();
+}
 
 const BOOKING_STATUS_LABEL: Record<string, string> = {
   PENDING: "Menunggu Pengesahan",
@@ -36,6 +66,15 @@ const BOOKING_STATUS_STYLE: Record<string, string> = {
   COMPLETED: "bg-emerald-50 text-emerald-600",
 };
 
+// Slot chip colors when the slot is BOOKED, keyed by the underlying booking's status —
+// e.g. a completed appointment shows green ("berjaya"), a still-pending one shows amber.
+const BOOKING_CHIP_STYLE: Record<string, string> = {
+  PENDING: "border-amber-300 bg-amber-50 text-amber-700",
+  CONFIRMED: "border-brand-300 bg-brand-50 text-brand-700",
+  COMPLETED: "border-emerald-300 bg-emerald-50 text-emerald-700",
+  CANCELLED: "border-red-300 bg-red-50 text-red-600",
+};
+
 export default function SlotManager({ token, initialSlots }: { token: string; initialSlots: Slot[] }) {
   const [slots, setSlots] = useState(initialSlots);
   const [date, setDate] = useState("");
@@ -44,7 +83,16 @@ export default function SlotManager({ token, initialSlots }: { token: string; in
   const [detailSlot, setDetailSlot] = useState<Slot | null>(null);
 
   function toggleTime(t: string) {
+    if (date === todayStr() && isPastTime(t)) return;
     setTimes((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
+  }
+
+  function handleDateChange(newDate: string) {
+    setDate(newDate);
+    // Drop any already-picked times that fall in the past once the date resolves to today.
+    if (newDate === todayStr()) {
+      setTimes((prev) => prev.filter((t) => !isPastTime(t)));
+    }
   }
 
   async function handleAdd(e: React.FormEvent) {
@@ -112,33 +160,41 @@ export default function SlotManager({ token, initialSlots }: { token: string; in
           <div key={d} className="card animate-fade-in" style={{ animationDelay: `${i * 40}ms` }}>
             <p className="mb-2.5 text-sm font-bold text-brand-900">{d}</p>
             <div className="flex flex-wrap gap-2">
-              {daySlots.map((s) =>
-                s.status === "BOOKED" && s.booking ? (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => setDetailSlot(s)}
-                    className={`card-tap flex max-w-[170px] items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-medium ${STATUS_STYLE[s.status]}`}
-                  >
-                    <span className="shrink-0">{s.startTime}</span>
-                    <span className="truncate font-semibold">{s.booking.customerName}</span>
-                  </button>
-                ) : (
+              {daySlots.map((s) => {
+                const past = isPastSlot(s.date, s.startTime);
+                if (s.status === "BOOKED" && s.booking) {
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => setDetailSlot(s)}
+                      className={`card-tap flex max-w-[170px] items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-medium ${BOOKING_CHIP_STYLE[s.booking.status] ?? STATUS_STYLE.BOOKED}`}
+                    >
+                      <span className="shrink-0">{s.startTime}</span>
+                      <span className="truncate font-semibold">{s.booking.customerName}</span>
+                    </button>
+                  );
+                }
+                return (
                   <div
                     key={s.id}
-                    className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-medium ${STATUS_STYLE[s.status]}`}
+                    className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-medium ${
+                      past ? "border-black/[0.06] bg-gray-50 text-gray-300" : STATUS_STYLE[s.status]
+                    }`}
                   >
                     <span>{s.startTime}</span>
-                    <span className="text-[10px] uppercase opacity-70">{STATUS_LABEL[s.status]}</span>
-                    <button onClick={() => blockSlot(s)} className="text-brand-400 active:opacity-60">
-                      {s.status === "BLOCKED" ? <UndoIcon className="h-3.5 w-3.5" /> : <XIcon className="h-3.5 w-3.5" />}
-                    </button>
-                    <button onClick={() => removeSlot(s.id)} className="text-red-400 active:opacity-60">
+                    <span className="text-[10px] uppercase opacity-70">{past ? "Lepas" : STATUS_LABEL[s.status]}</span>
+                    {!past && (
+                      <button onClick={() => blockSlot(s)} className="text-brand-400 active:opacity-60">
+                        {s.status === "BLOCKED" ? <UndoIcon className="h-3.5 w-3.5" /> : <XIcon className="h-3.5 w-3.5" />}
+                      </button>
+                    )}
+                    <button onClick={() => removeSlot(s.id)} className={`active:opacity-60 ${past ? "text-gray-300" : "text-red-400"}`}>
                       <TrashIcon className="h-3.5 w-3.5" />
                     </button>
                   </div>
-                )
-              )}
+                );
+              })}
             </div>
           </div>
         ))}
@@ -146,17 +202,34 @@ export default function SlotManager({ token, initialSlots }: { token: string; in
 
       <form onSubmit={handleAdd} className="card flex flex-col gap-3">
         <p className="text-[15px] font-bold text-brand-900">Tambah slot kosong</p>
-        <input className="input" type="date" value={date} min={new Date().toISOString().slice(0, 10)} onChange={(e) => setDate(e.target.value)} />
-        <div className="flex flex-wrap gap-2">
-          {QUICK_TIMES.map((t) => (
-            <button
-              type="button"
-              key={t}
-              onClick={() => toggleTime(t)}
-              className={`chip ${times.includes(t) ? "chip-active" : ""}`}
-            >
-              {t}
-            </button>
+        <input
+          className="input"
+          type="date"
+          value={date}
+          min={todayStr()}
+          onChange={(e) => handleDateChange(e.target.value)}
+        />
+        <div className="flex flex-col gap-2.5">
+          {TIME_GROUPS.map((group) => (
+            <div key={group.label}>
+              <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">{group.label}</p>
+              <div className="flex flex-wrap gap-2">
+                {group.times.map((t) => {
+                  const past = date === todayStr() && isPastTime(t);
+                  return (
+                    <button
+                      type="button"
+                      key={t}
+                      disabled={past}
+                      onClick={() => toggleTime(t)}
+                      className={`chip ${times.includes(t) ? "chip-active" : ""} ${past ? "cursor-not-allowed opacity-30" : ""}`}
+                    >
+                      {t} <span className="opacity-60">{timeOfDay(t)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           ))}
         </div>
         <button type="submit" className="btn-secondary flex items-center justify-center gap-1.5" disabled={saving || !date || times.length === 0}>
