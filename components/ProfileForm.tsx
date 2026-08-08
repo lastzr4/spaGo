@@ -286,141 +286,131 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
       </div>
 
       <form onSubmit={handleSave} className="flex flex-col gap-5">
-      {/* Profil Asas — collapsed by default, shows a quick summary until "Edit" is tapped */}
-      <div className="rounded-2xl bg-brand-50/60 p-4">
-        {editingProfile ? (
-          <>
-            <div className="mb-3 flex items-center justify-between">
-              <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
-                <UserIcon className="h-4 w-4" />
-                Profil Asas
-              </p>
-              <button type="button" onClick={cancelProfileEdit} className="text-xs font-semibold text-gray-400">
-                Batal
-              </button>
-            </div>
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-4">
-                {form.photoUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={form.photoUrl} alt="Profil" className="avatar-ring h-20 w-20 rounded-3xl object-cover" />
-                ) : (
-                  <div className="avatar-ring flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-400 to-brand-600 text-2xl font-bold text-white">
-                    {form.name.charAt(0).toUpperCase() || "?"}
-                  </div>
-                )}
-                <label className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-brand-600">
-                  <CameraIcon className="h-4 w-4" />
-                  {uploadingPhoto ? "Memuat naik..." : "Tukar foto profil"}
-                  <input type="file" accept="image/*" className="hidden" onChange={handlePhoto} disabled={uploadingPhoto} />
-                </label>
-              </div>
-
-              <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nama" />
-              <input className="input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="No. WhatsApp" />
-
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-brand-900">Pelanggan yang diterima</label>
-                <select
-                  className="input"
-                  value={form.clientGenderPolicy}
-                  onChange={(e) => setForm({ ...form, clientGenderPolicy: e.target.value as any })}
-                >
-                  <option value="FEMALE_ONLY">Wanita sahaja</option>
-                  <option value="MALE_ONLY">Lelaki sahaja</option>
-                  <option value="BOTH">Lelaki & Wanita</option>
-                </select>
-              </div>
-
-              <textarea className="input" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} placeholder="Ringkasan" rows={3} />
-            </div>
-          </>
-        ) : (
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex min-w-0 items-center gap-3">
+      {/* Profil Asas — collapsed by default; tap the card itself to edit */}
+      {editingProfile ? (
+        <div className="rounded-2xl bg-brand-50/60 p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+              <UserIcon className="h-4 w-4" />
+              Profil Asas
+            </p>
+            <button type="button" onClick={cancelProfileEdit} className="text-xs font-semibold text-gray-400">
+              Batal
+            </button>
+          </div>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-4">
               {form.photoUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={form.photoUrl} alt="Profil" className="avatar-ring h-11 w-11 shrink-0 rounded-2xl object-cover" />
+                <img src={form.photoUrl} alt="Profil" className="avatar-ring h-20 w-20 rounded-3xl object-cover" />
               ) : (
-                <div className="avatar-ring flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 text-sm font-bold text-white">
+                <div className="avatar-ring flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-400 to-brand-600 text-2xl font-bold text-white">
                   {form.name.charAt(0).toUpperCase() || "?"}
                 </div>
               )}
-              <div className="min-w-0">
-                <p className="truncate text-sm font-semibold text-brand-900">{form.name || "Belum ditetapkan"}</p>
-                <p className="truncate text-xs text-gray-500">
-                  {form.phone || "No. telefon belum ditetapkan"} &middot; {POLICY_LABEL[form.clientGenderPolicy]}
-                </p>
-              </div>
+              <label className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-brand-600">
+                <CameraIcon className="h-4 w-4" />
+                {uploadingPhoto ? "Memuat naik..." : "Tukar foto profil"}
+                <input type="file" accept="image/*" className="hidden" onChange={handlePhoto} disabled={uploadingPhoto} />
+              </label>
             </div>
-            <button
-              type="button"
-              onClick={() => setEditingProfile(true)}
-              className="btn-ghost flex shrink-0 items-center gap-1 bg-white px-3 py-1.5 text-xs"
-            >
-              Edit
-              <ChevronLeftIcon className="h-3 w-3 rotate-180" />
-            </button>
-          </div>
-        )}
-      </div>
 
-      {/* Kawasan Liputan — collapsed by default */}
-      <div className="rounded-2xl bg-brand-50/60 p-4">
-        {editingAreas ? (
-          <>
-            <div className="mb-3 flex items-center justify-between">
-              <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
-                <MapPinIcon className="h-4 w-4" />
-                Kawasan Liputan
-              </p>
-              <button type="button" onClick={cancelAreasEdit} className="text-xs font-semibold text-gray-400">
-                Batal
-              </button>
+            <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Nama" />
+            <input className="input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="No. WhatsApp" />
+
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-brand-900">Pelanggan yang diterima</label>
+              <select
+                className="input"
+                value={form.clientGenderPolicy}
+                onChange={(e) => setForm({ ...form, clientGenderPolicy: e.target.value as any })}
+              >
+                <option value="FEMALE_ONLY">Wanita sahaja</option>
+                <option value="MALE_ONLY">Lelaki sahaja</option>
+                <option value="BOTH">Lelaki & Wanita</option>
+              </select>
             </div>
-            <div className="flex flex-wrap gap-2">
-              {AREAS.map((a) => (
-                <button
-                  type="button"
-                  key={a}
-                  onClick={() => toggleArea(a)}
-                  className={`chip ${form.coverageAreas.includes(a) ? "chip-active" : ""}`}
-                >
-                  {a}
-                </button>
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="flex items-start justify-between gap-3">
+
+            <textarea className="input" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} placeholder="Ringkasan" rows={3} />
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setEditingProfile(true)}
+          className="card-tap flex w-full items-center justify-between gap-3 rounded-2xl bg-brand-50/60 p-4 text-left"
+        >
+          <div className="flex min-w-0 items-center gap-3">
+            {form.photoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={form.photoUrl} alt="Profil" className="avatar-ring h-11 w-11 shrink-0 rounded-2xl object-cover" />
+            ) : (
+              <div className="avatar-ring flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 text-sm font-bold text-white">
+                {form.name.charAt(0).toUpperCase() || "?"}
+              </div>
+            )}
             <div className="min-w-0">
-              <p className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-brand-900">
-                <MapPinIcon className="h-4 w-4" />
-                Kawasan Liputan
+              <p className="truncate text-sm font-semibold text-brand-900">{form.name || "Belum ditetapkan"}</p>
+              <p className="truncate text-xs text-gray-500">
+                {form.phone || "No. telefon belum ditetapkan"} &middot; {POLICY_LABEL[form.clientGenderPolicy]}
               </p>
-              {form.coverageAreas.length > 0 ? (
-                <div className="flex flex-wrap gap-1.5">
-                  {form.coverageAreas.map((a) => (
-                    <span key={a} className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-brand-600">
-                      {a}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs text-gray-400">Belum pilih kawasan</p>
-              )}
             </div>
-            <button
-              type="button"
-              onClick={() => setEditingAreas(true)}
-              className="btn-ghost flex shrink-0 items-center gap-1 bg-white px-3 py-1.5 text-xs"
-            >
-              Edit
-              <ChevronLeftIcon className="h-3 w-3 rotate-180" />
+          </div>
+          <ChevronLeftIcon className="h-3.5 w-3.5 shrink-0 rotate-180 text-brand-300" />
+        </button>
+      )}
+
+      {/* Kawasan Liputan — collapsed by default; tap the card itself to edit */}
+      {editingAreas ? (
+        <div className="rounded-2xl bg-brand-50/60 p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+              <MapPinIcon className="h-4 w-4" />
+              Kawasan Liputan
+            </p>
+            <button type="button" onClick={cancelAreasEdit} className="text-xs font-semibold text-gray-400">
+              Batal
             </button>
           </div>
-        )}
-      </div>
+          <div className="flex flex-wrap gap-2">
+            {AREAS.map((a) => (
+              <button
+                type="button"
+                key={a}
+                onClick={() => toggleArea(a)}
+                className={`chip ${form.coverageAreas.includes(a) ? "chip-active" : ""}`}
+              >
+                {a}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setEditingAreas(true)}
+          className="card-tap flex w-full items-start justify-between gap-3 rounded-2xl bg-brand-50/60 p-4 text-left"
+        >
+          <div className="min-w-0">
+            <p className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+              <MapPinIcon className="h-4 w-4" />
+              Kawasan Liputan
+            </p>
+            {form.coverageAreas.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {form.coverageAreas.map((a) => (
+                  <span key={a} className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-brand-600">
+                    {a}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-400">Belum pilih kawasan</p>
+            )}
+          </div>
+          <ChevronLeftIcon className="mt-1 h-3.5 w-3.5 shrink-0 rotate-180 text-brand-300" />
+        </button>
+      )}
 
       <div className="rounded-2xl bg-brand-50/60 p-4">
         <p className="mb-1 flex items-center gap-1.5 text-[15px] font-bold text-brand-900">
@@ -510,277 +500,262 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
         Profil aktif (kelihatan kepada pelanggan)
       </label>
 
-      <div className="rounded-2xl bg-brand-50/60 p-4">
-        {editingCreds ? (
-          <>
-            <div className="mb-3 flex items-center justify-between">
-              <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
-                <LockIcon className="h-4 w-4" />
-                Log masuk
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setEditingCreds(false);
-                  setCredError(null);
-                  setNewPin("");
-                  setNewPinConfirm("");
-                  setForm((f) => ({ ...f, username: therapist.username ?? "" }));
-                }}
-                className="text-xs font-semibold text-gray-400"
-              >
-                Batal
-              </button>
-            </div>
-            <div className="flex flex-col gap-3">
+      {editingCreds ? (
+        <div className="rounded-2xl bg-brand-50/60 p-4">
+          <div className="mb-3 flex items-center justify-between">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+              <LockIcon className="h-4 w-4" />
+              Log masuk
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setEditingCreds(false);
+                setCredError(null);
+                setNewPin("");
+                setNewPinConfirm("");
+                setForm((f) => ({ ...f, username: therapist.username ?? "" }));
+              }}
+              className="text-xs font-semibold text-gray-400"
+            >
+              Batal
+            </button>
+          </div>
+          <div className="flex flex-col gap-3">
+            <input
+              className="input"
+              placeholder="Username"
+              value={form.username}
+              onChange={(e) => setForm({ ...form, username: e.target.value.trim() })}
+              autoCapitalize="none"
+            />
+            <div className="flex gap-3">
               <input
                 className="input"
-                placeholder="Username"
-                value={form.username}
-                onChange={(e) => setForm({ ...form, username: e.target.value.trim() })}
-                autoCapitalize="none"
+                type="password"
+                inputMode="numeric"
+                placeholder="PIN baru (opsyenal)"
+                value={newPin}
+                onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
               />
-              <div className="flex gap-3">
-                <input
-                  className="input"
-                  type="password"
-                  inputMode="numeric"
-                  placeholder="PIN baru (opsyenal)"
-                  value={newPin}
-                  onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                />
-                <input
-                  className="input"
-                  type="password"
-                  inputMode="numeric"
-                  placeholder="Sahkan PIN baru"
-                  value={newPinConfirm}
-                  onChange={(e) => setNewPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                />
-              </div>
-            </div>
-            <p className="mt-2 text-xs text-gray-500">Kosongkan PIN jika tidak mahu menukarnya. Simpan guna butang di bawah.</p>
-            {credError && <p className="mt-2 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{credError}</p>}
-          </>
-        ) : (
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
-                <LockIcon className="h-4 w-4" />
-                Log masuk
-              </p>
-              <p className="mt-1 text-xs text-gray-500">
-                {therapist.username ? (
-                  <>Username: <span className="font-medium text-gray-600">{therapist.username}</span></>
-                ) : (
-                  "Belum ditetapkan"
-                )}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setEditingCreds(true)}
-              className="btn-ghost flex items-center gap-1 bg-white px-3 py-1.5 text-xs"
-            >
-              {therapist.username ? "Tukar" : "Tetapkan"}
-              <ChevronLeftIcon className="h-3 w-3 rotate-180" />
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* Bayaran & Deposit — collapsed by default */}
-      <div className="rounded-2xl bg-brand-50/60 p-4">
-        {editingDeposit ? (
-          <>
-            <div className="mb-1 flex items-center justify-between">
-              <p className="flex items-center gap-1.5 text-[15px] font-bold text-brand-900">
-                <WalletIcon className="h-4 w-4" />
-                Bayaran &amp; Deposit
-              </p>
-              <button type="button" onClick={cancelDepositEdit} className="text-xs font-semibold text-gray-400">
-                Batal
-              </button>
-            </div>
-            <p className="mb-3 text-xs text-gray-500">Tetapkan jika anda perlukan deposit sebelum tempahan disahkan, dan caj tambahan (jika ada).</p>
-
-            <label className="mb-3 flex items-center justify-between rounded-xl bg-white px-4 py-3">
-              <span className="text-sm font-medium text-gray-700">Perlukan deposit?</span>
               <input
-                type="checkbox"
-                checked={form.depositRequired}
-                onChange={(e) => setForm({ ...form, depositRequired: e.target.checked })}
-                className="h-4 w-4 accent-brand-600"
+                className="input"
+                type="password"
+                inputMode="numeric"
+                placeholder="Sahkan PIN baru"
+                value={newPinConfirm}
+                onChange={(e) => setNewPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 6))}
               />
-            </label>
-
-            {form.depositRequired && (
-              <div className="mb-3 flex flex-col gap-3 animate-fade-in">
-                <input
-                  className="input"
-                  type="number"
-                  min="0"
-                  placeholder="Jumlah deposit (RM)"
-                  value={form.depositAmount}
-                  onChange={(e) => setForm({ ...form, depositAmount: e.target.value })}
-                />
-
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-brand-900">Kaedah bayaran</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setForm({ ...form, paymentMethod: "QR" })}
-                      className={`chip justify-center py-2.5 ${form.paymentMethod === "QR" ? "chip-active" : ""}`}
-                    >
-                      QR (disyorkan)
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setForm({ ...form, paymentMethod: "CASH" })}
-                      className={`chip justify-center py-2.5 ${form.paymentMethod === "CASH" ? "chip-active" : ""}`}
-                    >
-                      Tunai
-                    </button>
-                  </div>
-                </div>
-
-                {form.paymentMethod === "QR" && (
-                  <div className="animate-fade-in">
-                    <label className="mb-2 block text-sm font-semibold text-brand-900">Kod QR</label>
-                    <div className="flex items-center gap-3">
-                      {form.qrCodeUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={form.qrCodeUrl} alt="Kod QR" className="h-20 w-20 rounded-xl border border-black/[0.06] object-cover" />
-                      ) : (
-                        <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-white text-brand-300">
-                          <ImageOffIcon className="h-6 w-6" />
-                        </div>
-                      )}
-                      <label className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-brand-600">
-                        <CameraIcon className="h-4 w-4" />
-                        {uploadingQr ? "Memuat naik..." : form.qrCodeUrl ? "Tukar kod QR" : "Muat naik kod QR"}
-                        <input type="file" accept="image/*" className="hidden" onChange={handleQrPhoto} disabled={uploadingQr} />
-                      </label>
-                    </div>
-                    <p className="mt-2 text-xs text-gray-400">Kod QR ini akan ditunjukkan kepada pelanggan semasa tempahan.</p>
-                  </div>
-                )}
-              </div>
-            )}
-
-            <textarea
-              className="input"
-              placeholder="Caj tambahan, cth: RM10 minyak/tol/parking (opsyenal)"
-              value={form.extraChargesNote}
-              onChange={(e) => setForm({ ...form, extraChargesNote: e.target.value })}
-              rows={2}
-            />
-          </>
-        ) : (
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-brand-900">
-                <WalletIcon className="h-4 w-4" />
-                Bayaran &amp; Deposit
-              </p>
-              <p className="text-xs text-gray-500">
-                {form.depositRequired && form.depositAmount
-                  ? `Deposit RM${form.depositAmount} · ${form.paymentMethod === "CASH" ? "Tunai" : "QR"}`
-                  : "Tiada deposit diperlukan"}
-              </p>
-              {form.extraChargesNote && (
-                <p className="mt-1 truncate text-xs text-gray-400">Caj tambahan: {form.extraChargesNote}</p>
-              )}
             </div>
-            <button
-              type="button"
-              onClick={() => setEditingDeposit(true)}
-              className="btn-ghost flex shrink-0 items-center gap-1 bg-white px-3 py-1.5 text-xs"
-            >
-              Edit
-              <ChevronLeftIcon className="h-3 w-3 rotate-180" />
-            </button>
           </div>
-        )}
-      </div>
-
-      {/* Media Sosial — collapsed by default */}
-      <div className="rounded-2xl bg-brand-50/60 p-4">
-        {editingSocial ? (
-          <>
-            <div className="mb-1 flex items-center justify-between">
-              <p className="text-[15px] font-bold text-brand-900">Media Sosial</p>
-              <button type="button" onClick={cancelSocialEdit} className="text-xs font-semibold text-gray-400">
-                Batal
-              </button>
-            </div>
-            <p className="mb-3 text-xs text-gray-500">Opsyenal. Bantu pelanggan buat semakan sendiri (due diligence) tentang anda selain ulasan SpaGo.</p>
-            <div className="flex flex-col gap-2.5">
-              <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
-                <InstagramIcon className="h-4 w-4 shrink-0 text-gray-400" />
-                <input
-                  className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
-                  placeholder="Instagram (@username)"
-                  value={form.socialInstagram}
-                  onChange={(e) => setForm({ ...form, socialInstagram: e.target.value })}
-                />
-              </div>
-              <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
-                <TiktokIcon className="h-4 w-4 shrink-0 text-gray-400" />
-                <input
-                  className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
-                  placeholder="TikTok (@username)"
-                  value={form.socialTiktok}
-                  onChange={(e) => setForm({ ...form, socialTiktok: e.target.value })}
-                />
-              </div>
-              <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
-                <ThreadsIcon className="h-4 w-4 shrink-0 text-gray-400" />
-                <input
-                  className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
-                  placeholder="Threads (@username)"
-                  value={form.socialThreads}
-                  onChange={(e) => setForm({ ...form, socialThreads: e.target.value })}
-                />
-              </div>
-              <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
-                <SocialXIcon className="h-4 w-4 shrink-0 text-gray-400" />
-                <input
-                  className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
-                  placeholder="X / Twitter (@username)"
-                  value={form.socialX}
-                  onChange={(e) => setForm({ ...form, socialX: e.target.value })}
-                />
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <p className="mb-1.5 text-sm font-semibold text-brand-900">Media Sosial</p>
-              {hasSocial ? (
-                <div className="flex items-center gap-2 text-brand-500">
-                  {form.socialInstagram && <InstagramIcon className="h-4 w-4" />}
-                  {form.socialTiktok && <TiktokIcon className="h-4 w-4" />}
-                  {form.socialThreads && <ThreadsIcon className="h-4 w-4" />}
-                  {form.socialX && <SocialXIcon className="h-4 w-4" />}
-                </div>
+          <p className="mt-2 text-xs text-gray-500">Kosongkan PIN jika tidak mahu menukarnya. Simpan guna butang di bawah.</p>
+          {credError && <p className="mt-2 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{credError}</p>}
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setEditingCreds(true)}
+          className="card-tap flex w-full items-center justify-between gap-3 rounded-2xl bg-brand-50/60 p-4 text-left"
+        >
+          <div>
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+              <LockIcon className="h-4 w-4" />
+              Log masuk
+            </p>
+            <p className="mt-1 text-xs text-gray-500">
+              {therapist.username ? (
+                <>Username: <span className="font-medium text-gray-600">{therapist.username}</span></>
               ) : (
-                <p className="text-xs text-gray-400">Belum ditetapkan</p>
+                "Belum ditetapkan"
               )}
-            </div>
-            <button
-              type="button"
-              onClick={() => setEditingSocial(true)}
-              className="btn-ghost flex shrink-0 items-center gap-1 bg-white px-3 py-1.5 text-xs"
-            >
-              Edit
-              <ChevronLeftIcon className="h-3 w-3 rotate-180" />
+            </p>
+          </div>
+          <ChevronLeftIcon className="h-3.5 w-3.5 shrink-0 rotate-180 text-brand-300" />
+        </button>
+      )}
+
+      {/* Bayaran & Deposit — collapsed by default; tap the card itself to edit */}
+      {editingDeposit ? (
+        <div className="rounded-2xl bg-brand-50/60 p-4">
+          <div className="mb-1 flex items-center justify-between">
+            <p className="flex items-center gap-1.5 text-[15px] font-bold text-brand-900">
+              <WalletIcon className="h-4 w-4" />
+              Bayaran &amp; Deposit
+            </p>
+            <button type="button" onClick={cancelDepositEdit} className="text-xs font-semibold text-gray-400">
+              Batal
             </button>
           </div>
-        )}
-      </div>
+          <p className="mb-3 text-xs text-gray-500">Tetapkan jika anda perlukan deposit sebelum tempahan disahkan, dan caj tambahan (jika ada).</p>
+
+          <label className="mb-3 flex items-center justify-between rounded-xl bg-white px-4 py-3">
+            <span className="text-sm font-medium text-gray-700">Perlukan deposit?</span>
+            <input
+              type="checkbox"
+              checked={form.depositRequired}
+              onChange={(e) => setForm({ ...form, depositRequired: e.target.checked })}
+              className="h-4 w-4 accent-brand-600"
+            />
+          </label>
+
+          {form.depositRequired && (
+            <div className="mb-3 flex flex-col gap-3 animate-fade-in">
+              <input
+                className="input"
+                type="number"
+                min="0"
+                placeholder="Jumlah deposit (RM)"
+                value={form.depositAmount}
+                onChange={(e) => setForm({ ...form, depositAmount: e.target.value })}
+              />
+
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-brand-900">Kaedah bayaran</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, paymentMethod: "QR" })}
+                    className={`chip justify-center py-2.5 ${form.paymentMethod === "QR" ? "chip-active" : ""}`}
+                  >
+                    QR (disyorkan)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, paymentMethod: "CASH" })}
+                    className={`chip justify-center py-2.5 ${form.paymentMethod === "CASH" ? "chip-active" : ""}`}
+                  >
+                    Tunai
+                  </button>
+                </div>
+              </div>
+
+              {form.paymentMethod === "QR" && (
+                <div className="animate-fade-in">
+                  <label className="mb-2 block text-sm font-semibold text-brand-900">Kod QR</label>
+                  <div className="flex items-center gap-3">
+                    {form.qrCodeUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={form.qrCodeUrl} alt="Kod QR" className="h-20 w-20 rounded-xl border border-black/[0.06] object-cover" />
+                    ) : (
+                      <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-white text-brand-300">
+                        <ImageOffIcon className="h-6 w-6" />
+                      </div>
+                    )}
+                    <label className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-brand-600">
+                      <CameraIcon className="h-4 w-4" />
+                      {uploadingQr ? "Memuat naik..." : form.qrCodeUrl ? "Tukar kod QR" : "Muat naik kod QR"}
+                      <input type="file" accept="image/*" className="hidden" onChange={handleQrPhoto} disabled={uploadingQr} />
+                    </label>
+                  </div>
+                  <p className="mt-2 text-xs text-gray-400">Kod QR ini akan ditunjukkan kepada pelanggan semasa tempahan.</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          <textarea
+            className="input"
+            placeholder="Caj tambahan, cth: RM10 minyak/tol/parking (opsyenal)"
+            value={form.extraChargesNote}
+            onChange={(e) => setForm({ ...form, extraChargesNote: e.target.value })}
+            rows={2}
+          />
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setEditingDeposit(true)}
+          className="card-tap flex w-full items-start justify-between gap-3 rounded-2xl bg-brand-50/60 p-4 text-left"
+        >
+          <div className="min-w-0">
+            <p className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+              <WalletIcon className="h-4 w-4" />
+              Bayaran &amp; Deposit
+            </p>
+            <p className="text-xs text-gray-500">
+              {form.depositRequired && form.depositAmount
+                ? `Deposit RM${form.depositAmount} · ${form.paymentMethod === "CASH" ? "Tunai" : "QR"}`
+                : "Tiada deposit diperlukan"}
+            </p>
+            {form.extraChargesNote && (
+              <p className="mt-1 truncate text-xs text-gray-400">Caj tambahan: {form.extraChargesNote}</p>
+            )}
+          </div>
+          <ChevronLeftIcon className="mt-1 h-3.5 w-3.5 shrink-0 rotate-180 text-brand-300" />
+        </button>
+      )}
+
+      {/* Media Sosial — collapsed by default; tap the card itself to edit */}
+      {editingSocial ? (
+        <div className="rounded-2xl bg-brand-50/60 p-4">
+          <div className="mb-1 flex items-center justify-between">
+            <p className="text-[15px] font-bold text-brand-900">Media Sosial</p>
+            <button type="button" onClick={cancelSocialEdit} className="text-xs font-semibold text-gray-400">
+              Batal
+            </button>
+          </div>
+          <p className="mb-3 text-xs text-gray-500">Opsyenal. Bantu pelanggan buat semakan sendiri (due diligence) tentang anda selain ulasan SpaGo.</p>
+          <div className="flex flex-col gap-2.5">
+            <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
+              <InstagramIcon className="h-4 w-4 shrink-0 text-gray-400" />
+              <input
+                className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
+                placeholder="Instagram (@username)"
+                value={form.socialInstagram}
+                onChange={(e) => setForm({ ...form, socialInstagram: e.target.value })}
+              />
+            </div>
+            <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
+              <TiktokIcon className="h-4 w-4 shrink-0 text-gray-400" />
+              <input
+                className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
+                placeholder="TikTok (@username)"
+                value={form.socialTiktok}
+                onChange={(e) => setForm({ ...form, socialTiktok: e.target.value })}
+              />
+            </div>
+            <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
+              <ThreadsIcon className="h-4 w-4 shrink-0 text-gray-400" />
+              <input
+                className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
+                placeholder="Threads (@username)"
+                value={form.socialThreads}
+                onChange={(e) => setForm({ ...form, socialThreads: e.target.value })}
+              />
+            </div>
+            <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
+              <SocialXIcon className="h-4 w-4 shrink-0 text-gray-400" />
+              <input
+                className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
+                placeholder="X / Twitter (@username)"
+                value={form.socialX}
+                onChange={(e) => setForm({ ...form, socialX: e.target.value })}
+              />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setEditingSocial(true)}
+          className="card-tap flex w-full items-center justify-between gap-3 rounded-2xl bg-brand-50/60 p-4 text-left"
+        >
+          <div className="min-w-0">
+            <p className="mb-1.5 text-sm font-semibold text-brand-900">Media Sosial</p>
+            {hasSocial ? (
+              <div className="flex items-center gap-2 text-brand-500">
+                {form.socialInstagram && <InstagramIcon className="h-4 w-4" />}
+                {form.socialTiktok && <TiktokIcon className="h-4 w-4" />}
+                {form.socialThreads && <ThreadsIcon className="h-4 w-4" />}
+                {form.socialX && <SocialXIcon className="h-4 w-4" />}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-400">Belum ditetapkan</p>
+            )}
+          </div>
+          <ChevronLeftIcon className="h-3.5 w-3.5 shrink-0 rotate-180 text-brand-300" />
+        </button>
+      )}
 
       <button type="submit" className="btn-primary flex items-center justify-center gap-1.5" disabled={saving}>
         {saved && <CheckCircleIcon filled className="h-4 w-4" />}
