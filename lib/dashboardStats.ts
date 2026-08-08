@@ -37,11 +37,10 @@ export async function getPendingBookingCount(therapistId: string) {
   return prisma.booking.count({ where: { therapistId, status: "PENDING" } });
 }
 
-export async function getNextUpcomingBooking(therapistId: string) {
-  // Fetch a small window of candidates rather than just the first — the single
-  // nearest-by-date row could technically already be finished earlier today,
-  // so we walk forward until we find one that hasn't wrapped up yet.
-  const candidates = await prisma.booking.findMany({
+export async function getUpcomingQueue(therapistId: string, limit = 8) {
+  // Every confirmed booking still ahead (or just started, within a 30-minute
+  // grace window), soonest first — powers the "Giliran Akan Datang" queue.
+  const bookings = await prisma.booking.findMany({
     where: {
       therapistId,
       status: "CONFIRMED",
@@ -49,17 +48,17 @@ export async function getNextUpcomingBooking(therapistId: string) {
     },
     include: { service: { select: { name: true, durationMinutes: true } }, slot: true },
     orderBy: [{ slot: { date: "asc" } }, { slot: { startTime: "asc" } }],
-    take: 5,
+    take: limit,
   });
 
   const now = Date.now();
-  for (const booking of candidates) {
-    const dateStr = booking.slot.date.toISOString().slice(0, 10);
-    // Slot times are stored as plain "HH:mm" and mean Malaysia time (UTC+8);
-    // anchor explicitly so this is correct regardless of the server's own TZ.
-    const slotInstant = new Date(`${dateStr}T${booking.slot.startTime}:00+08:00`);
-    const minutesUntil = Math.round((slotInstant.getTime() - now) / 60000);
-    if (minutesUntil >= -30) {
+  return bookings
+    .map((booking) => {
+      const dateStr = booking.slot.date.toISOString().slice(0, 10);
+      // Slot times are stored as plain "HH:mm" and mean Malaysia time (UTC+8);
+      // anchor explicitly so this is correct regardless of the server's own TZ.
+      const slotInstant = new Date(`${dateStr}T${booking.slot.startTime}:00+08:00`);
+      const minutesUntil = Math.round((slotInstant.getTime() - now) / 60000);
       return {
         id: booking.id,
         customerName: booking.customerName,
@@ -71,7 +70,6 @@ export async function getNextUpcomingBooking(therapistId: string) {
         startTime: booking.slot.startTime,
         minutesUntil,
       };
-    }
-  }
-  return null;
+    })
+    .filter((b) => b.minutesUntil >= -30);
 }

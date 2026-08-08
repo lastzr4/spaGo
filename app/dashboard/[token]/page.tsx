@@ -4,9 +4,9 @@ import TopBar from "@/components/TopBar";
 import BottomTabBar from "@/components/BottomTabBar";
 import ProfileForm from "@/components/ProfileForm";
 import DashboardStats from "@/components/DashboardStats";
-import { getDashboardStats, getNextUpcomingBooking } from "@/lib/dashboardStats";
+import { getDashboardStats, getUpcomingQueue } from "@/lib/dashboardStats";
 import PendingAlertBanner from "@/components/PendingAlertBanner";
-import NextBookingCard from "@/components/NextBookingCard";
+import UpcomingQueue from "@/components/UpcomingQueue";
 
 export const dynamic = "force-dynamic";
 
@@ -14,9 +14,9 @@ export default async function DashboardHomePage({ params }: { params: { token: s
   const therapist = await getTherapistByToken(params.token);
   if (!therapist) notFound();
 
-  const [stats, nextBooking] = await Promise.all([
+  const [stats, upcomingQueue] = await Promise.all([
     getDashboardStats(therapist.id),
-    getNextUpcomingBooking(therapist.id),
+    getUpcomingQueue(therapist.id),
   ]);
 
   return (
@@ -34,7 +34,7 @@ export default async function DashboardHomePage({ params }: { params: { token: s
           <DashboardStats token={params.token} {...stats} />
         </div>
 
-        {nextBooking && <NextBookingCard booking={nextBooking} />}
+        <UpcomingQueue bookings={upcomingQueue} />
 
         <h2 className="mb-3 text-[13px] font-bold uppercase tracking-wide text-gray-400">Profil Saya</h2>
         <div className="card animate-fade-in">
