@@ -71,6 +71,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
   const [editingAreas, setEditingAreas] = useState(false);
   const [editingDeposit, setEditingDeposit] = useState(false);
   const [editingSocial, setEditingSocial] = useState(false);
+  const [editingSpecialties, setEditingSpecialties] = useState(false);
 
   const promoUrl = slug
     ? typeof window !== "undefined"
@@ -191,6 +192,17 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
     setEditingSocial(false);
   }
 
+  function cancelSpecialtiesEdit() {
+    setForm((f) => ({
+      ...f,
+      specialties: therapist.specialties,
+      yearsExperience: therapist.yearsExperience?.toString() ?? "",
+      workingHoursNote: therapist.workingHoursNote ?? "",
+    }));
+    setSpecialtyInput("");
+    setEditingSpecialties(false);
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setCredError(null);
@@ -237,6 +249,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
       setEditingAreas(false);
       setEditingDeposit(false);
       setEditingSocial(false);
+      setEditingSpecialties(false);
       setTimeout(() => setSaved(false), 2000);
     } else {
       const data = await res.json().catch(() => null);
@@ -401,61 +414,101 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
         </button>
       )}
 
-      <div className="rounded-2xl bg-brand-50/60 p-4">
-        <p className="mb-1 flex items-center gap-1.5 text-[15px] font-bold text-brand-900">
-          <StarIcon className="h-4 w-4" />
-          Kepakaran &amp; Pengalaman
-        </p>
-        <p className="mb-3 text-xs text-gray-500">Tag kepakaran membantu pelanggan cepat nampak kelebihan anda.</p>
+      {/* Kepakaran & Pengalaman — collapsed by default; tap the card itself to edit */}
+      {editingSpecialties ? (
+        <div className="rounded-2xl bg-brand-50/60 p-4">
+          <div className="mb-1 flex items-center justify-between">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+              <StarIcon className="h-4 w-4" />
+              Kepakaran &amp; Pengalaman
+            </p>
+            <button type="button" onClick={cancelSpecialtiesEdit} className="text-xs font-semibold text-gray-400">
+              Batal
+            </button>
+          </div>
+          <p className="mb-3 text-xs text-gray-500">Tag kepakaran membantu pelanggan cepat nampak kelebihan anda.</p>
 
-        <div className="mb-3 flex flex-wrap gap-2">
-          {form.specialties.map((tag) => (
-            <span key={tag} className="chip chip-active flex items-center gap-1 pr-1.5">
-              {tag}
-              <button type="button" onClick={() => removeSpecialty(tag)} className="flex h-4 w-4 items-center justify-center rounded-full bg-white/60">
-                <XIcon className="h-2.5 w-2.5" />
-              </button>
-            </span>
-          ))}
-        </div>
-        <div className="mb-3 flex gap-2">
-          <input
-            className="input"
-            placeholder="cth: Deep Tissue, Prenatal"
-            value={specialtyInput}
-            onChange={(e) => setSpecialtyInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                addSpecialty();
-              }
-            }}
-          />
-          <button type="button" onClick={addSpecialty} className="btn-secondary shrink-0 px-4">
-            <PlusIcon className="h-4 w-4" />
-          </button>
-        </div>
+          <div className="mb-3 flex flex-wrap gap-2">
+            {form.specialties.map((tag) => (
+              <span key={tag} className="chip chip-active flex items-center gap-1 pr-1.5">
+                {tag}
+                <button type="button" onClick={() => removeSpecialty(tag)} className="flex h-4 w-4 items-center justify-center rounded-full bg-white/60">
+                  <XIcon className="h-2.5 w-2.5" />
+                </button>
+              </span>
+            ))}
+          </div>
+          <div className="mb-3 flex gap-2">
+            <input
+              className="input"
+              placeholder="cth: Deep Tissue, Prenatal"
+              value={specialtyInput}
+              onChange={(e) => setSpecialtyInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addSpecialty();
+                }
+              }}
+            />
+            <button type="button" onClick={addSpecialty} className="btn-secondary shrink-0 px-4">
+              <PlusIcon className="h-4 w-4" />
+            </button>
+          </div>
 
-        <div className="flex gap-3">
-          <input
-            className="input"
-            type="number"
-            min="0"
-            placeholder="Tahun pengalaman"
-            value={form.yearsExperience}
-            onChange={(e) => setForm({ ...form, yearsExperience: e.target.value })}
-          />
+          <div className="flex gap-3">
+            <input
+              className="input"
+              type="number"
+              min="0"
+              placeholder="Tahun pengalaman"
+              value={form.yearsExperience}
+              onChange={(e) => setForm({ ...form, yearsExperience: e.target.value })}
+            />
+          </div>
+          <div className="mt-3 flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
+            <ClockIcon className="h-4 w-4 shrink-0 text-gray-400" />
+            <input
+              className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
+              placeholder="Waktu beroperasi, cth: Isnin-Jumaat 9am-8pm"
+              value={form.workingHoursNote}
+              onChange={(e) => setForm({ ...form, workingHoursNote: e.target.value })}
+            />
+          </div>
         </div>
-        <div className="mt-3 flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
-          <ClockIcon className="h-4 w-4 shrink-0 text-gray-400" />
-          <input
-            className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
-            placeholder="Waktu beroperasi, cth: Isnin-Jumaat 9am-8pm"
-            value={form.workingHoursNote}
-            onChange={(e) => setForm({ ...form, workingHoursNote: e.target.value })}
-          />
-        </div>
-      </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setEditingSpecialties(true)}
+          className="card-tap flex w-full items-start justify-between gap-3 rounded-2xl bg-brand-50/60 p-4 text-left"
+        >
+          <div className="min-w-0">
+            <p className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+              <StarIcon className="h-4 w-4" />
+              Kepakaran &amp; Pengalaman
+            </p>
+            {form.specialties.length > 0 ? (
+              <div className="mb-1.5 flex flex-wrap gap-1.5">
+                {form.specialties.map((tag) => (
+                  <span key={tag} className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-brand-600">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-400">Belum ada kepakaran</p>
+            )}
+            {(form.yearsExperience || form.workingHoursNote) && (
+              <p className="text-xs text-gray-400">
+                {form.yearsExperience && `${form.yearsExperience} tahun pengalaman`}
+                {form.yearsExperience && form.workingHoursNote && " · "}
+                {form.workingHoursNote}
+              </p>
+            )}
+          </div>
+          <ChevronLeftIcon className="mt-1 h-3.5 w-3.5 shrink-0 rotate-180 text-brand-300" />
+        </button>
+      )}
 
       <div className="rounded-2xl bg-brand-50/60 p-4">
         <p className="mb-1 text-[15px] font-bold text-brand-900">Galeri Foto</p>
