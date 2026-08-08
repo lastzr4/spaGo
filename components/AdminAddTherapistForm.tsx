@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AREAS } from "@/lib/areas";
+import AreaPicker from "@/components/AreaPicker";
 import { PlusIcon, LinkIcon, CopyIcon } from "@/components/icons";
 
 export default function AdminAddTherapistForm() {
@@ -90,18 +90,7 @@ export default function AdminAddTherapistForm() {
             <button type="button" onClick={() => setGender("FEMALE")} className={`chip justify-center py-2.5 ${gender === "FEMALE" ? "chip-active" : ""}`}>Wanita</button>
             <button type="button" onClick={() => setGender("MALE")} className={`chip justify-center py-2.5 ${gender === "MALE" ? "chip-active" : ""}`}>Lelaki</button>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {AREAS.map((a) => (
-              <button
-                type="button"
-                key={a}
-                onClick={() => toggleArea(a)}
-                className={`chip ${areas.includes(a) ? "chip-active" : ""}`}
-              >
-                {a}
-              </button>
-            ))}
-          </div>
+          <AreaPicker value={areas} onToggle={toggleArea} />
           {error && <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{error}</p>}
           <div className="flex gap-2">
             <button type="button" onClick={() => setOpen(false)} className="btn-ghost flex-1 bg-gray-50">

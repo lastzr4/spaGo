@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AREAS } from "@/lib/areas";
+import AreaPicker from "@/components/AreaPicker";
 import { fileToCompressedDataUrl } from "@/lib/image";
 import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon, LockIcon, ChevronLeftIcon, ImageOffIcon, InstagramIcon, TiktokIcon, ThreadsIcon, SocialXIcon, PlusIcon, XIcon, ClockIcon, StarIcon, UserIcon, MapPinIcon, WalletIcon } from "@/components/icons";
 
@@ -372,18 +372,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
               Batal
             </button>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {AREAS.map((a) => (
-              <button
-                type="button"
-                key={a}
-                onClick={() => toggleArea(a)}
-                className={`chip ${form.coverageAreas.includes(a) ? "chip-active" : ""}`}
-              >
-                {a}
-              </button>
-            ))}
-          </div>
+          <AreaPicker value={form.coverageAreas} onToggle={toggleArea} />
         </div>
       ) : (
         <button
@@ -534,7 +523,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
                 className="input"
                 type="password"
                 inputMode="numeric"
-                placeholder="PIN baru (opsyenal)"
+                placeholder="PIN baru (optional)"
                 value={newPin}
                 onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
               />
@@ -655,7 +644,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
 
           <textarea
             className="input"
-            placeholder="Caj tambahan, cth: RM10 minyak/tol/parking (opsyenal)"
+            placeholder="Caj tambahan, cth: RM10 minyak/tol/parking (optional)"
             value={form.extraChargesNote}
             onChange={(e) => setForm({ ...form, extraChargesNote: e.target.value })}
             rows={2}

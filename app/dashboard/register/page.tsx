@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { AREAS } from "@/lib/areas";
 import TopBar from "@/components/TopBar";
 import SegmentedToggle from "@/components/SegmentedToggle";
+import AreaPicker from "@/components/AreaPicker";
 
 const ERROR_MESSAGES: Record<string, string> = {
   USERNAME_INVALID: "Username mesti 4-20 aksara (huruf, nombor, garis bawah sahaja).",
@@ -15,7 +15,6 @@ const ERROR_MESSAGES: Record<string, string> = {
 
 export default function TherapistRegisterPage() {
   const router = useRouter();
-  const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [gender, setGender] = useState<"FEMALE" | "MALE" | "">("");
   const [clientGenderPolicy, setClientGenderPolicy] = useState<"FEMALE_ONLY" | "MALE_ONLY" | "BOTH">("FEMALE_ONLY");
@@ -34,7 +33,7 @@ export default function TherapistRegisterPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!name || !phone || !gender || areas.length === 0 || !username || !pin) {
+    if (!phone || !gender || areas.length === 0 || !username || !pin) {
       setError("Sila lengkapkan semua maklumat wajib.");
       return;
     }
@@ -51,7 +50,9 @@ export default function TherapistRegisterPage() {
       const res = await fetch("/api/therapists", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, phone, gender, clientGenderPolicy, coverageAreas: areas, bio, username, pin }),
+        // Username doubles as the public display name — there's no separate
+        // "Nama Penuh" field anymore (merged per request).
+        body: JSON.stringify({ name: username, phone, gender, clientGenderPolicy, coverageAreas: areas, bio, username, pin }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -75,7 +76,20 @@ export default function TherapistRegisterPage() {
         </p>
 
         <form onSubmit={handleSubmit} className="flex animate-fade-in flex-col gap-5">
-          <input className="input" placeholder="Nama penuh" value={name} onChange={(e) => setName(e.target.value)} required />
+          <div>
+            <input
+              className="input"
+              placeholder="Username (4-20 aksara)"
+              value={username}
+              onChange={(e) => setUsername(e.target.value.trim())}
+              autoCapitalize="none"
+              required
+            />
+            <p className="mt-1.5 text-xs text-gray-400">
+              Ini akan jadi nama paparan awam anda juga (huruf, nombor, garis bawah sahaja — tiada ruang/spasi).
+            </p>
+          </div>
+
           <input className="input" placeholder="No. WhatsApp (cth: 0123456789)" value={phone} onChange={(e) => setPhone(e.target.value)} required />
 
           <div>
@@ -102,53 +116,32 @@ export default function TherapistRegisterPage() {
 
           <div>
             <label className="mb-2 block text-sm font-semibold text-brand-900">Kawasan liputan</label>
-            <div className="flex flex-wrap gap-2">
-              {AREAS.map((a) => (
-                <button
-                  type="button"
-                  key={a}
-                  onClick={() => toggleArea(a)}
-                  className={`chip ${areas.includes(a) ? "chip-active" : ""}`}
-                >
-                  {a}
-                </button>
-              ))}
-            </div>
+            <AreaPicker value={areas} onToggle={toggleArea} />
           </div>
 
-          <textarea className="input" placeholder="Ringkasan pengalaman / kepakaran (opsyenal)" value={bio} onChange={(e) => setBio(e.target.value)} rows={3} />
+          <textarea className="input" placeholder="Ringkasan pengalaman / kepakaran (optional)" value={bio} onChange={(e) => setBio(e.target.value)} rows={3} />
 
           <div className="rounded-2xl bg-brand-50/60 p-4">
-            <p className="mb-3 text-sm font-semibold text-brand-900">Maklumat log masuk</p>
-            <div className="flex flex-col gap-3">
+            <p className="mb-3 text-sm font-semibold text-brand-900">PIN log masuk</p>
+            <div className="flex gap-3">
               <input
                 className="input"
-                placeholder="Username (4-20 aksara)"
-                value={username}
-                onChange={(e) => setUsername(e.target.value.trim())}
-                autoCapitalize="none"
+                type="password"
+                inputMode="numeric"
+                placeholder="PIN (4-6 digit)"
+                value={pin}
+                onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
                 required
               />
-              <div className="flex gap-3">
-                <input
-                  className="input"
-                  type="password"
-                  inputMode="numeric"
-                  placeholder="PIN (4-6 digit)"
-                  value={pin}
-                  onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                  required
-                />
-                <input
-                  className="input"
-                  type="password"
-                  inputMode="numeric"
-                  placeholder="Sahkan PIN"
-                  value={pinConfirm}
-                  onChange={(e) => setPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 6))}
-                  required
-                />
-              </div>
+              <input
+                className="input"
+                type="password"
+                inputMode="numeric"
+                placeholder="Sahkan PIN"
+                value={pinConfirm}
+                onChange={(e) => setPinConfirm(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                required
+              />
             </div>
             <p className="mt-2 text-xs text-gray-500">Guna username &amp; PIN ini untuk log masuk ke dashboard anda kemudian.</p>
           </div>

@@ -64,7 +64,7 @@ export default function ReviewForm({ therapistId, onSubmitted }: { therapistId: 
         </div>
       </div>
       <input className="input" placeholder="Nama anda" value={customerName} onChange={(e) => setCustomerName(e.target.value)} />
-      <textarea className="input" placeholder="Kongsi pengalaman anda (opsyenal)" value={comment} onChange={(e) => setComment(e.target.value)} rows={3} />
+      <textarea className="input" placeholder="Kongsi pengalaman anda (optional)" value={comment} onChange={(e) => setComment(e.target.value)} rows={3} />
       {error && <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{error}</p>}
       <button type="submit" className="btn-secondary" disabled={submitting}>
         {submitting ? "Menghantar..." : "Hantar Ulasan"}

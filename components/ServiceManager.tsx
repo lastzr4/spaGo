@@ -145,7 +145,7 @@ export default function ServiceManager({ token, initialServices }: { token: stri
           )}
           <label className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-brand-600">
             <CameraIcon className="h-4 w-4" />
-            {photoUrl ? "Tukar foto" : "Foto servis (opsyenal)"}
+            {photoUrl ? "Tukar foto" : "Foto servis (optional)"}
             <input ref={newPhotoInputRef} type="file" accept="image/*" className="hidden" onChange={handleNewPhoto} />
           </label>
         </div>

@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { AREAS } from "@/lib/areas";
+import { AREAS_BY_STATE, STATES } from "@/lib/areas";
 import { MapPinIcon } from "@/components/icons";
 import SegmentedToggle from "@/components/SegmentedToggle";
 
@@ -31,8 +31,12 @@ export default function AreaGenderForm() {
             required
           >
             <option value="" disabled>Pilih kawasan</option>
-            {AREAS.map((a) => (
-              <option key={a} value={a}>{a}</option>
+            {STATES.map((state) => (
+              <optgroup key={state} label={state}>
+                {AREAS_BY_STATE[state].map((a) => (
+                  <option key={a} value={a}>{a}</option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </div>
