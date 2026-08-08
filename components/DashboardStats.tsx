@@ -21,6 +21,8 @@ export default function DashboardStats({
   averageRating: number | null;
   reviewCount: number;
 }) {
+  const needsAttention = pendingCount > 0;
+
   const stats = [
     {
       key: "customers",
@@ -45,6 +47,7 @@ export default function DashboardStats({
       Icon: ClockIcon,
       accent: "from-amber-400 to-orange-500",
       href: `/dashboard/${token}/bookings?status=PENDING`,
+      alert: needsAttention,
     },
     {
       key: "upcoming",
@@ -78,11 +81,22 @@ export default function DashboardStats({
         <Link
           key={s.key}
           href={s.href}
-          className="card card-tap group relative animate-fade-in"
+          className={`card card-tap group relative animate-fade-in ${
+            "alert" in s && s.alert ? "ring-2 ring-amber-300/70" : ""
+          }`}
           style={{ animationDelay: `${i * 40}ms` }}
         >
-          <ChevronRightIcon className="absolute right-3 top-3 h-3.5 w-3.5 text-gray-300 transition-transform group-active:translate-x-0.5" />
-          <div className={`mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-[0_4px_12px_-4px_rgba(0,0,0,0.35)] ${s.accent}`}>
+          {"alert" in s && s.alert && (
+            <span className="animate-badge-blink absolute right-3 top-3 h-2.5 w-2.5 rounded-full bg-red-500" aria-hidden />
+          )}
+          {!("alert" in s && s.alert) && (
+            <ChevronRightIcon className="absolute right-3 top-3 h-3.5 w-3.5 text-gray-300 transition-transform group-active:translate-x-0.5" />
+          )}
+          <div
+            className={`mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-[0_4px_12px_-4px_rgba(0,0,0,0.35)] ${s.accent} ${
+              "alert" in s && s.alert ? "animate-pulse-ring" : ""
+            }`}
+          >
             <s.Icon className="h-4 w-4" />
           </div>
           <p className="text-lg font-bold text-brand-900">{s.value}</p>

@@ -17,6 +17,7 @@ export default async function BookingsPage({ params }: { params: { token: string
     include: { service: true, slot: true },
     orderBy: { createdAt: "desc" },
   });
+  const pendingCount = bookings.filter((b) => b.status === "PENDING").length;
 
   return (
     <>
@@ -39,7 +40,7 @@ export default async function BookingsPage({ params }: { params: { token: string
           />
         </Suspense>
       </main>
-      <BottomTabBar token={params.token} />
+      <BottomTabBar token={params.token} pendingCount={pendingCount} />
     </>
   );
 }

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTherapistByToken } from "@/lib/dashboard";
 import { prisma } from "@/lib/prisma";
+import { getPendingBookingCount } from "@/lib/dashboardStats";
 import TopBar from "@/components/TopBar";
 import BottomTabBar from "@/components/BottomTabBar";
 import SlotManager from "@/components/SlotManager";
@@ -11,10 +12,13 @@ export default async function SlotsPage({ params }: { params: { token: string } 
   const therapist = await getTherapistByToken(params.token);
   if (!therapist) notFound();
 
-  const slots = await prisma.slot.findMany({
-    where: { therapistId: therapist.id, date: { gte: new Date(new Date().toISOString().slice(0, 10)) } },
-    orderBy: [{ date: "asc" }, { startTime: "asc" }],
-  });
+  const [slots, pendingCount] = await Promise.all([
+    prisma.slot.findMany({
+      where: { therapistId: therapist.id, date: { gte: new Date(new Date().toISOString().slice(0, 10)) } },
+      orderBy: [{ date: "asc" }, { startTime: "asc" }],
+    }),
+    getPendingBookingCount(therapist.id),
+  ]);
 
   return (
     <>
@@ -25,7 +29,7 @@ export default async function SlotsPage({ params }: { params: { token: string } 
           initialSlots={slots.map((s) => ({ id: s.id, date: s.date.toISOString(), startTime: s.startTime, endTime: s.endTime, status: s.status }))}
         />
       </main>
-      <BottomTabBar token={params.token} />
+      <BottomTabBar token={params.token} pendingCount={pendingCount} />
     </>
   );
 }

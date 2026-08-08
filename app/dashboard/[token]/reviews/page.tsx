@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTherapistByToken } from "@/lib/dashboard";
 import { prisma } from "@/lib/prisma";
+import { getPendingBookingCount } from "@/lib/dashboardStats";
 import TopBar from "@/components/TopBar";
 import BottomTabBar from "@/components/BottomTabBar";
 import ReviewModeration from "@/components/ReviewModeration";
@@ -11,10 +12,13 @@ export default async function DashboardReviewsPage({ params }: { params: { token
   const therapist = await getTherapistByToken(params.token);
   if (!therapist) notFound();
 
-  const reviews = await prisma.review.findMany({
-    where: { therapistId: therapist.id },
-    orderBy: { createdAt: "desc" },
-  });
+  const [reviews, pendingCount] = await Promise.all([
+    prisma.review.findMany({
+      where: { therapistId: therapist.id },
+      orderBy: { createdAt: "desc" },
+    }),
+    getPendingBookingCount(therapist.id),
+  ]);
 
   return (
     <>
@@ -32,7 +36,7 @@ export default async function DashboardReviewsPage({ params }: { params: { token
           }))}
         />
       </main>
-      <BottomTabBar token={params.token} />
+      <BottomTabBar token={params.token} pendingCount={pendingCount} />
     </>
   );
 }

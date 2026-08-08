@@ -33,6 +33,10 @@ export async function getDashboardStats(therapistId: string) {
   };
 }
 
+export async function getPendingBookingCount(therapistId: string) {
+  return prisma.booking.count({ where: { therapistId, status: "PENDING" } });
+}
+
 export async function getNextUpcomingBooking(therapistId: string) {
   const booking = await prisma.booking.findFirst({
     where: { therapistId, status: "CONFIRMED", slot: { date: { gte: new Date() } } },

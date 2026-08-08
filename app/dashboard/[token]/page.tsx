@@ -6,6 +6,7 @@ import ProfileForm from "@/components/ProfileForm";
 import DashboardStats from "@/components/DashboardStats";
 import { getDashboardStats, getNextUpcomingBooking } from "@/lib/dashboardStats";
 import { CalendarIcon } from "@/components/icons";
+import PendingAlertBanner from "@/components/PendingAlertBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -25,6 +26,8 @@ export default async function DashboardHomePage({ params }: { params: { token: s
         <p className="mb-5 animate-fade-in text-[15px] text-gray-500">
           Hai, <span className="font-semibold text-brand-900">{therapist.name}</span> 👋
         </p>
+
+        <PendingAlertBanner token={params.token} pendingCount={stats.pendingCount} />
 
         <h2 className="mb-3 text-[13px] font-bold uppercase tracking-wide text-gray-400">Ringkasan</h2>
         <div className="mb-6 animate-fade-in">
@@ -82,7 +85,7 @@ export default async function DashboardHomePage({ params }: { params: { token: s
           Simpan pautan ini untuk akses dashboard anda pada bila-bila masa.
         </p>
       </main>
-      <BottomTabBar token={params.token} />
+      <BottomTabBar token={params.token} pendingCount={stats.pendingCount} />
     </>
   );
 }

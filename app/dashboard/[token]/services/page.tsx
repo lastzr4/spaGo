@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getTherapistByToken } from "@/lib/dashboard";
 import { prisma } from "@/lib/prisma";
+import { getPendingBookingCount } from "@/lib/dashboardStats";
 import TopBar from "@/components/TopBar";
 import BottomTabBar from "@/components/BottomTabBar";
 import ServiceManager from "@/components/ServiceManager";
@@ -11,7 +12,10 @@ export default async function ServicesPage({ params }: { params: { token: string
   const therapist = await getTherapistByToken(params.token);
   if (!therapist) notFound();
 
-  const services = await prisma.service.findMany({ where: { therapistId: therapist.id }, orderBy: { createdAt: "asc" } });
+  const [services, pendingCount] = await Promise.all([
+    prisma.service.findMany({ where: { therapistId: therapist.id }, orderBy: { createdAt: "asc" } }),
+    getPendingBookingCount(therapist.id),
+  ]);
 
   return (
     <>
@@ -22,7 +26,7 @@ export default async function ServicesPage({ params }: { params: { token: string
           initialServices={services.map((s) => ({ id: s.id, name: s.name, durationMinutes: s.durationMinutes, price: s.price.toString(), active: s.active, photoUrl: s.photoUrl }))}
         />
       </main>
-      <BottomTabBar token={params.token} />
+      <BottomTabBar token={params.token} pendingCount={pendingCount} />
     </>
   );
 }
