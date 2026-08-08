@@ -67,6 +67,8 @@ model Therapist {
   aiChatEnabled       Boolean             @default(true)
   reviewSummary       String?
   reviewSummaryUpdatedAt DateTime?
+  weeklyTemplate      Json?
+  templateGeneratedUntil DateTime?
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
 

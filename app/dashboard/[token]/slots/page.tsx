@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { getTherapistByToken } from "@/lib/dashboard";
 import { prisma } from "@/lib/prisma";
 import { getPendingBookingCount } from "@/lib/dashboardStats";
+import { generateTemplateSlots } from "@/lib/slotTemplate";
 import TopBar from "@/components/TopBar";
 import BottomTabBar from "@/components/BottomTabBar";
 import SlotManager from "@/components/SlotManager";
@@ -11,6 +12,9 @@ export const dynamic = "force-dynamic";
 export default async function SlotsPage({ params }: { params: { token: string } }) {
   const therapist = await getTherapistByToken(params.token);
   if (!therapist) notFound();
+
+  // Extend the rolling template window (idempotent — no-op if already up to date).
+  await generateTemplateSlots(therapist.id);
 
   const [slots, pendingCount] = await Promise.all([
     prisma.slot.findMany({
@@ -27,6 +31,7 @@ export default async function SlotsPage({ params }: { params: { token: string } 
       <main className="flex-1 overflow-y-auto px-5 py-5">
         <SlotManager
           token={params.token}
+          initialTemplate={(therapist.weeklyTemplate as Record<string, string[]> | null) ?? null}
           initialSlots={slots.map((s) => ({
             id: s.id,
             date: s.date.toISOString(),
