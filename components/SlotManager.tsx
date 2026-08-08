@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PlusIcon, TrashIcon, UndoIcon, XIcon, PhoneIcon, MapPinIcon, BriefcaseIcon } from "@/components/icons";
 import { TIME_GROUPS, timeOfDay, todayStr, isPastTime, isPastSlot } from "@/lib/slotTimes";
 import SlotTemplateEditor from "@/components/SlotTemplateEditor";
+import DateStrip, { type DayPill } from "@/components/DateStrip";
 
 type BookingInfo = {
   customerName: string;
@@ -47,15 +48,26 @@ const BOOKING_CHIP_STYLE: Record<string, string> = {
 
 const WEEKDAY_LABEL = ["Ahd", "Isn", "Sel", "Rab", "Kha", "Jum", "Sab"];
 const MONTH_LABEL = ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogo", "Sep", "Okt", "Nov", "Dis"];
-const DAYS_CAP = 14;
+const STRIP_DAYS = 14;
+
+function addDaysStr(base: string, n: number) {
+  const d = new Date(base + "T00:00:00");
+  d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+}
 
 function formatDateLabel(d: string) {
   const date = new Date(d + "T00:00:00");
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
   if (d === todayStr()) return "Hari ini";
-  if (d === tomorrow.toISOString().slice(0, 10)) return "Esok";
+  if (d === addDaysStr(todayStr(), 1)) return "Esok";
   return `${WEEKDAY_LABEL[date.getDay()]}, ${date.getDate()} ${MONTH_LABEL[date.getMonth()]}`;
+}
+
+function formatDateShort(d: string) {
+  const date = new Date(d + "T00:00:00");
+  if (d === todayStr()) return "Hari ini";
+  if (d === addDaysStr(todayStr(), 1)) return "Esok";
+  return `${WEEKDAY_LABEL[date.getDay()]} ${date.getDate()}`;
 }
 
 function groupByTimeOfDay(daySlots: Slot[]) {
@@ -74,11 +86,17 @@ export default function SlotManager({
   initialTemplate: Record<string, string[]> | null;
 }) {
   const [slots, setSlots] = useState(initialSlots);
+  const [selectedDate, setSelectedDate] = useState(todayStr());
   const [date, setDate] = useState("");
   const [times, setTimes] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [detailSlot, setDetailSlot] = useState<Slot | null>(null);
-  const [showAllDays, setShowAllDays] = useState(false);
+  const [showAllBookings, setShowAllBookings] = useState(false);
+
+  function selectDay(d: string) {
+    setSelectedDate(d);
+    handleDateChange(d); // keep the manual add-form date in sync with what you're viewing
+  }
 
   function toggleTime(t: string) {
     if (date === todayStr() && isPastTime(t)) return;
@@ -132,7 +150,7 @@ export default function SlotManager({
     if (res.ok) setSlots((list) => list.filter((s) => s.id !== id));
   }
 
-  const upcoming = slots.filter((s) => s.date.slice(0, 10) >= new Date().toISOString().slice(0, 10));
+  const upcoming = slots.filter((s) => s.date.slice(0, 10) >= todayStr());
   const grouped: Record<string, Slot[]> = {};
   for (const s of upcoming) {
     const d = s.date.slice(0, 10);
@@ -145,85 +163,128 @@ export default function SlotManager({
     AVAILABLE: "border-black/[0.06] bg-white text-gray-600",
   } as const;
 
-  const dayEntries = Object.entries(grouped);
-  const visibleDays = showAllDays ? dayEntries : dayEntries.slice(0, DAYS_CAP);
-  const hiddenCount = dayEntries.length - visibleDays.length;
+  // Rolling 14-day strip, always shown regardless of whether a day has slots yet.
+  const stripDays: DayPill[] = Array.from({ length: STRIP_DAYS }, (_, i) => {
+    const d = addDaysStr(todayStr(), i);
+    const daySlots = grouped[d] ?? [];
+    return {
+      date: d,
+      label: formatDateShort(d),
+      hasSlots: daySlots.length > 0,
+      hasBooking: daySlots.some((s) => s.status === "BOOKED"),
+    };
+  });
+
+  const selectedDaySlots = grouped[selectedDate] ?? [];
+  const byTod = groupByTimeOfDay(selectedDaySlots);
+
+  // Every future booked slot, across all days, soonest first — answers "who's booked in advance".
+  const upcomingBookings = upcoming
+    .filter((s) => s.status === "BOOKED" && s.booking && !isPastSlot(s.date, s.startTime))
+    .sort((a, b) => (a.date.slice(0, 10) + a.startTime).localeCompare(b.date.slice(0, 10) + b.startTime));
+  const visibleBookings = showAllBookings ? upcomingBookings : upcomingBookings.slice(0, 5);
+
+  function renderChip(s: Slot) {
+    const past = isPastSlot(s.date, s.startTime);
+    if (s.status === "BOOKED" && s.booking) {
+      return (
+        <button
+          key={s.id}
+          type="button"
+          onClick={() => setDetailSlot(s)}
+          className={`card-tap flex max-w-[170px] items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-medium ${
+            BOOKING_CHIP_STYLE[s.booking.status] ?? STATUS_STYLE.BOOKED
+          }`}
+        >
+          <span className="shrink-0">{s.startTime}</span>
+          <span className="truncate font-semibold">{s.booking.customerName}</span>
+        </button>
+      );
+    }
+    return (
+      <div
+        key={s.id}
+        className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-medium ${
+          past ? "border-black/[0.06] bg-gray-50 text-gray-300" : STATUS_STYLE[s.status]
+        }`}
+      >
+        <span>{s.startTime}</span>
+        {(past || s.status === "BLOCKED") && <span className="text-[10px] uppercase opacity-70">{past ? "Lepas" : "Ditutup"}</span>}
+        {!past && (
+          <button onClick={() => blockSlot(s)} className="text-brand-400 active:opacity-60">
+            {s.status === "BLOCKED" ? <UndoIcon className="h-3.5 w-3.5" /> : <XIcon className="h-3.5 w-3.5" />}
+          </button>
+        )}
+        <button onClick={() => removeSlot(s.id)} className={`active:opacity-60 ${past ? "text-gray-300" : "text-red-400"}`}>
+          <TrashIcon className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6">
       <SlotTemplateEditor token={token} initialTemplate={initialTemplate} />
 
-      <div className="flex flex-col gap-3">
-        {dayEntries.length === 0 && (
-          <div className="card flex flex-col items-center gap-1 py-8 text-center animate-fade-in">
-            <p className="text-sm font-medium text-gray-600">Belum ada slot ditetapkan.</p>
+      {upcomingBookings.length > 0 && (
+        <div className="card flex flex-col gap-2.5 animate-fade-in">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-gray-400">Tempahan Akan Datang</p>
+          <div className="flex flex-col gap-2">
+            {visibleBookings.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => setDetailSlot(s)}
+                className="card-tap flex items-center justify-between gap-2 rounded-xl border border-black/[0.05] px-3 py-2.5 text-left"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-brand-900">{s.booking!.customerName}</p>
+                  <p className="text-xs text-gray-400">
+                    {formatDateLabel(s.date.slice(0, 10))} &middot; {s.startTime}
+                  </p>
+                </div>
+                <span
+                  className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                    BOOKING_STATUS_STYLE[s.booking!.status] ?? "bg-gray-50 text-gray-500"
+                  }`}
+                >
+                  {BOOKING_STATUS_LABEL[s.booking!.status] ?? s.booking!.status}
+                </span>
+              </button>
+            ))}
           </div>
-        )}
-        {visibleDays.map(([d, daySlots], i) => {
-          const byTod = groupByTimeOfDay(daySlots);
-          return (
-            <div key={d} className="card animate-fade-in" style={{ animationDelay: `${i * 30}ms` }}>
-              <p className="mb-2.5 text-sm font-bold text-brand-900">{formatDateLabel(d)}</p>
-              <div className="flex flex-col gap-2">
-                {(["pagi", "petang", "malam"] as const).map((tod) =>
-                  byTod[tod].length === 0 ? null : (
-                    <div key={tod} className="flex flex-wrap items-center gap-2">
-                      <span className="w-11 shrink-0 text-[10px] font-semibold uppercase tracking-wide text-gray-300">{tod}</span>
-                      {byTod[tod].map((s) => {
-                        const past = isPastSlot(s.date, s.startTime);
-                        if (s.status === "BOOKED" && s.booking) {
-                          return (
-                            <button
-                              key={s.id}
-                              type="button"
-                              onClick={() => setDetailSlot(s)}
-                              className={`card-tap flex max-w-[170px] items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-medium ${
-                                BOOKING_CHIP_STYLE[s.booking.status] ?? STATUS_STYLE.BOOKED
-                              }`}
-                            >
-                              <span className="shrink-0">{s.startTime}</span>
-                              <span className="truncate font-semibold">{s.booking.customerName}</span>
-                            </button>
-                          );
-                        }
-                        return (
-                          <div
-                            key={s.id}
-                            className={`flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 text-xs font-medium ${
-                              past ? "border-black/[0.06] bg-gray-50 text-gray-300" : STATUS_STYLE[s.status]
-                            }`}
-                          >
-                            <span>{s.startTime}</span>
-                            {(past || s.status === "BLOCKED") && (
-                              <span className="text-[10px] uppercase opacity-70">{past ? "Lepas" : "Ditutup"}</span>
-                            )}
-                            {!past && (
-                              <button onClick={() => blockSlot(s)} className="text-brand-400 active:opacity-60">
-                                {s.status === "BLOCKED" ? <UndoIcon className="h-3.5 w-3.5" /> : <XIcon className="h-3.5 w-3.5" />}
-                              </button>
-                            )}
-                            <button onClick={() => removeSlot(s.id)} className={`active:opacity-60 ${past ? "text-gray-300" : "text-red-400"}`}>
-                              <TrashIcon className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )
-                )}
-              </div>
+          {upcomingBookings.length > 5 && !showAllBookings && (
+            <button
+              type="button"
+              onClick={() => setShowAllBookings(true)}
+              className="text-xs font-semibold text-brand-600 active:opacity-60"
+            >
+              Papar semua ({upcomingBookings.length})
+            </button>
+          )}
+        </div>
+      )}
+
+      <div className="flex flex-col gap-3">
+        <DateStrip days={stripDays} selected={selectedDate} onSelect={selectDay} />
+
+        <div className="card animate-fade-in">
+          <p className="mb-2.5 text-sm font-bold text-brand-900">{formatDateLabel(selectedDate)}</p>
+          {selectedDaySlots.length === 0 ? (
+            <p className="py-4 text-center text-xs text-gray-400">Tiada slot untuk hari ini.</p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {(["pagi", "petang", "malam"] as const).map((tod) =>
+                byTod[tod].length === 0 ? null : (
+                  <div key={tod} className="flex flex-wrap items-center gap-2">
+                    <span className="w-11 shrink-0 text-[10px] font-semibold uppercase tracking-wide text-gray-300">{tod}</span>
+                    {byTod[tod].map((s) => renderChip(s))}
+                  </div>
+                )
+              )}
             </div>
-          );
-        })}
-        {hiddenCount > 0 && (
-          <button
-            type="button"
-            onClick={() => setShowAllDays(true)}
-            className="rounded-2xl border border-dashed border-gray-200 py-2.5 text-xs font-semibold text-gray-400 active:opacity-60"
-          >
-            Papar {hiddenCount} hari lagi
-          </button>
-        )}
+          )}
+        </div>
       </div>
 
       <form onSubmit={handleAdd} className="card flex flex-col gap-3">
@@ -276,7 +337,7 @@ export default function SlotManager({
             <div className="mb-3 flex items-start justify-between gap-2">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
-                  {detailSlot.date.slice(0, 10)} &middot; {detailSlot.startTime}
+                  {formatDateLabel(detailSlot.date.slice(0, 10))} &middot; {detailSlot.startTime}
                 </p>
                 <h3 className="mt-0.5 text-[17px] font-bold text-brand-900">{detailSlot.booking.customerName}</h3>
               </div>
