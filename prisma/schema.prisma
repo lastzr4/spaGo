@@ -64,6 +64,7 @@ model Therapist {
   yearsExperience     Int?
   workingHoursNote    String?
   galleryPhotos       String[]            @default([])
+  aiChatEnabled       Boolean             @default(true)
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
 
@@ -71,6 +72,8 @@ model Therapist {
   slots               Slot[]
   bookings            Booking[]
   reviews             Review[]
+  customerNotes       CustomerNote[]
+  chatUsage           ChatUsage[]
 }
 
 model Service {
@@ -107,22 +110,48 @@ model Slot {
 }
 
 model Booking {
-  id              String        @id @default(cuid())
-  therapistId     String
-  therapist       Therapist     @relation(fields: [therapistId], references: [id], onDelete: Cascade)
-  serviceId       String
-  service         Service       @relation(fields: [serviceId], references: [id])
-  slotId          String        @unique
-  slot            Slot          @relation(fields: [slotId], references: [id])
-  customerName    String
-  customerPhone   String
-  customerAddress String
-  customerGender  Gender
-  outcallFee      Decimal       @default(0) @db.Decimal(10, 2)
-  status          BookingStatus @default(PENDING)
-  createdAt       DateTime      @default(now())
-  review          Review?
+  id                String        @id @default(cuid())
+  therapistId       String
+  therapist         Therapist     @relation(fields: [therapistId], references: [id], onDelete: Cascade)
+  serviceId         String
+  service           Service       @relation(fields: [serviceId], references: [id])
+  slotId            String        @unique
+  slot              Slot          @relation(fields: [slotId], references: [id])
+  customerName      String
+  customerPhone     String
+  customerAddress   String
+  customerGender    Gender
+  outcallFee        Decimal       @default(0) @db.Decimal(10, 2)
+  status            BookingStatus @default(PENDING)
+  referralCodeUsed  String?
+  createdAt         DateTime      @default(now())
+  review            Review?
 
+  @@index([therapistId])
+  @@index([therapistId, customerPhone])
+}
+
+model CustomerNote {
+  id            String    @id @default(cuid())
+  therapistId   String
+  therapist     Therapist @relation(fields: [therapistId], references: [id], onDelete: Cascade)
+  customerPhone String
+  note          String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([therapistId, customerPhone])
+  @@index([therapistId])
+}
+
+model ChatUsage {
+  id           String   @id @default(cuid())
+  therapistId  String
+  therapist    Therapist @relation(fields: [therapistId], references: [id], onDelete: Cascade)
+  date         String
+  messageCount Int      @default(0)
+
+  @@unique([therapistId, date])
   @@index([therapistId])
 }
 

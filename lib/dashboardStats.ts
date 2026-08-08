@@ -81,3 +81,64 @@ export async function getUpcomingQueue(therapistId: string, limit = 8) {
     };
   });
 }
+
+export type ScheduleConflict = {
+  date: string;
+  firstCustomerName: string;
+  firstEndTime: string;
+  secondCustomerName: string;
+  secondStartTime: string;
+  gapMinutes: number;
+};
+
+// Flags same-day CONFIRMED bookings that leave too little time between one
+// job's end and the next one's start. This is an honest, buildable warning —
+// NOT real distance-based route optimization (that would need a
+// geocoding/Maps Distance Matrix API, which SpaGo doesn't have yet).
+const CONFLICT_BUFFER_MINUTES = 45;
+
+export async function getScheduleConflicts(therapistId: string): Promise<ScheduleConflict[]> {
+  const bookings = await prisma.booking.findMany({
+    where: {
+      therapistId,
+      status: "CONFIRMED",
+      slot: { date: { gte: new Date(new Date().toISOString().slice(0, 10)) } },
+    },
+    select: { customerName: true, slot: { select: { date: true, startTime: true, endTime: true } } },
+  });
+
+  const byDate = new Map<string, { customerName: string; startTime: string; endTime: string }[]>();
+  for (const b of bookings) {
+    const dateStr = b.slot.date.toISOString().slice(0, 10);
+    const list = byDate.get(dateStr) ?? [];
+    list.push({ customerName: b.customerName, startTime: b.slot.startTime, endTime: b.slot.endTime });
+    byDate.set(dateStr, list);
+  }
+
+  const conflicts: ScheduleConflict[] = [];
+
+  for (const [date, list] of byDate) {
+    list.sort((a, b) => a.startTime.localeCompare(b.startTime));
+    for (let i = 0; i < list.length - 1; i++) {
+      const current = list[i];
+      const next = list[i + 1];
+      // Anchor explicitly to Malaysia time (+08:00) — plain "HH:mm" strings
+      // mean nothing without a timezone, and the server may not run in MYT.
+      const currentEnd = new Date(`${date}T${current.endTime}:00+08:00`).getTime();
+      const nextStart = new Date(`${date}T${next.startTime}:00+08:00`).getTime();
+      const gapMinutes = Math.round((nextStart - currentEnd) / 60000);
+      if (gapMinutes < CONFLICT_BUFFER_MINUTES) {
+        conflicts.push({
+          date,
+          firstCustomerName: current.customerName,
+          firstEndTime: current.endTime,
+          secondCustomerName: next.customerName,
+          secondStartTime: next.startTime,
+          gapMinutes,
+        });
+      }
+    }
+  }
+
+  return conflicts.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+}

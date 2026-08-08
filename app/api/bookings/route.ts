@@ -6,7 +6,7 @@ import { isMatch } from "@/lib/gender";
 // { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender }
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender } = body ?? {};
+  const { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender, referralCodeUsed } = body ?? {};
 
   if (!therapistId || !serviceId || !slotId || !customerName || !customerPhone || !customerAddress || !customerGender) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
           customerAddress,
           customerGender,
           status: "PENDING",
+          referralCodeUsed: typeof referralCodeUsed === "string" && referralCodeUsed.trim() ? referralCodeUsed.trim().toUpperCase() : null,
         },
       });
 

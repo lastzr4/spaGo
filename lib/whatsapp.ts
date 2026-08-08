@@ -7,8 +7,9 @@ export function buildWhatsAppBookingMessage(params: {
   address: string;
   depositInfo?: string;
   extraChargesNote?: string;
+  referralCode?: string;
 }) {
-  const { customerName, serviceName, durationMinutes, date, startTime, address, depositInfo, extraChargesNote } = params;
+  const { customerName, serviceName, durationMinutes, date, startTime, address, depositInfo, extraChargesNote, referralCode } = params;
   const lines = [
     `Salam SpaGo! Tempahan Baru daripada ${customerName}.`,
     `Servis: ${serviceName} (${durationMinutes} min).`,
@@ -17,6 +18,7 @@ export function buildWhatsAppBookingMessage(params: {
   ];
   if (depositInfo) lines.push(`Deposit: ${depositInfo}.`);
   if (extraChargesNote) lines.push(`Caj tambahan: ${extraChargesNote}.`);
+  if (referralCode) lines.push(`Kod rujukan digunakan: ${referralCode}.`);
   lines.push(`Status: Menunggu Pengesahan.`);
   return lines.join("\n");
 }
@@ -46,5 +48,14 @@ export function buildWhatsAppReminderMessage(params: {
     `Tempahan ${serviceName} anda dijadualkan jam ${startTime} sebentar lagi.`,
     `Alamat: ${address}.`,
     `Sila bersedia ya, jumpa sekejap lagi!`,
+  ].join("\n");
+}
+
+export function buildWhatsAppFollowUpMessage(params: { customerName: string; therapistName: string; referralCode: string }) {
+  const { customerName, therapistName, referralCode } = params;
+  return [
+    `Hai ${customerName}! Ini ${therapistName} dari SpaGo 😊`,
+    `Dah agak lama tak jumpa — nak tempah sesi urut lagi?`,
+    `Bawa kawan dan guna kod ${referralCode} untuk diskaun istimewa (tertakluk budi bicara saya ya).`,
   ].join("\n");
 }

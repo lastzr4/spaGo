@@ -348,3 +348,14 @@ export function PhoneIcon(props: IconProps) {
     </svg>
   );
 }
+
+export function UsersIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="9" cy="8" r="3.2" />
+      <path d="M2.8 19c1.2-3.2 3.6-4.8 6.2-4.8s5 1.6 6.2 4.8" />
+      <path d="M15.5 5.2a3.2 3.2 0 0 1 0 6.2" />
+      <path d="M17.5 14.6c2 .5 3.4 1.9 4.3 4.4" />
+    </svg>
+  );
+}

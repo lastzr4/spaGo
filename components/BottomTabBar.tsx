@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserIcon, BriefcaseIcon, CalendarIcon, ClipboardListIcon, MessageSquareIcon } from "@/components/icons";
+import { UserIcon, BriefcaseIcon, CalendarIcon, ClipboardListIcon, MessageSquareIcon, UsersIcon } from "@/components/icons";
 
 export default function BottomTabBar({ token, pendingCount = 0 }: { token: string; pendingCount?: number }) {
   const pathname = usePathname();
@@ -12,6 +12,7 @@ export default function BottomTabBar({ token, pendingCount = 0 }: { token: strin
     { key: "services", label: "Servis", href: `/dashboard/${token}/services`, Icon: BriefcaseIcon },
     { key: "slots", label: "Slot", href: `/dashboard/${token}/slots`, Icon: CalendarIcon },
     { key: "bookings", label: "Tempahan", href: `/dashboard/${token}/bookings`, Icon: ClipboardListIcon, badge: pendingCount },
+    { key: "customers", label: "Pelanggan", href: `/dashboard/${token}/customers`, Icon: UsersIcon },
     { key: "reviews", label: "Ulasan", href: `/dashboard/${token}/reviews`, Icon: MessageSquareIcon },
   ] as const;
 

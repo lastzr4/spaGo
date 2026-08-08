@@ -44,6 +44,7 @@ export default function BookingFlow({
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [depositConfirmed, setDepositConfirmed] = useState(false);
@@ -99,6 +100,7 @@ export default function BookingFlow({
           customerPhone: phone,
           customerAddress: address,
           customerGender,
+          referralCodeUsed: referralCode || undefined,
         }),
       });
       const data = await res.json();
@@ -125,6 +127,7 @@ export default function BookingFlow({
             : `RM${Number(depositAmount).toFixed(0)} (QR — butiran akan diberikan terapis)`
           : undefined,
         extraChargesNote: extraChargesNote || undefined,
+        referralCode: referralCode || undefined,
       });
       const link = buildWhatsAppLink(therapistPhone, message);
       setJustBooked(true);
@@ -260,6 +263,12 @@ export default function BookingFlow({
         <input ref={nameRef} className="input" placeholder="Nama penuh" value={name} onChange={(e) => setName(e.target.value)} required />
         <input ref={phoneRef} className="input" placeholder="No. telefon anda" value={phone} onChange={(e) => setPhone(e.target.value)} required />
         <textarea ref={addressRef} className="input" placeholder="Alamat penuh untuk urutan" value={address} onChange={(e) => setAddress(e.target.value)} rows={3} required />
+        <input
+          className="input"
+          placeholder="Kod rujukan (jika ada)"
+          value={referralCode}
+          onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+        />
       </div>
       )}
 

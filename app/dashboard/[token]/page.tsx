@@ -4,9 +4,10 @@ import TopBar from "@/components/TopBar";
 import BottomTabBar from "@/components/BottomTabBar";
 import ProfileForm from "@/components/ProfileForm";
 import DashboardStats from "@/components/DashboardStats";
-import { getDashboardStats, getUpcomingQueue } from "@/lib/dashboardStats";
+import { getDashboardStats, getUpcomingQueue, getScheduleConflicts } from "@/lib/dashboardStats";
 import PendingAlertBanner from "@/components/PendingAlertBanner";
 import UpcomingQueue from "@/components/UpcomingQueue";
+import ScheduleConflictBanner from "@/components/ScheduleConflictBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -14,9 +15,10 @@ export default async function DashboardHomePage({ params }: { params: { token: s
   const therapist = await getTherapistByToken(params.token);
   if (!therapist) notFound();
 
-  const [stats, upcomingQueue] = await Promise.all([
+  const [stats, upcomingQueue, scheduleConflicts] = await Promise.all([
     getDashboardStats(therapist.id),
     getUpcomingQueue(therapist.id),
+    getScheduleConflicts(therapist.id),
   ]);
 
   return (
@@ -28,6 +30,7 @@ export default async function DashboardHomePage({ params }: { params: { token: s
         </p>
 
         <PendingAlertBanner token={params.token} pendingCount={stats.pendingCount} />
+        <ScheduleConflictBanner token={params.token} conflicts={scheduleConflicts} />
 
         <h2 className="mb-3 text-[13px] font-bold uppercase tracking-wide text-gray-400">Ringkasan</h2>
         <div className="mb-6 animate-fade-in">

@@ -9,7 +9,10 @@ import TherapistExtras from "@/components/TherapistExtras";
 import TherapistBadges from "@/components/TherapistBadges";
 import ShareButton from "@/components/ShareButton";
 import FavoriteButton from "@/components/FavoriteButton";
+import ChatWidget from "@/components/ChatWidget";
 import { StarIcon, MapPinIcon, QrIcon, CashIcon } from "@/components/icons";
+
+const CHAT_TRIAL_DAYS = 30;
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +45,8 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
 
   const defaultGender = therapist.clientGenderPolicy === "MALE_ONLY" ? "MALE" : "FEMALE";
   const hasSocial = Boolean(therapist.socialInstagram || therapist.socialTiktok || therapist.socialThreads || therapist.socialX);
+  const daysSinceCreated = Math.floor((Date.now() - therapist.createdAt.getTime()) / 86400000);
+  const chatEnabled = therapist.aiChatEnabled && daysSinceCreated <= CHAT_TRIAL_DAYS;
 
   return (
     <>
@@ -179,6 +184,7 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
 
         <Footer />
       </main>
+      {chatEnabled && <ChatWidget slug={params.slug} therapistName={therapist.name} therapistPhone={therapist.phone} />}
     </>
   );
 }
