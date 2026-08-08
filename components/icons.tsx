@@ -349,6 +349,15 @@ export function PhoneIcon(props: IconProps) {
   );
 }
 
+export function BackspaceIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M9 5h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-6.5-7L9 5z" />
+      <path d="M13.5 9.5l5 5M18.5 9.5l-5 5" />
+    </svg>
+  );
+}
+
 export function UsersIcon(props: IconProps) {
   return (
     <svg {...base} {...props}>

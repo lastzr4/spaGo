@@ -4,12 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import TopBar from "@/components/TopBar";
+import PinPadInput from "@/components/PinPadInput";
 import { LockIcon } from "@/components/icons";
 
 export default function TherapistLoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [pin, setPin] = useState("");
+  const [pinPadOpen, setPinPadOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -57,14 +59,13 @@ export default function TherapistLoginPage() {
               autoCapitalize="none"
               required
             />
-            <input
-              className="input"
-              type="password"
-              inputMode="numeric"
-              placeholder="PIN"
+            <PinPadInput
               value={pin}
-              onChange={(e) => setPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
-              required
+              onChange={setPin}
+              open={pinPadOpen}
+              onOpenChange={setPinPadOpen}
+              label="Masukkan PIN"
+              placeholder="PIN"
             />
             {error && <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{error}</p>}
             <button type="submit" className="btn-primary" disabled={submitting}>
