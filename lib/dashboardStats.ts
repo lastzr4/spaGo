@@ -9,7 +9,11 @@ export async function getDashboardStats(therapistId: string) {
       }),
       prisma.booking.count({ where: { therapistId, status: "PENDING" } }),
       prisma.booking.count({
-        where: { therapistId, status: "CONFIRMED", slot: { date: { gte: new Date() } } },
+        where: {
+          therapistId,
+          status: "CONFIRMED",
+          slot: { date: { gte: new Date(new Date().toISOString().slice(0, 10)) } },
+        },
       }),
       prisma.service.count({ where: { therapistId, active: true } }),
       prisma.review.aggregate({ where: { therapistId, hidden: false }, _avg: { rating: true } }),
@@ -38,8 +42,8 @@ export async function getPendingBookingCount(therapistId: string) {
 }
 
 export async function getUpcomingQueue(therapistId: string, limit = 8) {
-  // Every confirmed booking still ahead (or just started, within a 30-minute
-  // grace window), soonest first — powers the "Giliran Akan Datang" queue.
+  // Every confirmed booking from today onward, soonest first — powers the
+  // "Giliran Akan Datang" queue.
   const bookings = await prisma.booking.findMany({
     where: {
       therapistId,
@@ -52,24 +56,28 @@ export async function getUpcomingQueue(therapistId: string, limit = 8) {
   });
 
   const now = Date.now();
-  return bookings
-    .map((booking) => {
-      const dateStr = booking.slot.date.toISOString().slice(0, 10);
-      // Slot times are stored as plain "HH:mm" and mean Malaysia time (UTC+8);
-      // anchor explicitly so this is correct regardless of the server's own TZ.
-      const slotInstant = new Date(`${dateStr}T${booking.slot.startTime}:00+08:00`);
-      const minutesUntil = Math.round((slotInstant.getTime() - now) / 60000);
-      return {
-        id: booking.id,
-        customerName: booking.customerName,
-        customerPhone: booking.customerPhone,
-        customerAddress: booking.customerAddress,
-        serviceName: booking.service.name,
-        durationMinutes: booking.service.durationMinutes,
-        date: dateStr,
-        startTime: booking.slot.startTime,
-        minutesUntil,
-      };
-    })
-    .filter((b) => b.minutesUntil >= -30);
+  // Note: we deliberately do NOT filter out "already past" bookings here —
+  // the WHERE clause above already limits to today-or-later by date, and
+  // minutesUntil is only used for "due soon" styling below, not exclusion.
+  // Being extra clever about excluding same-day-but-passed bookings caused
+  // this list to silently disappear even when the Ringkasan stat still
+  // counted the booking as upcoming.
+  return bookings.map((booking) => {
+    const dateStr = booking.slot.date.toISOString().slice(0, 10);
+    // Slot times are stored as plain "HH:mm" and mean Malaysia time (UTC+8);
+    // anchor explicitly so this is correct regardless of the server's own TZ.
+    const slotInstant = new Date(`${dateStr}T${booking.slot.startTime}:00+08:00`);
+    const minutesUntil = Math.round((slotInstant.getTime() - now) / 60000);
+    return {
+      id: booking.id,
+      customerName: booking.customerName,
+      customerPhone: booking.customerPhone,
+      customerAddress: booking.customerAddress,
+      serviceName: booking.service.name,
+      durationMinutes: booking.service.durationMinutes,
+      date: dateStr,
+      startTime: booking.slot.startTime,
+      minutesUntil,
+    };
+  });
 }
