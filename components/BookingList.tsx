@@ -31,6 +31,15 @@ const STATUS_STYLE: Record<string, string> = {
   COMPLETED: "bg-emerald-50 text-emerald-600",
 };
 
+function isOverdue(b: Booking) {
+  // A confirmed booking whose session should already be over but hasn't
+  // been marked Selesai/Dibatalkan — flag it instead of silently sitting
+  // there looking like any other upcoming "Disahkan" booking.
+  if (b.status !== "CONFIRMED") return false;
+  const endInstant = new Date(`${b.date}T${b.endTime}:00+08:00`);
+  return endInstant.getTime() < Date.now();
+}
+
 type StatusFilter = "ALL" | Booking["status"];
 
 const FILTERS: { value: StatusFilter; label: string }[] = [
@@ -105,12 +114,21 @@ export default function BookingList({ token, initialBookings }: { token: string;
         </div>
       )}
 
-      {filteredBookings.map((b, i) => (
-        <div key={b.id} className="card animate-fade-in" style={{ animationDelay: `${i * 40}ms` }}>
-          <div className="flex items-center justify-between">
-            <p className="font-semibold text-brand-900">{b.customerName}</p>
-            <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLE[b.status] ?? "bg-gray-50 text-gray-500"}`}>
-              {STATUS_LABEL[b.status] ?? b.status}
+      {filteredBookings.map((b, i) => {
+        const overdue = isOverdue(b);
+        return (
+        <div key={b.id} className={`card animate-fade-in ${overdue ? "ring-1 ring-amber-300" : ""}`} style={{ animationDelay: `${i * 40}ms` }}>
+          <div className="flex items-center justify-between gap-2">
+            <p className="min-w-0 truncate font-semibold text-brand-900">{b.customerName}</p>
+            <span className="flex shrink-0 items-center gap-1.5">
+              {overdue && (
+                <span className="rounded-full bg-amber-100 px-2 py-1 text-[10px] font-semibold text-amber-700">
+                  Tertunggak
+                </span>
+              )}
+              <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLE[b.status] ?? "bg-gray-50 text-gray-500"}`}>
+                {STATUS_LABEL[b.status] ?? b.status}
+              </span>
             </span>
           </div>
           <p className="mt-1.5 text-sm text-gray-600">{b.serviceName} &middot; {b.date} {b.startTime}</p>
@@ -171,7 +189,8 @@ export default function BookingList({ token, initialBookings }: { token: string;
             </a>
           )}
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
