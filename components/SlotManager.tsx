@@ -50,10 +50,13 @@ const WEEKDAY_LABEL = ["Ahd", "Isn", "Sel", "Rab", "Kha", "Jum", "Sab"];
 const MONTH_LABEL = ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogo", "Sep", "Okt", "Nov", "Dis"];
 const STRIP_DAYS = 14;
 
+// Pure UTC-calendar arithmetic — mixing a local-time parse with a UTC-output
+// format (toISOString) silently shifts the date by a day in positive-offset
+// timezones like Malaysia's, so this avoids local-time parsing entirely.
 function addDaysStr(base: string, n: number) {
-  const d = new Date(base + "T00:00:00");
-  d.setDate(d.getDate() + n);
-  return d.toISOString().slice(0, 10);
+  const [y, m, d] = base.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d + n));
+  return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, "0")}-${String(dt.getUTCDate()).padStart(2, "0")}`;
 }
 
 function formatDateLabel(d: string) {

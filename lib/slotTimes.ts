@@ -15,22 +15,34 @@ export function timeOfDay(t: string) {
   return "malam";
 }
 
+// Malaysia is a fixed UTC+8 offset (no DST). Shifting the current epoch by 8h and
+// reading it back via the UTC getters gives Malaysia's wall-clock date/time no
+// matter what timezone the runtime itself is in (Railway's server vs. the
+// browser). Without this, "today"/"past" comparisons computed during server-side
+// render (server TZ) and during client hydration (browser TZ) can disagree —
+// which shows up as a slot rendering as available on first load and only
+// correcting itself (looking "stuck") after a manual refresh.
+function nowInMY() {
+  return new Date(Date.now() + 8 * 60 * 60 * 1000);
+}
+
 export function todayStr() {
-  return new Date().toISOString().slice(0, 10);
+  const d = nowInMY();
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 }
 
 // Is this HH:MM already in the past, assuming the given calendar date is today?
 export function isPastTime(t: string) {
-  const now = new Date();
+  const d = nowInMY();
+  const nowMinutes = d.getUTCHours() * 60 + d.getUTCMinutes();
   const [h, m] = t.split(":").map(Number);
-  const slot = new Date();
-  slot.setHours(h, m, 0, 0);
-  return slot.getTime() < now.getTime();
+  return h * 60 + m < nowMinutes;
 }
 
-// Is this date+time combo already in the past, right now?
+// Is this date+time combo already in the past, right now? Anchored explicitly to
+// +08:00 so the resulting instant is correct regardless of the server's own TZ.
 export function isPastSlot(dateStr: string, time: string) {
-  const slot = new Date(`${dateStr.slice(0, 10)}T${time}:00`);
+  const slot = new Date(`${dateStr.slice(0, 10)}T${time}:00+08:00`);
   return slot.getTime() < Date.now();
 }
 

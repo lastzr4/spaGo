@@ -6,13 +6,18 @@ export const TEMPLATE_WINDOW_DAYS = 14;
 // Keyed by JS Date.getDay() as a string: "0" = Ahad ... "6" = Sabtu.
 export type WeeklyTemplate = Record<string, string[]>;
 
+// Malaysia is a fixed UTC+8 offset (no DST). Dates here are normalized to a
+// UTC-midnight Date representing the correct Malaysia calendar day, then all
+// further math uses the UTC getters/setters — this stays correct regardless of
+// the server's own runtime timezone (Railway isn't guaranteed to run in MYT).
 function toDateOnly(d: Date) {
-  return new Date(d.toISOString().slice(0, 10));
+  const my = new Date(d.getTime() + 8 * 60 * 60 * 1000);
+  return new Date(Date.UTC(my.getUTCFullYear(), my.getUTCMonth(), my.getUTCDate()));
 }
 
 function addDays(d: Date, n: number) {
   const copy = new Date(d);
-  copy.setDate(copy.getDate() + n);
+  copy.setUTCDate(copy.getUTCDate() + n);
   return copy;
 }
 
@@ -43,7 +48,7 @@ export async function generateTemplateSlots(therapistId: string) {
 
   const ops = [];
   for (let d = new Date(start); d <= targetEnd; d = addDays(d, 1)) {
-    const times = template[String(d.getDay())];
+    const times = template[String(d.getUTCDay())];
     if (!times || times.length === 0) continue;
     for (const t of times) {
       ops.push(
