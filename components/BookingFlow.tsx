@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { buildWhatsAppBookingMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import { CheckCircleIcon, SendIcon, CalendarIcon, AlertTriangleIcon, QrIcon, CashIcon, ChevronRightIcon } from "@/components/icons";
 import Confetti from "@/components/Confetti";
+import { isPastSlot } from "@/lib/slotTimes";
 
 type Service = { id: string; name: string; durationMinutes: number; price: string; photoUrl?: string | null };
 type Slot = { id: string; date: string; startTime: string; endTime: string };
@@ -240,18 +241,26 @@ export default function BookingFlow({
               })}
             </div>
             <div className="flex flex-wrap gap-2">
-              {(slotsByDate[activeDate] ?? []).map((s) => (
-                <button
-                  type="button"
-                  key={s.id}
-                  onClick={() => setSlotId(s.id)}
-                  className={`rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors active:scale-[0.96] ${
-                    slotId === s.id ? "border-brand-600 bg-brand-600 text-white shadow-card" : "border-black/[0.08] bg-white text-gray-600"
-                  }`}
-                >
-                  {s.startTime}
-                </button>
-              ))}
+              {(slotsByDate[activeDate] ?? []).map((s) => {
+                const past = isPastSlot(s.date, s.startTime);
+                return (
+                  <button
+                    type="button"
+                    key={s.id}
+                    disabled={past}
+                    onClick={() => setSlotId(s.id)}
+                    className={`rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors active:scale-[0.96] ${
+                      past
+                        ? "cursor-not-allowed border-black/[0.04] bg-gray-50 text-gray-300"
+                        : slotId === s.id
+                          ? "border-brand-600 bg-brand-600 text-white shadow-card"
+                          : "border-black/[0.08] bg-white text-gray-600"
+                    }`}
+                  >
+                    {s.startTime}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
