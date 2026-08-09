@@ -20,12 +20,12 @@ export default function AreaGenderForm() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
       <div>
-        <label className="mb-2 block text-sm font-semibold text-brand-900">Kawasan anda</label>
+        <label className="mb-2 block text-sm font-semibold text-[color:var(--text-primary)]">Kawasan anda</label>
         <AreaSelect value={area} onChange={setArea} />
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-semibold text-brand-900">Servis untuk</label>
+        <label className="mb-2 block text-sm font-semibold text-[color:var(--text-primary)]">Servis untuk</label>
         <SegmentedToggle
           options={[
             { value: "FEMALE" as const, label: "Wanita" },
@@ -35,7 +35,7 @@ export default function AreaGenderForm() {
           onChange={setGender}
         />
         {gender === "MALE" && (
-          <p className="mt-2 animate-fade-in text-xs text-gray-500">Pelanggan lelaki hanya dipadankan dengan terapis lelaki.</p>
+          <p className="mt-2 animate-fade-in text-xs text-[color:var(--text-secondary)]">Pelanggan lelaki hanya dipadankan dengan terapis lelaki.</p>
         )}
       </div>
 

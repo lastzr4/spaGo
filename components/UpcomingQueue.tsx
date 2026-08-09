@@ -44,19 +44,19 @@ function QueueRow({ booking, token, defaultOpen }: { booking: Booking; token: st
 
   const cardStyle =
     phase === "dueSoon"
-      ? "border-amber-200 bg-amber-50"
+      ? "border-amber-500/30 bg-amber-500/15"
       : phase === "overdue"
-        ? "border-gray-200 bg-gray-50"
-        : "border-blue-100 bg-white";
+        ? "border-[color:var(--border-strong)] bg-[color:var(--surface-2)]"
+        : "border-blue-500/25 bg-[color:var(--surface-2)]";
 
   const iconStyle =
     phase === "dueSoon"
-      ? "animate-pulse-ring bg-white text-amber-500"
+      ? "animate-pulse-ring bg-[color:var(--surface-2)] text-amber-500"
       : phase === "overdue"
-        ? "bg-white text-gray-400"
-        : "bg-blue-50 text-blue-600";
+        ? "bg-[color:var(--surface-2)] text-[color:var(--text-muted)]"
+        : "bg-blue-500/15 text-blue-400";
 
-  const labelStyle = phase === "dueSoon" ? "font-semibold text-amber-600" : phase === "overdue" ? "font-semibold text-gray-500" : "text-gray-500";
+  const labelStyle = phase === "dueSoon" ? "font-semibold text-amber-400" : phase === "overdue" ? "font-semibold text-[color:var(--text-secondary)]" : "text-[color:var(--text-secondary)]";
 
   return (
     <div className={`rounded-2xl border p-3.5 ${cardStyle}`}>
@@ -65,7 +65,7 @@ function QueueRow({ booking, token, defaultOpen }: { booking: Booking; token: st
           {phase === "overdue" ? <AlertTriangleIcon className="h-4 w-4" /> : <ClockIcon className="h-4 w-4" />}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-brand-900">
+          <p className="truncate text-sm font-semibold text-[color:var(--text-primary)]">
             {booking.customerName} &middot; {booking.serviceName}
           </p>
           <p className={`text-xs ${labelStyle}`}>
@@ -74,23 +74,23 @@ function QueueRow({ booking, token, defaultOpen }: { booking: Booking; token: st
             {booking.date}, {booking.startTime}
           </p>
         </div>
-        <ChevronLeftIcon className={`h-4 w-4 shrink-0 text-gray-300 transition-transform ${open ? "rotate-90" : "-rotate-90"}`} />
+        <ChevronLeftIcon className={`h-4 w-4 shrink-0 text-[color:var(--text-muted)] transition-transform ${open ? "rotate-90" : "-rotate-90"}`} />
       </button>
 
       {open && (
-        <div className="mt-3 flex animate-fade-in flex-col gap-2 border-t border-black/[0.05] pt-3">
+        <div className="mt-3 flex animate-fade-in flex-col gap-2 border-t border-[color:var(--border)] pt-3">
           <a
             href={`tel:${booking.customerPhone}`}
-            className="flex items-center gap-2.5 rounded-xl bg-white px-3.5 py-2.5 text-sm font-medium text-gray-700 active:scale-[0.98]"
+            className="flex items-center gap-2.5 rounded-xl bg-[color:var(--surface-2)] px-3.5 py-2.5 text-sm font-medium text-[color:var(--text-secondary)] active:scale-[0.98]"
           >
             <PhoneIcon className="h-4 w-4 shrink-0 text-blue-500" />
             {booking.customerPhone}
           </a>
-          <div className="flex items-start gap-2.5 rounded-xl bg-white px-3.5 py-2.5 text-sm text-gray-600">
-            <MapPinIcon className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+          <div className="flex items-start gap-2.5 rounded-xl bg-[color:var(--surface-2)] px-3.5 py-2.5 text-sm text-[color:var(--text-secondary)]">
+            <MapPinIcon className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--text-muted)]" />
             {booking.customerAddress}
           </div>
-          <p className="px-1 text-xs text-gray-500">{booking.durationMinutes} minit</p>
+          <p className="px-1 text-xs text-[color:var(--text-secondary)]">{booking.durationMinutes} minit</p>
 
           {phase === "overdue" ? (
             <a
@@ -125,7 +125,7 @@ export default function UpcomingQueue({ bookings, token }: { bookings: Booking[]
         <CalendarIcon className="h-3.5 w-3.5" />
         Giliran Akan Datang
       </h2>
-      <div className="flex flex-col gap-2.5 rounded-2xl border border-blue-100 bg-blue-50/60 p-2.5">
+      <div className="flex flex-col gap-2.5 rounded-2xl border border-blue-500/25 bg-blue-500/150/10 p-2.5">
         {bookings.map((b, i) => (
           <QueueRow key={b.id} booking={b} token={token} defaultOpen={i === 0 && getPhase(b) === "dueSoon"} />
         ))}

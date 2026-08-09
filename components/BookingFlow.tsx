@@ -144,7 +144,7 @@ export default function BookingFlow({
   if (services.length === 0) {
     return (
       <div className="card flex flex-col items-center gap-1 py-8 text-center">
-        <p className="text-sm font-medium text-gray-600">Terapis ini belum menetapkan sebarang servis.</p>
+        <p className="text-sm font-medium text-[color:var(--text-secondary)]">Terapis ini belum menetapkan sebarang servis.</p>
       </div>
     );
   }
@@ -153,11 +153,11 @@ export default function BookingFlow({
     return (
       <div className="flex flex-col items-center justify-center gap-3 py-24 text-center animate-fade-in">
         <Confetti />
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50 text-emerald-500">
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-500">
           <CheckCircleIcon filled className="h-8 w-8" />
         </div>
-        <p className="text-[15px] font-bold text-brand-900">Tempahan dihantar!</p>
-        <p className="max-w-[240px] text-sm text-gray-500">Membuka WhatsApp untuk sahkan dengan terapis...</p>
+        <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Tempahan dihantar!</p>
+        <p className="max-w-[240px] text-sm text-[color:var(--text-secondary)]">Membuka WhatsApp untuk sahkan dengan terapis...</p>
       </div>
     );
   }
@@ -165,14 +165,14 @@ export default function BookingFlow({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 pb-24">
       {extraChargesNote && (
-        <div className="flex items-start gap-2.5 rounded-2xl bg-amber-50 px-4 py-3 text-[13px] font-medium text-amber-700">
+        <div className="flex items-start gap-2.5 rounded-2xl bg-amber-500/15 px-4 py-3 text-[13px] font-medium text-amber-400">
           <AlertTriangleIcon className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" />
           <span>Caj tambahan mungkin dikenakan: {extraChargesNote}</span>
         </div>
       )}
 
       <div>
-        <h2 className="mb-3 text-[15px] font-bold text-brand-900">Pilih servis</h2>
+        <h2 className="mb-3 text-[15px] font-bold text-[color:var(--text-primary)]">Pilih servis</h2>
         <div className="flex flex-col gap-2.5">
           {services.map((s) => {
             const active = serviceId === s.id;
@@ -182,7 +182,7 @@ export default function BookingFlow({
                 key={s.id}
                 onClick={() => setServiceId(s.id)}
                 className={`card-tap flex items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors ${
-                  active ? "border-brand-500 bg-brand-50/70 shadow-card" : "border-black/[0.06] bg-white"
+                  active ? "border-brand-500 bg-[color:var(--surface-2)]/70 shadow-card" : "border-[color:var(--border)] bg-[color:var(--surface-2)]"
                 }`}
               >
                 {s.photoUrl ? (
@@ -195,8 +195,8 @@ export default function BookingFlow({
                 )}
                 <span className="flex flex-1 items-center justify-between gap-2">
                   <span className="min-w-0">
-                    <span className="block truncate font-semibold text-brand-900">{s.name}</span>
-                    <span className="block text-xs text-gray-500">{s.durationMinutes} minit</span>
+                    <span className="block truncate font-semibold text-[color:var(--text-primary)]">{s.name}</span>
+                    <span className="block text-xs text-[color:var(--text-secondary)]">{s.durationMinutes} minit</span>
                   </span>
                   <span className="flex shrink-0 items-center gap-1.5 font-semibold text-brand-700">
                     RM{Number(s.price).toFixed(0)}
@@ -210,13 +210,13 @@ export default function BookingFlow({
       </div>
 
       <div>
-        <h2 className="mb-3 flex items-center gap-1.5 text-[15px] font-bold text-brand-900">
+        <h2 className="mb-3 flex items-center gap-1.5 text-[15px] font-bold text-[color:var(--text-primary)]">
           <CalendarIcon className="h-4 w-4 text-brand-500" />
           Pilih slot masa
         </h2>
         {dates.length === 0 ? (
           <div className="card flex flex-col items-center gap-1 py-8 text-center">
-            <p className="text-sm font-medium text-gray-600">Tiada slot kosong buat masa ini.</p>
+            <p className="text-sm font-medium text-[color:var(--text-secondary)]">Tiada slot kosong buat masa ini.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-3">
@@ -230,7 +230,7 @@ export default function BookingFlow({
                     key={d}
                     onClick={() => setActiveDate(d)}
                     className={`flex shrink-0 flex-col items-center gap-0.5 rounded-2xl px-3.5 py-2.5 transition-all active:scale-[0.96] ${
-                      active ? "bg-brand-600 text-white shadow-card" : "bg-brand-50 text-brand-700"
+                      active ? "bg-brand-600 text-white shadow-card" : "bg-[color:var(--surface-2)] text-brand-700"
                     }`}
                   >
                     <span className={`text-[10px] font-medium uppercase ${active ? "text-white/80" : "text-brand-400"}`}>{weekday}</span>
@@ -251,10 +251,10 @@ export default function BookingFlow({
                     onClick={() => setSlotId(s.id)}
                     className={`rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors active:scale-[0.96] ${
                       past
-                        ? "cursor-not-allowed border-black/[0.04] bg-gray-50 text-gray-300"
+                        ? "cursor-not-allowed border-[color:var(--border)] bg-[color:var(--surface-2)] text-[color:var(--text-muted)]"
                         : slotId === s.id
                           ? "border-brand-600 bg-brand-600 text-white shadow-card"
-                          : "border-black/[0.08] bg-white text-gray-600"
+                          : "border-[color:var(--border)] bg-[color:var(--surface-2)] text-[color:var(--text-secondary)]"
                     }`}
                   >
                     {s.startTime}
@@ -268,7 +268,7 @@ export default function BookingFlow({
 
       {detailsRevealed && (
       <div ref={detailsRef} className="flex animate-fade-in flex-col gap-3 scroll-mt-5">
-        <h2 className="text-[15px] font-bold text-brand-900">Maklumat anda</h2>
+        <h2 className="text-[15px] font-bold text-[color:var(--text-primary)]">Maklumat anda</h2>
         <input ref={nameRef} className="input" placeholder="Nama penuh" value={name} onChange={(e) => setName(e.target.value)} required />
         <input ref={phoneRef} className="input" placeholder="No. telefon anda" value={phone} onChange={(e) => setPhone(e.target.value)} required />
         <textarea ref={addressRef} className="input" placeholder="Alamat penuh untuk urutan" value={address} onChange={(e) => setAddress(e.target.value)} rows={3} required />
@@ -282,14 +282,14 @@ export default function BookingFlow({
       )}
 
       {detailsRevealed && depositRequired && depositAmount && (
-        <div className="rounded-2xl border border-brand-100 bg-brand-50/60 p-4">
+        <div className="rounded-2xl border border-brand-100 bg-[color:var(--surface-2)]/60 p-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-brand-600">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[color:var(--surface-2)] text-brand-600">
               {paymentMethod === "CASH" ? <CashIcon className="h-4 w-4" /> : <QrIcon className="h-4 w-4" />}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[15px] font-bold text-brand-900">Deposit RM{Number(depositAmount).toFixed(0)} diperlukan</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Deposit RM{Number(depositAmount).toFixed(0)} diperlukan</p>
+              <p className="text-xs text-[color:var(--text-secondary)]">
                 {paymentMethod === "CASH"
                   ? "Dibayar tunai semasa terapis tiba."
                   : "Butiran pembayaran akan diberikan terapis melalui WhatsApp selepas tempahan."}
@@ -302,27 +302,27 @@ export default function BookingFlow({
               <button
                 type="button"
                 onClick={() => setShowQr((v) => !v)}
-                className="btn-ghost mt-3 w-full justify-center bg-white text-xs"
+                className="btn-ghost mt-3 w-full justify-center bg-[color:var(--surface-2)] text-xs"
               >
                 {showQr ? "Sembunyikan kod QR" : "Lihat kod QR sekarang"}
               </button>
               {showQr && (
                 <div className="mt-3 flex flex-col items-center gap-2 animate-fade-in">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={qrCodeUrl} alt="Kod QR pembayaran" className="h-40 w-40 rounded-xl border border-black/[0.06] object-cover" />
+                  <img src={qrCodeUrl} alt="Kod QR pembayaran" className="h-40 w-40 rounded-xl border border-[color:var(--border)] object-cover" />
                 </div>
               )}
             </>
           )}
 
-          <label className="mt-3 flex items-start gap-2.5 rounded-xl bg-white px-3.5 py-3">
+          <label className="mt-3 flex items-start gap-2.5 rounded-xl bg-[color:var(--surface-2)] px-3.5 py-3">
             <input
               type="checkbox"
               checked={depositConfirmed}
               onChange={(e) => setDepositConfirmed(e.target.checked)}
               className="mt-0.5 h-4 w-4 shrink-0 accent-brand-600"
             />
-            <span className="text-sm text-gray-700">
+            <span className="text-sm text-[color:var(--text-secondary)]">
               Saya faham deposit RM{Number(depositAmount).toFixed(0)} diperlukan sebelum tempahan disahkan terapis.
             </span>
           </label>
@@ -330,10 +330,10 @@ export default function BookingFlow({
       )}
 
       {detailsRevealed && error && (
-        <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{error}</p>
+        <p className="rounded-xl bg-red-500/15 px-3.5 py-2.5 text-sm font-medium text-red-400">{error}</p>
       )}
 
-      <div className="safe-bottom sticky bottom-0 z-20 -mx-5 border-t border-black/[0.05] bg-white/90 px-5 pb-4 pt-3 backdrop-blur-md">
+      <div className="safe-bottom sticky bottom-0 z-20 -mx-5 border-t border-[color:var(--border)] bg-[rgba(26,18,48,0.9)] px-5 pb-4 pt-3 backdrop-blur-md">
         {!detailsRevealed ? (
           <button
             type="button"

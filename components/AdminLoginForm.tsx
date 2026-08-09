@@ -32,11 +32,11 @@ export default function AdminLoginForm() {
     <div className="flex flex-1 flex-col items-center justify-center px-6 py-10">
       <div className="card w-full max-w-sm animate-pop-in">
         <div className="mb-5 flex flex-col items-center gap-2 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-2)] text-brand-600">
             <LockIcon className="h-5 w-5" />
           </div>
-          <h1 className="text-lg font-bold text-brand-900">SpaGo Admin</h1>
-          <p className="text-sm text-gray-500">Log masuk untuk urus tetapan laman.</p>
+          <h1 className="text-lg font-bold text-[color:var(--text-primary)]">SpaGo Admin</h1>
+          <p className="text-sm text-[color:var(--text-secondary)]">Log masuk untuk urus tetapan laman.</p>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input
@@ -54,7 +54,7 @@ export default function AdminLoginForm() {
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
           />
-          {error && <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{error}</p>}
+          {error && <p className="rounded-xl bg-red-500/15 px-3.5 py-2.5 text-sm font-medium text-red-400">{error}</p>}
           <button type="submit" className="btn-primary" disabled={submitting}>
             {submitting ? "Log masuk..." : "Log Masuk"}
           </button>

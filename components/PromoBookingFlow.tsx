@@ -34,8 +34,8 @@ export default function PromoBookingFlow({
 
   return (
     <div>
-      <div className="mb-5 rounded-2xl bg-brand-50/60 p-4">
-        <label className="mb-2 block text-sm font-semibold text-brand-900">Anda pelanggan</label>
+      <div className="mb-5 rounded-2xl bg-[color:var(--surface-2)]/60 p-4">
+        <label className="mb-2 block text-sm font-semibold text-[color:var(--text-primary)]">Anda pelanggan</label>
         <SegmentedToggle
           size="sm"
           options={[

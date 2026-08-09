@@ -39,7 +39,7 @@ export default function ReviewSummaryPanel({
   return (
     <div className="card mb-4 flex flex-col gap-2 animate-fade-in">
       <div className="flex items-center justify-between gap-2">
-        <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+        <p className="flex items-center gap-1.5 text-sm font-semibold text-[color:var(--text-primary)]">
           <SparkleIcon className="h-4 w-4 text-brand-500" />
           Ringkasan AI
         </p>
@@ -53,9 +53,9 @@ export default function ReviewSummaryPanel({
         </button>
       </div>
       {summary ? (
-        <p className="text-sm italic text-gray-600">&ldquo;{summary}&rdquo;</p>
+        <p className="text-sm italic text-[color:var(--text-secondary)]">&ldquo;{summary}&rdquo;</p>
       ) : (
-        <p className="text-xs text-gray-400">Jana ringkasan pendek daripada ulasan pelanggan anda menggunakan AI.</p>
+        <p className="text-xs text-[color:var(--text-muted)]">Jana ringkasan pendek daripada ulasan pelanggan anda menggunakan AI.</p>
       )}
       {error && <p className="text-xs font-medium text-red-500">{error}</p>}
     </div>

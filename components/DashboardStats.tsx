@@ -90,7 +90,7 @@ export default function DashboardStats({
             <span className="animate-badge-blink absolute right-3 top-3 h-2.5 w-2.5 rounded-full bg-red-500" aria-hidden />
           )}
           {!("alert" in s && s.alert) && (
-            <ChevronRightIcon className="absolute right-3 top-3 h-3.5 w-3.5 text-gray-300 transition-transform group-active:translate-x-0.5" />
+            <ChevronRightIcon className="absolute right-3 top-3 h-3.5 w-3.5 text-[color:var(--text-muted)] transition-transform group-active:translate-x-0.5" />
           )}
           <div
             className={`mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-[0_4px_12px_-4px_rgba(0,0,0,0.35)] ${s.accent} ${
@@ -99,8 +99,8 @@ export default function DashboardStats({
           >
             <s.Icon className="h-4 w-4" />
           </div>
-          <p className="text-lg font-bold text-brand-900">{s.value}</p>
-          <p className="mt-0.5 text-[11px] font-medium text-gray-500">{s.label}</p>
+          <p className="text-lg font-bold text-[color:var(--text-primary)]">{s.value}</p>
+          <p className="mt-0.5 text-[11px] font-medium text-[color:var(--text-secondary)]">{s.label}</p>
         </Link>
       ))}
     </div>

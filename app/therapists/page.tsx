@@ -32,14 +32,14 @@ export default async function TherapistsPage({
     <>
       <TopBar title={area || "Terapis"} backHref="/" />
       <main className="flex-1 overflow-y-auto px-5 py-5">
-        <p className="mb-5 animate-fade-in text-sm text-gray-500">
+        <p className="mb-5 animate-fade-in text-sm text-[color:var(--text-secondary)]">
           {therapists.length} terapis sepadan dengan carian anda.
         </p>
 
         {therapists.length === 0 ? (
           <div className="card flex flex-col items-center gap-1 py-10 text-center animate-fade-in">
-            <p className="text-sm font-medium text-gray-600">Tiada terapis di kawasan ini</p>
-            <p className="text-xs text-gray-400">Cuba kawasan lain atau kembali sebentar lagi.</p>
+            <p className="text-sm font-medium text-[color:var(--text-secondary)]">Tiada terapis di kawasan ini</p>
+            <p className="text-xs text-[color:var(--text-muted)]">Cuba kawasan lain atau kembali sebentar lagi.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-3">

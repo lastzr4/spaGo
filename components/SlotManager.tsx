@@ -31,19 +31,19 @@ const BOOKING_STATUS_LABEL: Record<string, string> = {
 };
 
 const BOOKING_STATUS_STYLE: Record<string, string> = {
-  PENDING: "bg-amber-50 text-amber-600",
-  CONFIRMED: "bg-brand-50 text-brand-600",
-  CANCELLED: "bg-red-50 text-red-500",
-  COMPLETED: "bg-emerald-50 text-emerald-600",
+  PENDING: "bg-amber-500/15 text-amber-400",
+  CONFIRMED: "bg-[color:var(--surface-2)] text-brand-600",
+  CANCELLED: "bg-red-500/15 text-red-500",
+  COMPLETED: "bg-emerald-500/15 text-emerald-400",
 };
 
 // Slot chip colors when the slot is BOOKED, keyed by the underlying booking's status —
 // e.g. a completed appointment shows green ("berjaya"), a still-pending one shows amber.
 const BOOKING_CHIP_STYLE: Record<string, string> = {
-  PENDING: "border-amber-300 bg-amber-50 text-amber-700",
-  CONFIRMED: "border-brand-300 bg-brand-50 text-brand-700",
-  COMPLETED: "border-emerald-300 bg-emerald-50 text-emerald-700",
-  CANCELLED: "border-red-300 bg-red-50 text-red-600",
+  PENDING: "border-amber-500/30 bg-amber-500/15 text-amber-400",
+  CONFIRMED: "border-brand-300 bg-[color:var(--surface-2)] text-brand-700",
+  COMPLETED: "border-emerald-500/30 bg-emerald-500/15 text-emerald-400",
+  CANCELLED: "border-red-500/30 bg-red-500/15 text-red-400",
 };
 
 const WEEKDAY_LABEL = ["Ahd", "Isn", "Sel", "Rab", "Kha", "Jum", "Sab"];
@@ -161,9 +161,9 @@ export default function SlotManager({
   }
 
   const STATUS_STYLE = {
-    BOOKED: "border-brand-300 bg-brand-50 text-brand-700",
-    BLOCKED: "border-black/[0.06] bg-gray-100 text-gray-400",
-    AVAILABLE: "border-black/[0.06] bg-white text-gray-600",
+    BOOKED: "border-brand-300 bg-[color:var(--surface-2)] text-brand-700",
+    BLOCKED: "border-[color:var(--border)] bg-[color:var(--surface-2)] text-[color:var(--text-muted)]",
+    AVAILABLE: "border-[color:var(--border)] bg-[color:var(--surface-2)] text-[color:var(--text-secondary)]",
   } as const;
 
   // Rolling 14-day strip, always shown regardless of whether a day has slots yet.
@@ -208,7 +208,7 @@ export default function SlotManager({
       <div
         key={s.id}
         className={`flex items-center justify-between gap-2 rounded-xl border px-3 py-2 text-xs font-medium ${
-          past ? "border-black/[0.06] bg-gray-50 text-gray-300" : STATUS_STYLE[s.status]
+          past ? "border-[color:var(--border)] bg-[color:var(--surface-2)] text-[color:var(--text-muted)]" : STATUS_STYLE[s.status]
         }`}
       >
         <span className="flex items-center gap-2">
@@ -221,7 +221,7 @@ export default function SlotManager({
               {s.status === "BLOCKED" ? <UndoIcon className="h-3.5 w-3.5" /> : <XIcon className="h-3.5 w-3.5" />}
             </button>
           )}
-          <button onClick={() => removeSlot(s.id)} className={`active:opacity-60 ${past ? "text-gray-300" : "text-red-400"}`}>
+          <button onClick={() => removeSlot(s.id)} className={`active:opacity-60 ${past ? "text-[color:var(--text-muted)]" : "text-red-400"}`}>
             <TrashIcon className="h-3.5 w-3.5" />
           </button>
         </span>
@@ -235,24 +235,24 @@ export default function SlotManager({
 
       {upcomingBookings.length > 0 && (
         <div className="card flex flex-col gap-2.5 animate-fade-in">
-          <p className="text-[11px] font-bold uppercase tracking-wide text-gray-400">Tempahan Akan Datang</p>
+          <p className="text-[11px] font-bold uppercase tracking-wide text-[color:var(--text-muted)]">Tempahan Akan Datang</p>
           <div className="flex flex-col gap-2">
             {visibleBookings.map((s) => (
               <button
                 key={s.id}
                 type="button"
                 onClick={() => setDetailSlot(s)}
-                className="card-tap flex items-center justify-between gap-2 rounded-xl border border-black/[0.05] px-3 py-2.5 text-left"
+                className="card-tap flex items-center justify-between gap-2 rounded-xl border border-[color:var(--border)] px-3 py-2.5 text-left"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-brand-900">{s.booking!.customerName}</p>
-                  <p className="text-xs text-gray-400">
+                  <p className="truncate text-sm font-semibold text-[color:var(--text-primary)]">{s.booking!.customerName}</p>
+                  <p className="text-xs text-[color:var(--text-muted)]">
                     {formatDateLabel(s.date.slice(0, 10))} &middot; {s.startTime}
                   </p>
                 </div>
                 <span
                   className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${
-                    BOOKING_STATUS_STYLE[s.booking!.status] ?? "bg-gray-50 text-gray-500"
+                    BOOKING_STATUS_STYLE[s.booking!.status] ?? "bg-[color:var(--surface-2)] text-[color:var(--text-secondary)]"
                   }`}
                 >
                   {BOOKING_STATUS_LABEL[s.booking!.status] ?? s.booking!.status}
@@ -276,15 +276,15 @@ export default function SlotManager({
         <DateStrip days={stripDays} selected={selectedDate} onSelect={selectDay} />
 
         <div className="card animate-fade-in">
-          <p className="mb-2.5 text-sm font-bold text-brand-900">{formatDateLabel(selectedDate)}</p>
+          <p className="mb-2.5 text-sm font-bold text-[color:var(--text-primary)]">{formatDateLabel(selectedDate)}</p>
           {selectedDaySlots.length === 0 ? (
-            <p className="py-4 text-center text-xs text-gray-400">Tiada slot untuk hari ini.</p>
+            <p className="py-4 text-center text-xs text-[color:var(--text-muted)]">Tiada slot untuk hari ini.</p>
           ) : (
             <div className="flex flex-col gap-3">
               {(["pagi", "petang", "malam"] as const).map((tod) =>
                 byTod[tod].length === 0 ? null : (
                   <div key={tod} className="flex flex-col gap-1.5">
-                    <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-300">{tod}</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wide text-[color:var(--text-muted)]">{tod}</span>
                     <div className="flex flex-col gap-1.5">{byTod[tod].map((s) => renderRow(s))}</div>
                   </div>
                 )
@@ -295,7 +295,7 @@ export default function SlotManager({
       </div>
 
       <form onSubmit={handleAdd} className="card flex flex-col gap-3">
-        <p className="text-[15px] font-bold text-brand-900">Tambah slot kosong (sekali sahaja)</p>
+        <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Tambah slot kosong (sekali sahaja)</p>
         <input
           className="input"
           type="date"
@@ -306,7 +306,7 @@ export default function SlotManager({
         <div className="flex flex-col gap-2.5">
           {TIME_GROUPS.map((group) => (
             <div key={group.label}>
-              <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">{group.label}</p>
+              <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-[color:var(--text-muted)]">{group.label}</p>
               <div className="flex flex-wrap gap-2">
                 {group.times.map((t) => {
                   const past = date === todayStr() && isPastTime(t);
@@ -338,17 +338,17 @@ export default function SlotManager({
           onClick={() => setDetailSlot(null)}
         >
           <div
-            className="animate-modal-in w-full max-w-sm rounded-3xl bg-white p-5 shadow-card-hover"
+            className="animate-modal-in w-full max-w-sm rounded-3xl bg-[color:var(--surface-2)] p-5 shadow-card-hover"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-3 flex items-start justify-between gap-2">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-[color:var(--text-muted)]">
                   {formatDateLabel(detailSlot.date.slice(0, 10))} &middot; {detailSlot.startTime}
                 </p>
-                <h3 className="mt-0.5 text-[17px] font-bold text-brand-900">{detailSlot.booking.customerName}</h3>
+                <h3 className="mt-0.5 text-[17px] font-bold text-[color:var(--text-primary)]">{detailSlot.booking.customerName}</h3>
               </div>
-              <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${BOOKING_STATUS_STYLE[detailSlot.booking.status] ?? "bg-gray-50 text-gray-500"}`}>
+              <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${BOOKING_STATUS_STYLE[detailSlot.booking.status] ?? "bg-[color:var(--surface-2)] text-[color:var(--text-secondary)]"}`}>
                 {BOOKING_STATUS_LABEL[detailSlot.booking.status] ?? detailSlot.booking.status}
               </span>
             </div>
@@ -356,17 +356,17 @@ export default function SlotManager({
             <div className="flex flex-col gap-2.5">
               <a
                 href={`tel:${detailSlot.booking.customerPhone}`}
-                className="flex items-center gap-2.5 rounded-xl bg-brand-50 px-3.5 py-3 text-sm font-medium text-brand-700 active:scale-[0.98]"
+                className="flex items-center gap-2.5 rounded-xl bg-[color:var(--surface-2)] px-3.5 py-3 text-sm font-medium text-brand-700 active:scale-[0.98]"
               >
                 <PhoneIcon className="h-4 w-4 shrink-0" />
                 {detailSlot.booking.customerPhone}
               </a>
-              <div className="flex items-start gap-2.5 rounded-xl bg-gray-50 px-3.5 py-3 text-sm text-gray-600">
-                <MapPinIcon className="mt-0.5 h-4 w-4 shrink-0 text-gray-400" />
+              <div className="flex items-start gap-2.5 rounded-xl bg-[color:var(--surface-2)] px-3.5 py-3 text-sm text-[color:var(--text-secondary)]">
+                <MapPinIcon className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--text-muted)]" />
                 {detailSlot.booking.customerAddress}
               </div>
-              <div className="flex items-center gap-2.5 rounded-xl bg-gray-50 px-3.5 py-3 text-sm text-gray-600">
-                <BriefcaseIcon className="h-4 w-4 shrink-0 text-gray-400" />
+              <div className="flex items-center gap-2.5 rounded-xl bg-[color:var(--surface-2)] px-3.5 py-3 text-sm text-[color:var(--text-secondary)]">
+                <BriefcaseIcon className="h-4 w-4 shrink-0 text-[color:var(--text-muted)]" />
                 {detailSlot.booking.serviceName}
               </div>
             </div>

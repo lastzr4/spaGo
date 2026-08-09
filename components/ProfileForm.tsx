@@ -294,16 +294,16 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="rounded-2xl bg-brand-50/60 p-4">
-        <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+      <div className="rounded-2xl bg-[color:var(--surface-2)]/60 p-4">
+        <p className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-[color:var(--text-primary)]">
           <LinkIcon className="h-4 w-4" />
           Pautan promosi anda
         </p>
         {promoUrl ? (
           <>
-            <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3 py-2.5">
-              <span className="flex-1 truncate text-[13px] text-gray-600">{promoUrl}</span>
-              <button type="button" onClick={handleCopy} className="btn-ghost shrink-0 bg-brand-50 px-2.5 py-1.5 text-xs">
+            <div className="flex items-center gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3 py-2.5">
+              <span className="flex-1 truncate text-[13px] text-[color:var(--text-secondary)]">{promoUrl}</span>
+              <button type="button" onClick={handleCopy} className="btn-ghost shrink-0 bg-[color:var(--surface-2)] px-2.5 py-1.5 text-xs">
                 <CopyIcon className="h-3.5 w-3.5" />
                 {copied ? "Disalin!" : "Salin"}
               </button>
@@ -319,20 +319,20 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
             </a>
           </>
         ) : (
-          <p className="text-[13px] text-gray-400">Pautan sedang dijana, sila muat semula sebentar lagi.</p>
+          <p className="text-[13px] text-[color:var(--text-muted)]">Pautan sedang dijana, sila muat semula sebentar lagi.</p>
         )}
       </div>
 
       <form onSubmit={handleSave} className="flex flex-col gap-5">
       {/* Profil Asas — collapsed by default; tap the card itself to edit */}
       {editingProfile ? (
-        <div className="rounded-2xl bg-brand-50/60 p-4">
+        <div className="rounded-2xl bg-[color:var(--surface-2)]/60 p-4">
           <div className="mb-3 flex items-center justify-between">
-            <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-[color:var(--text-primary)]">
               <UserIcon className="h-4 w-4" />
               Profil Asas
             </p>
-            <button type="button" onClick={cancelProfileEdit} className="text-xs font-semibold text-gray-400">
+            <button type="button" onClick={cancelProfileEdit} className="text-xs font-semibold text-[color:var(--text-muted)]">
               Batal
             </button>
           </div>
@@ -357,7 +357,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
             <input className="input" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="No. WhatsApp" />
 
             <div>
-              <label className="mb-2 block text-sm font-semibold text-brand-900">Pelanggan yang diterima</label>
+              <label className="mb-2 block text-sm font-semibold text-[color:var(--text-primary)]">Pelanggan yang diterima</label>
               <select
                 className="input"
                 value={form.clientGenderPolicy}
@@ -388,7 +388,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
         <button
           type="button"
           onClick={() => setEditingProfile(true)}
-          className="card-tap flex w-full items-center justify-between gap-3 rounded-2xl bg-brand-50/60 p-4 text-left"
+          className="card-tap flex w-full items-center justify-between gap-3 rounded-2xl bg-[color:var(--surface-2)]/60 p-4 text-left"
         >
           <div className="flex min-w-0 items-center gap-3">
             {form.photoUrl ? (
@@ -400,8 +400,8 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
               </div>
             )}
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-brand-900">{form.name || "Belum ditetapkan"}</p>
-              <p className="truncate text-xs text-gray-500">
+              <p className="truncate text-sm font-semibold text-[color:var(--text-primary)]">{form.name || "Belum ditetapkan"}</p>
+              <p className="truncate text-xs text-[color:var(--text-secondary)]">
                 {form.phone || "No. telefon belum ditetapkan"} &middot; {POLICY_LABEL[form.clientGenderPolicy]}
               </p>
             </div>
@@ -412,13 +412,13 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
 
       {/* Kawasan Liputan — collapsed by default; tap the card itself to edit */}
       {editingAreas ? (
-        <div className="rounded-2xl bg-brand-50/60 p-4">
+        <div className="rounded-2xl bg-[color:var(--surface-2)]/60 p-4">
           <div className="mb-3 flex items-center justify-between">
-            <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-[color:var(--text-primary)]">
               <MapPinIcon className="h-4 w-4" />
               Kawasan Liputan
             </p>
-            <button type="button" onClick={cancelAreasEdit} className="text-xs font-semibold text-gray-400">
+            <button type="button" onClick={cancelAreasEdit} className="text-xs font-semibold text-[color:var(--text-muted)]">
               Batal
             </button>
           </div>
@@ -428,23 +428,23 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
         <button
           type="button"
           onClick={() => setEditingAreas(true)}
-          className="card-tap flex w-full items-start justify-between gap-3 rounded-2xl bg-brand-50/60 p-4 text-left"
+          className="card-tap flex w-full items-start justify-between gap-3 rounded-2xl bg-[color:var(--surface-2)]/60 p-4 text-left"
         >
           <div className="min-w-0">
-            <p className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+            <p className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-[color:var(--text-primary)]">
               <MapPinIcon className="h-4 w-4" />
               Kawasan Liputan
             </p>
             {form.coverageAreas.length > 0 ? (
               <div className="flex flex-wrap gap-1.5">
                 {form.coverageAreas.map((a) => (
-                  <span key={a} className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-brand-600">
+                  <span key={a} className="rounded-full bg-[color:var(--surface-2)] px-2.5 py-1 text-[11px] font-medium text-brand-600">
                     {a}
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-gray-400">Belum pilih kawasan</p>
+              <p className="text-xs text-[color:var(--text-muted)]">Belum pilih kawasan</p>
             )}
           </div>
           <ChevronLeftIcon className="mt-1 h-3.5 w-3.5 shrink-0 rotate-180 text-brand-300" />
@@ -453,23 +453,23 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
 
       {/* Kepakaran & Pengalaman — collapsed by default; tap the card itself to edit */}
       {editingSpecialties ? (
-        <div className="rounded-2xl bg-brand-50/60 p-4">
+        <div className="rounded-2xl bg-[color:var(--surface-2)]/60 p-4">
           <div className="mb-1 flex items-center justify-between">
-            <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-[color:var(--text-primary)]">
               <StarIcon className="h-4 w-4" />
               Kepakaran &amp; Pengalaman
             </p>
-            <button type="button" onClick={cancelSpecialtiesEdit} className="text-xs font-semibold text-gray-400">
+            <button type="button" onClick={cancelSpecialtiesEdit} className="text-xs font-semibold text-[color:var(--text-muted)]">
               Batal
             </button>
           </div>
-          <p className="mb-3 text-xs text-gray-500">Tag kepakaran membantu pelanggan cepat nampak kelebihan anda.</p>
+          <p className="mb-3 text-xs text-[color:var(--text-secondary)]">Tag kepakaran membantu pelanggan cepat nampak kelebihan anda.</p>
 
           <div className="mb-3 flex flex-wrap gap-2">
             {form.specialties.map((tag) => (
               <span key={tag} className="chip chip-active flex items-center gap-1 pr-1.5">
                 {tag}
-                <button type="button" onClick={() => removeSpecialty(tag)} className="flex h-4 w-4 items-center justify-center rounded-full bg-white/60">
+                <button type="button" onClick={() => removeSpecialty(tag)} className="flex h-4 w-4 items-center justify-center rounded-full bg-white/15">
                   <XIcon className="h-2.5 w-2.5" />
                 </button>
               </span>
@@ -503,10 +503,10 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
               onChange={(e) => setForm({ ...form, yearsExperience: e.target.value })}
             />
           </div>
-          <div className="mt-3 flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
-            <ClockIcon className="h-4 w-4 shrink-0 text-gray-400" />
+          <div className="mt-3 flex items-center gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3">
+            <ClockIcon className="h-4 w-4 shrink-0 text-[color:var(--text-muted)]" />
             <input
-              className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
+              className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-[color:var(--text-muted)] focus:outline-none"
               placeholder="Waktu beroperasi, cth: Isnin-Jumaat 9am-8pm"
               value={form.workingHoursNote}
               onChange={(e) => setForm({ ...form, workingHoursNote: e.target.value })}
@@ -517,26 +517,26 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
         <button
           type="button"
           onClick={() => setEditingSpecialties(true)}
-          className="card-tap flex w-full items-start justify-between gap-3 rounded-2xl bg-brand-50/60 p-4 text-left"
+          className="card-tap flex w-full items-start justify-between gap-3 rounded-2xl bg-[color:var(--surface-2)]/60 p-4 text-left"
         >
           <div className="min-w-0">
-            <p className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+            <p className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-[color:var(--text-primary)]">
               <StarIcon className="h-4 w-4" />
               Kepakaran &amp; Pengalaman
             </p>
             {form.specialties.length > 0 ? (
               <div className="mb-1.5 flex flex-wrap gap-1.5">
                 {form.specialties.map((tag) => (
-                  <span key={tag} className="rounded-full bg-white px-2.5 py-1 text-[11px] font-medium text-brand-600">
+                  <span key={tag} className="rounded-full bg-[color:var(--surface-2)] px-2.5 py-1 text-[11px] font-medium text-brand-600">
                     {tag}
                   </span>
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-gray-400">Belum ada kepakaran</p>
+              <p className="text-xs text-[color:var(--text-muted)]">Belum ada kepakaran</p>
             )}
             {(form.yearsExperience || form.workingHoursNote) && (
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-[color:var(--text-muted)]">
                 {form.yearsExperience && `${form.yearsExperience} tahun pengalaman`}
                 {form.yearsExperience && form.workingHoursNote && " · "}
                 {form.workingHoursNote}
@@ -547,9 +547,9 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
         </button>
       )}
 
-      <div className="rounded-2xl bg-brand-50/60 p-4">
-        <p className="mb-1 text-[15px] font-bold text-brand-900">Galeri Foto</p>
-        <p className="mb-3 text-xs text-gray-500">Tambah sehingga 6 foto (tempat kerja, suasana, dll) untuk pelanggan lihat.</p>
+      <div className="rounded-2xl bg-[color:var(--surface-2)]/60 p-4">
+        <p className="mb-1 text-[15px] font-bold text-[color:var(--text-primary)]">Galeri Foto</p>
+        <p className="mb-3 text-xs text-[color:var(--text-secondary)]">Tambah sehingga 6 foto (tempat kerja, suasana, dll) untuk pelanggan lihat.</p>
         <div className="flex flex-wrap gap-2.5">
           {form.galleryPhotos.map((url, i) => (
             <div key={i} className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl">
@@ -565,7 +565,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
             </div>
           ))}
           {form.galleryPhotos.length < 6 && (
-            <label className="flex h-20 w-20 shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-brand-200 bg-white text-brand-400">
+            <label className="flex h-20 w-20 shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-brand-200 bg-[color:var(--surface-2)] text-brand-400">
               <CameraIcon className="h-5 w-5" />
               <span className="text-[10px] font-medium">{uploadingGallery ? "..." : "Tambah"}</span>
               <input type="file" accept="image/*" className="hidden" onChange={handleGalleryPhoto} disabled={uploadingGallery} />
@@ -574,15 +574,15 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
         </div>
       </div>
 
-      <label className="flex items-center gap-2.5 rounded-2xl bg-brand-50/60 px-4 py-3 text-sm font-medium text-gray-600">
+      <label className="flex items-center gap-2.5 rounded-2xl bg-[color:var(--surface-2)]/60 px-4 py-3 text-sm font-medium text-[color:var(--text-secondary)]">
         <input type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} className="h-4 w-4 accent-brand-600" />
         Profil aktif (kelihatan kepada pelanggan)
       </label>
 
       {editingCreds ? (
-        <div className="rounded-2xl bg-brand-50/60 p-4">
+        <div className="rounded-2xl bg-[color:var(--surface-2)]/60 p-4">
           <div className="mb-3 flex items-center justify-between">
-            <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-[color:var(--text-primary)]">
               <LockIcon className="h-4 w-4" />
               Log masuk
             </p>
@@ -595,7 +595,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
                 setNewPinConfirm("");
                 setForm((f) => ({ ...f, username: therapist.username ?? "" }));
               }}
-              className="text-xs font-semibold text-gray-400"
+              className="text-xs font-semibold text-[color:var(--text-muted)]"
             >
               Batal
             </button>
@@ -627,23 +627,23 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
               />
             </div>
           </div>
-          <p className="mt-2 text-xs text-gray-500">Kosongkan PIN jika tidak mahu menukarnya. Simpan guna butang di bawah.</p>
-          {credError && <p className="mt-2 rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{credError}</p>}
+          <p className="mt-2 text-xs text-[color:var(--text-secondary)]">Kosongkan PIN jika tidak mahu menukarnya. Simpan guna butang di bawah.</p>
+          {credError && <p className="mt-2 rounded-xl bg-red-500/15 px-3.5 py-2.5 text-sm font-medium text-red-400">{credError}</p>}
         </div>
       ) : (
         <button
           type="button"
           onClick={() => setEditingCreds(true)}
-          className="card-tap flex w-full items-center justify-between gap-3 rounded-2xl bg-brand-50/60 p-4 text-left"
+          className="card-tap flex w-full items-center justify-between gap-3 rounded-2xl bg-[color:var(--surface-2)]/60 p-4 text-left"
         >
           <div>
-            <p className="flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+            <p className="flex items-center gap-1.5 text-sm font-semibold text-[color:var(--text-primary)]">
               <LockIcon className="h-4 w-4" />
               Log masuk
             </p>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-[color:var(--text-secondary)]">
               {therapist.username ? (
-                <>Username: <span className="font-medium text-gray-600">{therapist.username}</span></>
+                <>Username: <span className="font-medium text-[color:var(--text-secondary)]">{therapist.username}</span></>
               ) : (
                 "Belum ditetapkan"
               )}
@@ -655,20 +655,20 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
 
       {/* Bayaran & Deposit — collapsed by default; tap the card itself to edit */}
       {editingDeposit ? (
-        <div className="rounded-2xl bg-brand-50/60 p-4">
+        <div className="rounded-2xl bg-[color:var(--surface-2)]/60 p-4">
           <div className="mb-1 flex items-center justify-between">
-            <p className="flex items-center gap-1.5 text-[15px] font-bold text-brand-900">
+            <p className="flex items-center gap-1.5 text-[15px] font-bold text-[color:var(--text-primary)]">
               <WalletIcon className="h-4 w-4" />
               Bayaran &amp; Deposit
             </p>
-            <button type="button" onClick={cancelDepositEdit} className="text-xs font-semibold text-gray-400">
+            <button type="button" onClick={cancelDepositEdit} className="text-xs font-semibold text-[color:var(--text-muted)]">
               Batal
             </button>
           </div>
-          <p className="mb-3 text-xs text-gray-500">Tetapkan jika anda perlukan deposit sebelum tempahan disahkan, dan caj tambahan (jika ada).</p>
+          <p className="mb-3 text-xs text-[color:var(--text-secondary)]">Tetapkan jika anda perlukan deposit sebelum tempahan disahkan, dan caj tambahan (jika ada).</p>
 
-          <label className="mb-3 flex items-center justify-between rounded-xl bg-white px-4 py-3">
-            <span className="text-sm font-medium text-gray-700">Perlukan deposit?</span>
+          <label className="mb-3 flex items-center justify-between rounded-xl bg-[color:var(--surface-2)] px-4 py-3">
+            <span className="text-sm font-medium text-[color:var(--text-secondary)]">Perlukan deposit?</span>
             <input
               type="checkbox"
               checked={form.depositRequired}
@@ -689,7 +689,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
               />
 
               <div>
-                <label className="mb-2 block text-sm font-semibold text-brand-900">Kaedah bayaran</label>
+                <label className="mb-2 block text-sm font-semibold text-[color:var(--text-primary)]">Kaedah bayaran</label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
@@ -710,13 +710,13 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
 
               {form.paymentMethod === "QR" && (
                 <div className="animate-fade-in">
-                  <label className="mb-2 block text-sm font-semibold text-brand-900">Kod QR</label>
+                  <label className="mb-2 block text-sm font-semibold text-[color:var(--text-primary)]">Kod QR</label>
                   <div className="flex items-center gap-3">
                     {form.qrCodeUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={form.qrCodeUrl} alt="Kod QR" className="h-20 w-20 rounded-xl border border-black/[0.06] object-cover" />
+                      <img src={form.qrCodeUrl} alt="Kod QR" className="h-20 w-20 rounded-xl border border-[color:var(--border)] object-cover" />
                     ) : (
-                      <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-white text-brand-300">
+                      <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-[color:var(--surface-2)] text-brand-300">
                         <ImageOffIcon className="h-6 w-6" />
                       </div>
                     )}
@@ -726,7 +726,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
                       <input type="file" accept="image/*" className="hidden" onChange={handleQrPhoto} disabled={uploadingQr} />
                     </label>
                   </div>
-                  <p className="mt-2 text-xs text-gray-400">Kod QR ini akan ditunjukkan kepada pelanggan semasa tempahan.</p>
+                  <p className="mt-2 text-xs text-[color:var(--text-muted)]">Kod QR ini akan ditunjukkan kepada pelanggan semasa tempahan.</p>
                 </div>
               )}
             </div>
@@ -744,20 +744,20 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
         <button
           type="button"
           onClick={() => setEditingDeposit(true)}
-          className="card-tap flex w-full items-start justify-between gap-3 rounded-2xl bg-brand-50/60 p-4 text-left"
+          className="card-tap flex w-full items-start justify-between gap-3 rounded-2xl bg-[color:var(--surface-2)]/60 p-4 text-left"
         >
           <div className="min-w-0">
-            <p className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+            <p className="mb-1 flex items-center gap-1.5 text-sm font-semibold text-[color:var(--text-primary)]">
               <WalletIcon className="h-4 w-4" />
               Bayaran &amp; Deposit
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[color:var(--text-secondary)]">
               {form.depositRequired && form.depositAmount
                 ? `Deposit RM${form.depositAmount} · ${form.paymentMethod === "CASH" ? "Tunai" : "QR"}`
                 : "Tiada deposit diperlukan"}
             </p>
             {form.extraChargesNote && (
-              <p className="mt-1 truncate text-xs text-gray-400">Caj tambahan: {form.extraChargesNote}</p>
+              <p className="mt-1 truncate text-xs text-[color:var(--text-muted)]">Caj tambahan: {form.extraChargesNote}</p>
             )}
           </div>
           <ChevronLeftIcon className="mt-1 h-3.5 w-3.5 shrink-0 rotate-180 text-brand-300" />
@@ -766,46 +766,46 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
 
       {/* Media Sosial — collapsed by default; tap the card itself to edit */}
       {editingSocial ? (
-        <div className="rounded-2xl bg-brand-50/60 p-4">
+        <div className="rounded-2xl bg-[color:var(--surface-2)]/60 p-4">
           <div className="mb-1 flex items-center justify-between">
-            <p className="text-[15px] font-bold text-brand-900">Media Sosial</p>
-            <button type="button" onClick={cancelSocialEdit} className="text-xs font-semibold text-gray-400">
+            <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Media Sosial</p>
+            <button type="button" onClick={cancelSocialEdit} className="text-xs font-semibold text-[color:var(--text-muted)]">
               Batal
             </button>
           </div>
-          <p className="mb-3 text-xs text-gray-500">Opsyenal. Bantu pelanggan buat semakan sendiri (due diligence) tentang anda selain ulasan SpaGo.</p>
+          <p className="mb-3 text-xs text-[color:var(--text-secondary)]">Opsyenal. Bantu pelanggan buat semakan sendiri (due diligence) tentang anda selain ulasan SpaGo.</p>
           <div className="flex flex-col gap-2.5">
-            <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
-              <InstagramIcon className="h-4 w-4 shrink-0 text-gray-400" />
+            <div className="flex items-center gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3">
+              <InstagramIcon className="h-4 w-4 shrink-0 text-[color:var(--text-muted)]" />
               <input
-                className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
+                className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-[color:var(--text-muted)] focus:outline-none"
                 placeholder="Instagram (@username)"
                 value={form.socialInstagram}
                 onChange={(e) => setForm({ ...form, socialInstagram: e.target.value })}
               />
             </div>
-            <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
-              <TiktokIcon className="h-4 w-4 shrink-0 text-gray-400" />
+            <div className="flex items-center gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3">
+              <TiktokIcon className="h-4 w-4 shrink-0 text-[color:var(--text-muted)]" />
               <input
-                className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
+                className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-[color:var(--text-muted)] focus:outline-none"
                 placeholder="TikTok (@username)"
                 value={form.socialTiktok}
                 onChange={(e) => setForm({ ...form, socialTiktok: e.target.value })}
               />
             </div>
-            <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
-              <ThreadsIcon className="h-4 w-4 shrink-0 text-gray-400" />
+            <div className="flex items-center gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3">
+              <ThreadsIcon className="h-4 w-4 shrink-0 text-[color:var(--text-muted)]" />
               <input
-                className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
+                className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-[color:var(--text-muted)] focus:outline-none"
                 placeholder="Threads (@username)"
                 value={form.socialThreads}
                 onChange={(e) => setForm({ ...form, socialThreads: e.target.value })}
               />
             </div>
-            <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3">
-              <SocialXIcon className="h-4 w-4 shrink-0 text-gray-400" />
+            <div className="flex items-center gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3">
+              <SocialXIcon className="h-4 w-4 shrink-0 text-[color:var(--text-muted)]" />
               <input
-                className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-gray-400 focus:outline-none"
+                className="w-full bg-transparent py-2.5 text-[15px] placeholder:text-[color:var(--text-muted)] focus:outline-none"
                 placeholder="X / Twitter (@username)"
                 value={form.socialX}
                 onChange={(e) => setForm({ ...form, socialX: e.target.value })}
@@ -817,10 +817,10 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
         <button
           type="button"
           onClick={() => setEditingSocial(true)}
-          className="card-tap flex w-full items-center justify-between gap-3 rounded-2xl bg-brand-50/60 p-4 text-left"
+          className="card-tap flex w-full items-center justify-between gap-3 rounded-2xl bg-[color:var(--surface-2)]/60 p-4 text-left"
         >
           <div className="min-w-0">
-            <p className="mb-1.5 text-sm font-semibold text-brand-900">Media Sosial</p>
+            <p className="mb-1.5 text-sm font-semibold text-[color:var(--text-primary)]">Media Sosial</p>
             {hasSocial ? (
               <div className="flex items-center gap-2 text-brand-500">
                 {form.socialInstagram && <InstagramIcon className="h-4 w-4" />}
@@ -829,7 +829,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
                 {form.socialX && <SocialXIcon className="h-4 w-4" />}
               </div>
             ) : (
-              <p className="text-xs text-gray-400">Belum ditetapkan</p>
+              <p className="text-xs text-[color:var(--text-muted)]">Belum ditetapkan</p>
             )}
           </div>
           <ChevronLeftIcon className="h-3.5 w-3.5 shrink-0 rotate-180 text-brand-300" />

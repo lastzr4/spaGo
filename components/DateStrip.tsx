@@ -24,8 +24,8 @@ export default function DateStrip({
               isSelected
                 ? "border-brand-500 bg-brand-500 text-white"
                 : d.hasSlots
-                  ? "border-black/[0.06] bg-white text-gray-600"
-                  : "border-black/[0.04] bg-gray-50 text-gray-300"
+                  ? "border-[color:var(--border)] bg-[color:var(--surface-2)] text-[color:var(--text-secondary)]"
+                  : "border-[color:var(--border)] bg-[color:var(--surface-2)] text-[color:var(--text-muted)]"
             }`}
           >
             {d.label}
@@ -37,7 +37,7 @@ export default function DateStrip({
           </button>
         );
       })}
-      <label className="flex shrink-0 cursor-pointer items-center justify-center rounded-2xl border border-dashed border-gray-200 px-3 py-2 text-xs font-semibold text-gray-400">
+      <label className="flex shrink-0 cursor-pointer items-center justify-center rounded-2xl border border-dashed border-[color:var(--border-strong)] px-3 py-2 text-xs font-semibold text-[color:var(--text-muted)]">
         Lain
         <input type="date" className="hidden" onChange={(e) => e.target.value && onSelect(e.target.value)} />
       </label>

@@ -58,8 +58,8 @@ export default function ChatWidget({ slug, therapistName, therapistPhone }: { sl
     <div className="fixed inset-x-0 bottom-24 z-30 mx-auto max-w-md px-5 sm:max-w-lg">
       <div className="flex justify-end">
         {open && (
-          <div className="mb-3 flex h-[420px] w-full max-w-[320px] flex-col overflow-hidden rounded-3xl border border-black/[0.06] bg-white shadow-2xl animate-modal-in">
-            <div className="flex items-center gap-2.5 border-b border-black/[0.05] bg-brand-50/70 px-4 py-3">
+          <div className="mb-3 flex h-[420px] w-full max-w-[320px] flex-col overflow-hidden rounded-3xl border border-[color:var(--border)] bg-[color:var(--surface-2)] shadow-2xl animate-modal-in">
+            <div className="flex items-center gap-2.5 border-b border-[color:var(--border)] bg-[color:var(--surface-2)]/70 px-4 py-3">
               <div
                 className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-white"
                 style={{ background: "linear-gradient(135deg, var(--brand, #7a51c9), color-mix(in srgb, var(--brand, #7a51c9) 75%, black))" }}
@@ -67,10 +67,10 @@ export default function ChatWidget({ slug, therapistName, therapistPhone }: { sl
                 <SparkleIcon className="h-4 w-4" />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-bold text-brand-900">Tanya AI &middot; {therapistName}</p>
+                <p className="truncate text-sm font-bold text-[color:var(--text-primary)]">Tanya AI &middot; {therapistName}</p>
                 <p className="text-[10px] font-medium text-brand-500">Percuma buat masa ini</p>
               </div>
-              <button type="button" onClick={() => setOpen(false)} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-gray-400 active:scale-90">
+              <button type="button" onClick={() => setOpen(false)} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[color:var(--text-muted)] active:scale-90">
                 <XIcon className="h-4 w-4" />
               </button>
             </div>
@@ -79,7 +79,7 @@ export default function ChatWidget({ slug, therapistName, therapistPhone }: { sl
               {messages.length === 0 && (
                 <div className="flex flex-col items-center gap-2 py-6 text-center">
                   <SparkleIcon className="h-6 w-6 text-brand-300" />
-                  <p className="text-xs text-gray-400">Tanya tentang harga, waktu, atau kawasan liputan {therapistName}.</p>
+                  <p className="text-xs text-[color:var(--text-muted)]">Tanya tentang harga, waktu, atau kawasan liputan {therapistName}.</p>
                 </div>
               )}
               <div className="flex flex-col gap-2.5">
@@ -87,7 +87,7 @@ export default function ChatWidget({ slug, therapistName, therapistPhone }: { sl
                   <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                     <div
                       className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-[13px] leading-relaxed ${
-                        m.role === "user" ? "bg-brand-600 text-white" : "bg-gray-100 text-gray-700"
+                        m.role === "user" ? "bg-brand-600 text-white" : "bg-[color:var(--surface-2)] text-[color:var(--text-secondary)]"
                       }`}
                     >
                       {m.content}
@@ -96,17 +96,17 @@ export default function ChatWidget({ slug, therapistName, therapistPhone }: { sl
                 ))}
                 {sending && (
                   <div className="flex justify-start">
-                    <div className="flex gap-1 rounded-2xl bg-gray-100 px-3.5 py-2.5">
-                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: "0ms" }} />
-                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: "120ms" }} />
-                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-gray-400" style={{ animationDelay: "240ms" }} />
+                    <div className="flex gap-1 rounded-2xl bg-[color:var(--surface-2)] px-3.5 py-2.5">
+                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[color:var(--text-muted)]" style={{ animationDelay: "0ms" }} />
+                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[color:var(--text-muted)]" style={{ animationDelay: "120ms" }} />
+                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-[color:var(--text-muted)]" style={{ animationDelay: "240ms" }} />
                     </div>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="border-t border-black/[0.05] p-2.5">
+            <div className="border-t border-[color:var(--border)] p-2.5">
               <a href={whatsappLink} target="_blank" rel="noreferrer" className="mb-2 block text-center text-[11px] font-semibold text-brand-600 active:opacity-60">
                 Nak tempah terus? Hubungi WhatsApp →
               </a>
@@ -121,7 +121,7 @@ export default function ChatWidget({ slug, therapistName, therapistPhone }: { sl
                     }
                   }}
                   placeholder="Taip soalan anda..."
-                  className="flex-1 rounded-full border border-gray-200 px-3.5 py-2 text-[13px] outline-none focus:border-brand-400"
+                  className="flex-1 rounded-full border border-[color:var(--border-strong)] px-3.5 py-2 text-[13px] outline-none focus:border-brand-400"
                 />
                 <button
                   type="button"

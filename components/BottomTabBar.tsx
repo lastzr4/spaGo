@@ -17,7 +17,7 @@ export default function BottomTabBar({ token, pendingCount = 0 }: { token: strin
   ] as const;
 
   return (
-    <nav className="safe-bottom sticky bottom-0 z-20 mt-auto flex border-t border-black/[0.04] bg-white/95 shadow-nav backdrop-blur-md">
+    <nav className="safe-bottom sticky bottom-0 z-20 mt-auto flex border-t border-[color:var(--border)] bg-[rgba(26,18,48,0.95)] shadow-nav backdrop-blur-md">
       {items.map((item) => {
         const active = pathname === item.href;
         const badge = "badge" in item ? item.badge : 0;
@@ -29,7 +29,7 @@ export default function BottomTabBar({ token, pendingCount = 0 }: { token: strin
           >
             <span className="relative">
               <item.Icon
-                className={`h-5 w-5 transition-colors ${active ? "nav-active" : "text-gray-400"}`}
+                className={`h-5 w-5 transition-colors ${active ? "nav-active" : "text-[color:var(--text-muted)]"}`}
                 strokeWidth={active ? 2.2 : 1.9}
               />
               {badge > 0 && (
@@ -38,7 +38,7 @@ export default function BottomTabBar({ token, pendingCount = 0 }: { token: strin
                 </span>
               )}
             </span>
-            <span className={`text-[11px] font-medium transition-colors ${active ? "nav-active" : "text-gray-400"}`}>
+            <span className={`text-[11px] font-medium transition-colors ${active ? "nav-active" : "text-[color:var(--text-muted)]"}`}>
               {item.label}
             </span>
             <span className={`h-1 w-1 rounded-full transition-colors ${active ? "nav-active-dot" : "bg-transparent"}`} />

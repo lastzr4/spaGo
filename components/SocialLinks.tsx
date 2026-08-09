@@ -29,7 +29,7 @@ export default function SocialLinks({
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-brand-600 transition-transform active:scale-90"
+          className="flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--surface-2)] text-brand-600 transition-transform active:scale-90"
         >
           <Icon className="h-4 w-4" />
         </a>

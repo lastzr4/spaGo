@@ -140,8 +140,8 @@ export default function ServiceManager({ token, initialServices }: { token: stri
       <div className="flex flex-col gap-3">
         {services.length === 0 && (
           <div className="card flex flex-col items-center gap-1 py-8 text-center animate-fade-in">
-            <p className="text-sm font-medium text-gray-600">Belum ada servis.</p>
-            <p className="text-xs text-gray-400">Tambah servis pertama anda di bawah.</p>
+            <p className="text-sm font-medium text-[color:var(--text-secondary)]">Belum ada servis.</p>
+            <p className="text-xs text-[color:var(--text-muted)]">Tambah servis pertama anda di bawah.</p>
           </div>
         )}
         {services.map((s, i) => (
@@ -157,7 +157,7 @@ export default function ServiceManager({ token, initialServices }: { token: stri
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={s.photoUrl} alt={s.name} className="h-14 w-14 rounded-2xl object-cover" />
                   ) : (
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-300">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[color:var(--surface-2)] text-brand-300">
                       <CameraIcon className="h-5 w-5" />
                     </div>
                   )}
@@ -166,7 +166,7 @@ export default function ServiceManager({ token, initialServices }: { token: stri
                       <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                     </div>
                   )}
-                  <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-white text-brand-500 shadow-sm ring-1 ring-black/[0.06]">
+                  <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--surface-2)] text-brand-500 shadow-sm ring-1 ring-[color:var(--border-strong)]">
                     <CameraIcon className="h-3 w-3" />
                   </span>
                   <input
@@ -181,21 +181,21 @@ export default function ServiceManager({ token, initialServices }: { token: stri
                 {editingId === s.id ? (
                   <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                     <input
-                      className="w-full rounded-xl border border-gray-200 px-3 py-1.5 text-sm outline-none focus:border-brand-400"
+                      className="w-full rounded-xl border border-[color:var(--border-strong)] px-3 py-1.5 text-sm outline-none focus:border-brand-400"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       placeholder="Nama servis"
                     />
                     <div className="flex gap-2">
                       <input
-                        className="w-full rounded-xl border border-gray-200 px-3 py-1.5 text-sm outline-none focus:border-brand-400"
+                        className="w-full rounded-xl border border-[color:var(--border-strong)] px-3 py-1.5 text-sm outline-none focus:border-brand-400"
                         type="number"
                         value={editDuration}
                         onChange={(e) => setEditDuration(e.target.value)}
                         placeholder="Minit"
                       />
                       <input
-                        className="w-full rounded-xl border border-gray-200 px-3 py-1.5 text-sm outline-none focus:border-brand-400"
+                        className="w-full rounded-xl border border-[color:var(--border-strong)] px-3 py-1.5 text-sm outline-none focus:border-brand-400"
                         type="number"
                         value={editPrice}
                         onChange={(e) => setEditPrice(e.target.value)}
@@ -211,15 +211,15 @@ export default function ServiceManager({ token, initialServices }: { token: stri
                       >
                         {savingEdit ? "Menyimpan..." : "Simpan"}
                       </button>
-                      <button type="button" onClick={() => setEditingId(null)} className="text-xs font-semibold text-gray-400 active:opacity-60">
+                      <button type="button" onClick={() => setEditingId(null)} className="text-xs font-semibold text-[color:var(--text-muted)] active:opacity-60">
                         Batal
                       </button>
                     </div>
                   </div>
                 ) : (
                   <button type="button" onClick={() => startEdit(s)} className="min-w-0 flex-1 text-left">
-                    <p className="truncate font-semibold text-brand-900">{s.name}</p>
-                    <p className="text-xs text-gray-500">{s.durationMinutes} minit &middot; RM{Number(s.price).toFixed(0)}</p>
+                    <p className="truncate font-semibold text-[color:var(--text-primary)]">{s.name}</p>
+                    <p className="text-xs text-[color:var(--text-secondary)]">{s.durationMinutes} minit &middot; RM{Number(s.price).toFixed(0)}</p>
                   </button>
                 )}
               </div>
@@ -234,7 +234,7 @@ export default function ServiceManager({ token, initialServices }: { token: stri
               </div>
             </div>
 
-            <div className="border-t border-black/[0.04] pt-2">
+            <div className="border-t border-[color:var(--border)] pt-2">
               <button
                 type="button"
                 onClick={() => fetchGuidance(s)}
@@ -245,7 +245,7 @@ export default function ServiceManager({ token, initialServices }: { token: stri
                 {guidanceLoading === s.id ? "Menjana..." : guidance[s.id] ? "Jana semula panduan harga AI" : "Panduan harga AI"}
               </button>
               {guidance[s.id] && (
-                <p className="mt-1.5 rounded-xl bg-brand-50/60 px-3 py-2 text-xs leading-relaxed text-gray-600">{guidance[s.id]}</p>
+                <p className="mt-1.5 rounded-xl bg-[color:var(--surface-2)]/60 px-3 py-2 text-xs leading-relaxed text-[color:var(--text-secondary)]">{guidance[s.id]}</p>
               )}
             </div>
           </div>
@@ -253,7 +253,7 @@ export default function ServiceManager({ token, initialServices }: { token: stri
       </div>
 
       <form onSubmit={addService} className="card flex flex-col gap-3">
-        <p className="text-[15px] font-bold text-brand-900">Tambah servis baru</p>
+        <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Tambah servis baru</p>
         <input className="input" placeholder="Nama servis (cth: Urut Badan)" value={name} onChange={(e) => setName(e.target.value)} />
         <div className="flex gap-3">
           <input className="input" type="number" placeholder="Minit" value={duration} onChange={(e) => setDuration(e.target.value)} />

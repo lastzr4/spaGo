@@ -27,7 +27,7 @@ export default function AdminOverviewStats({
       label: "Jumlah Terapis",
       value: (
         <>
-          <CountUp value={totalTherapists} /> <span className="text-sm font-semibold text-gray-400">({activeTherapists} aktif)</span>
+          <CountUp value={totalTherapists} /> <span className="text-sm font-semibold text-[color:var(--text-muted)]">({activeTherapists} aktif)</span>
         </>
       ),
       Icon: UserIcon,
@@ -51,17 +51,17 @@ export default function AdminOverviewStats({
             className="card card-tap group relative animate-fade-in"
             style={{ animationDelay: `${i * 40}ms` }}
           >
-            <ChevronRightIcon className="absolute right-3 top-3 h-3.5 w-3.5 text-gray-300 transition-transform group-active:translate-x-0.5" />
+            <ChevronRightIcon className="absolute right-3 top-3 h-3.5 w-3.5 text-[color:var(--text-muted)] transition-transform group-active:translate-x-0.5" />
             <div className={`mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-[0_4px_12px_-4px_rgba(0,0,0,0.35)] ${s.accent}`}>
               <s.Icon className="h-4 w-4" />
             </div>
-            <p className="text-lg font-bold text-brand-900">{s.value}</p>
-            <p className="mt-0.5 text-[11px] font-medium text-gray-500">{s.label}</p>
+            <p className="text-lg font-bold text-[color:var(--text-primary)]">{s.value}</p>
+            <p className="mt-0.5 text-[11px] font-medium text-[color:var(--text-secondary)]">{s.label}</p>
           </Link>
         ))}
       </div>
       {demoTherapists > 0 && (
-        <p className="mt-4 rounded-xl bg-gray-50 px-3.5 py-2.5 text-xs text-gray-400">
+        <p className="mt-4 rounded-xl bg-[color:var(--surface-2)] px-3.5 py-2.5 text-xs text-[color:var(--text-muted)]">
           {demoTherapists} terapis demo tidak dikira dalam statistik di atas.
         </p>
       )}

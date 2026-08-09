@@ -47,26 +47,26 @@ export default function SlotTemplateEditor({ token, initialTemplate }: { token: 
     <div className="card flex flex-col gap-3 animate-fade-in">
       <button type="button" onClick={() => setOpen((o) => !o)} className="flex items-center justify-between gap-2 text-left">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-500">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[color:var(--surface-2)] text-brand-500">
             <CalendarIcon className="h-4 w-4" />
           </span>
           <div>
-            <p className="text-[15px] font-bold text-brand-900">Slot berulang mingguan</p>
-            <p className="text-xs text-gray-400">{summary}</p>
+            <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Slot berulang mingguan</p>
+            <p className="text-xs text-[color:var(--text-muted)]">{summary}</p>
           </div>
         </div>
-        <ChevronLeftIcon className={`h-4 w-4 shrink-0 text-gray-400 transition-transform ${open ? "rotate-90" : "-rotate-90"}`} />
+        <ChevronLeftIcon className={`h-4 w-4 shrink-0 text-[color:var(--text-muted)] transition-transform ${open ? "rotate-90" : "-rotate-90"}`} />
       </button>
 
       {open && (
-        <div className="flex flex-col gap-3 border-t border-black/[0.04] pt-3">
-          <p className="text-xs leading-relaxed text-gray-400">
+        <div className="flex flex-col gap-3 border-t border-[color:var(--border)] pt-3">
+          <p className="text-xs leading-relaxed text-[color:var(--text-muted)]">
             Slot akan dijana automatik 14 hari ke hadapan setiap kali halaman ini dibuka. Kalau anda padam satu slot secara manual, ia takkan
             muncul semula.
           </p>
 
           <div>
-            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">Hari bekerja</p>
+            <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-[color:var(--text-muted)]">Hari bekerja</p>
             <div className="flex flex-wrap gap-2">
               {WEEKDAYS.map((w) => (
                 <button
@@ -84,7 +84,7 @@ export default function SlotTemplateEditor({ token, initialTemplate }: { token: 
           <div className="flex flex-col gap-2.5">
             {TIME_GROUPS.map((group) => (
               <div key={group.label}>
-                <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-gray-400">{group.label}</p>
+                <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-[color:var(--text-muted)]">{group.label}</p>
                 <div className="flex flex-wrap gap-2">
                   {group.times.map((t) => (
                     <button type="button" key={t} onClick={() => toggleTime(t)} className={`chip ${times.includes(t) ? "chip-active" : ""}`}>

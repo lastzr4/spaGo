@@ -53,29 +53,29 @@ export default function AreaPicker({
         className="input text-sm"
       />
 
-      <div className="flex flex-col divide-y divide-black/[0.04] overflow-hidden rounded-2xl border border-black/[0.06]">
+      <div className="flex flex-col divide-y divide-[color:var(--border)] overflow-hidden rounded-2xl border border-[color:var(--border)]">
         {visibleStates.map((state) => {
           const areas = AREAS_BY_STATE[state].filter((a) => !q || a.toLowerCase().includes(q) || state.toLowerCase().includes(q));
           const selectedCount = AREAS_BY_STATE[state].filter((a) => value.includes(a)).length;
           const isOpen = openState === state || Boolean(q);
 
           return (
-            <div key={state} className="bg-white">
+            <div key={state} className="bg-[color:var(--surface-2)]">
               <button
                 type="button"
                 onClick={() => setOpenState((cur) => (cur === state ? null : state))}
                 className="card-tap flex w-full items-center justify-between gap-2 px-3.5 py-2.5 text-left"
               >
-                <span className="flex items-center gap-2 text-sm font-semibold text-brand-900">
+                <span className="flex items-center gap-2 text-sm font-semibold text-[color:var(--text-primary)]">
                   <StateFlag state={state} />
                   {state}
                   {selectedCount > 0 && (
-                    <span className="rounded-full bg-brand-50 px-1.5 py-0.5 text-[10px] font-bold text-brand-600">
+                    <span className="rounded-full bg-[color:var(--surface-2)] px-1.5 py-0.5 text-[10px] font-bold text-brand-600">
                       {selectedCount}
                     </span>
                   )}
                 </span>
-                <ChevronLeftIcon className={`h-3.5 w-3.5 shrink-0 text-gray-400 transition-transform ${isOpen ? "rotate-90" : "-rotate-90"}`} />
+                <ChevronLeftIcon className={`h-3.5 w-3.5 shrink-0 text-[color:var(--text-muted)] transition-transform ${isOpen ? "rotate-90" : "-rotate-90"}`} />
               </button>
               {isOpen && (
                 <div className="flex flex-wrap gap-1.5 px-3.5 pb-3">
@@ -94,7 +94,7 @@ export default function AreaPicker({
             </div>
           );
         })}
-        {visibleStates.length === 0 && <p className="px-3.5 py-4 text-center text-sm text-gray-400">Tiada kawasan sepadan.</p>}
+        {visibleStates.length === 0 && <p className="px-3.5 py-4 text-center text-sm text-[color:var(--text-muted)]">Tiada kawasan sepadan.</p>}
       </div>
     </div>
   );

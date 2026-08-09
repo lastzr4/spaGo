@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
 export const DEFAULT_THEME_COLOR = "#7a51c9";
-export const DEFAULT_BACKGROUND_COLOR = "#faf9fc";
+export const DEFAULT_BACKGROUND_COLOR = "#120a1e";
 export const DEFAULT_HERO_TITLE = "Urut rumah, ditempah terus.";
 export const DEFAULT_HERO_SUBTITLE =
   "Cari terapis mobile berhampiran anda dan tempah terus ke WhatsApp — tanpa PM, tanpa tunggu.";

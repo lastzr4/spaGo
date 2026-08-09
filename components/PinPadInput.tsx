@@ -49,7 +49,7 @@ export default function PinPadInput({
         onClick={() => onOpenChange(true)}
         className="input flex items-center justify-between text-left"
       >
-        <span className={value ? "text-lg tracking-[8px] text-brand-900" : "text-gray-400"}>
+        <span className={value ? "text-lg tracking-[8px] text-[color:var(--text-primary)]" : "text-[color:var(--text-muted)]"}>
           {value ? "•".repeat(value.length) : placeholder}
         </span>
         <LockIcon className="h-4 w-4 shrink-0 text-brand-300" />
@@ -61,11 +61,11 @@ export default function PinPadInput({
           onClick={() => onOpenChange(false)}
         >
           <div
-            className="safe-bottom w-full max-w-md rounded-t-3xl bg-white p-5 animate-modal-in sm:max-w-lg"
+            className="safe-bottom w-full max-w-md rounded-t-3xl bg-[color:var(--surface-2)] p-5 animate-modal-in sm:max-w-lg"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-5 flex items-center justify-between">
-              <p className="text-sm font-semibold text-brand-900">{label}</p>
+              <p className="text-sm font-semibold text-[color:var(--text-primary)]">{label}</p>
               <button type="button" onClick={() => onOpenChange(false)} className="text-xs font-semibold text-brand-600 active:opacity-60">
                 Selesai
               </button>
@@ -76,12 +76,12 @@ export default function PinPadInput({
                 <span
                   key={i}
                   className={`h-3 w-3 rounded-full transition-all duration-150 ${
-                    i < value.length ? "scale-110 bg-brand-600" : "bg-gray-200"
+                    i < value.length ? "scale-110 bg-brand-600" : "bg-[color:var(--surface-2)]"
                   }`}
                 />
               ))}
             </div>
-            <p className="mb-6 text-center text-[11px] text-gray-400">Minimum {minLength} digit</p>
+            <p className="mb-6 text-center text-[11px] text-[color:var(--text-muted)]">Minimum {minLength} digit</p>
 
             <div className="grid grid-cols-3 justify-items-center gap-2 justify-center">
               {KEYS.map((key, i) =>
@@ -93,7 +93,7 @@ export default function PinPadInput({
                     type="button"
                     onClick={() => press(key)}
                     aria-label="Padam"
-                    className="card-tap flex h-14 w-14 items-center justify-center rounded-full bg-gray-50 text-brand-900 active:bg-brand-50"
+                    className="card-tap flex h-14 w-14 items-center justify-center rounded-full bg-[color:var(--surface-2)] text-[color:var(--text-primary)] active:bg-[color:var(--surface-2)]"
                   >
                     <BackspaceIcon className="h-4 w-4" />
                   </button>
@@ -102,7 +102,7 @@ export default function PinPadInput({
                     key={key}
                     type="button"
                     onClick={() => press(key)}
-                    className="card-tap flex h-14 w-14 items-center justify-center rounded-full bg-gray-50 text-lg font-semibold text-brand-900 active:bg-brand-50"
+                    className="card-tap flex h-14 w-14 items-center justify-center rounded-full bg-[color:var(--surface-2)] text-lg font-semibold text-[color:var(--text-primary)] active:bg-[color:var(--surface-2)]"
                   >
                     {key}
                   </button>

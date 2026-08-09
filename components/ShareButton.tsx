@@ -28,7 +28,7 @@ export default function ShareButton({ title, url }: { title: string; url: string
     <button
       type="button"
       onClick={handleShare}
-      className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-50 text-brand-600 transition-transform active:scale-90"
+      className="flex h-8 w-8 items-center justify-center rounded-full bg-[color:var(--surface-2)] text-brand-600 transition-transform active:scale-90"
       aria-label="Kongsi"
     >
       {copied ? <CheckCircleIcon filled className="h-4 w-4" /> : <ShareIcon className="h-4 w-4" />}

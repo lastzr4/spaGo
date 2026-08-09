@@ -71,7 +71,7 @@ export default function TherapistRegisterPage() {
     <>
       <TopBar title="Daftar Terapis" backHref="/" />
       <main className="flex-1 overflow-y-auto px-5 py-6">
-        <p className="mb-6 animate-fade-in text-sm text-gray-500">
+        <p className="mb-6 animate-fade-in text-sm text-[color:var(--text-secondary)]">
           Selepas daftar, anda boleh log masuk bila-bila masa dengan username &amp; PIN yang anda tetapkan di bawah.
         </p>
 
@@ -85,7 +85,7 @@ export default function TherapistRegisterPage() {
               autoCapitalize="none"
               required
             />
-            <p className="mt-1.5 text-xs text-gray-400">
+            <p className="mt-1.5 text-xs text-[color:var(--text-muted)]">
               Ini akan jadi nama paparan awam anda juga (huruf, nombor, garis bawah sahaja — tiada ruang/spasi).
             </p>
           </div>
@@ -93,7 +93,7 @@ export default function TherapistRegisterPage() {
           <input className="input" placeholder="No. WhatsApp (cth: 0123456789)" value={phone} onChange={(e) => setPhone(e.target.value)} required />
 
           <div>
-            <label className="mb-2 block text-sm font-semibold text-brand-900">Jantina anda</label>
+            <label className="mb-2 block text-sm font-semibold text-[color:var(--text-primary)]">Jantina anda</label>
             <SegmentedToggle
               options={[
                 { value: "FEMALE" as const, label: "Wanita" },
@@ -105,24 +105,24 @@ export default function TherapistRegisterPage() {
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-semibold text-brand-900">Pelanggan yang diterima</label>
+            <label className="mb-2 block text-sm font-semibold text-[color:var(--text-primary)]">Pelanggan yang diterima</label>
             <select className="input" value={clientGenderPolicy} onChange={(e) => setClientGenderPolicy(e.target.value as any)}>
               <option value="FEMALE_ONLY">Wanita sahaja</option>
               <option value="MALE_ONLY">Lelaki sahaja</option>
               <option value="BOTH">Lelaki & Wanita</option>
             </select>
-            <p className="mt-1.5 text-xs text-gray-400">Nota: pelanggan lelaki hanya akan dipadankan dengan terapis lelaki (polisi keselamatan).</p>
+            <p className="mt-1.5 text-xs text-[color:var(--text-muted)]">Nota: pelanggan lelaki hanya akan dipadankan dengan terapis lelaki (polisi keselamatan).</p>
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-semibold text-brand-900">Kawasan liputan</label>
+            <label className="mb-2 block text-sm font-semibold text-[color:var(--text-primary)]">Kawasan liputan</label>
             <AreaPicker value={areas} onToggle={toggleArea} />
           </div>
 
           <textarea className="input" placeholder="Ringkasan pengalaman / kepakaran (optional)" value={bio} onChange={(e) => setBio(e.target.value)} rows={3} />
 
-          <div className="rounded-2xl bg-brand-50/60 p-4">
-            <p className="mb-3 text-sm font-semibold text-brand-900">PIN log masuk</p>
+          <div className="rounded-2xl bg-[color:var(--surface-2)]/60 p-4">
+            <p className="mb-3 text-sm font-semibold text-[color:var(--text-primary)]">PIN log masuk</p>
             <div className="flex gap-3">
               <input
                 className="input"
@@ -143,16 +143,16 @@ export default function TherapistRegisterPage() {
                 required
               />
             </div>
-            <p className="mt-2 text-xs text-gray-500">Guna username &amp; PIN ini untuk log masuk ke dashboard anda kemudian.</p>
+            <p className="mt-2 text-xs text-[color:var(--text-secondary)]">Guna username &amp; PIN ini untuk log masuk ke dashboard anda kemudian.</p>
           </div>
 
-          {error && <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{error}</p>}
+          {error && <p className="rounded-xl bg-red-500/15 px-3.5 py-2.5 text-sm font-medium text-red-400">{error}</p>}
 
           <button type="submit" className="btn-primary" disabled={submitting}>
             {submitting ? "Mendaftar..." : "Daftar"}
           </button>
 
-          <p className="text-center text-sm text-gray-500">
+          <p className="text-center text-sm text-[color:var(--text-secondary)]">
             Dah ada akaun?{" "}
             <Link href="/dashboard/login" className="font-semibold text-brand-600">
               Log masuk

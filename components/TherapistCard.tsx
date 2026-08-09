@@ -49,13 +49,13 @@ export default function TherapistCard({ therapist, area, gender }: { therapist: 
       )}
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2 pr-8">
-          <h3 className="truncate font-semibold text-brand-900">{therapist.name}</h3>
-          <span className="shrink-0 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-semibold text-brand-600">
+          <h3 className="truncate font-semibold text-[color:var(--text-primary)]">{therapist.name}</h3>
+          <span className="shrink-0 rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[11px] font-semibold text-brand-600">
             {therapist.gender === "FEMALE" ? "Wanita" : "Lelaki"}
           </span>
         </div>
-        {therapist.bio && <p className="mt-0.5 truncate text-[13px] text-gray-500">{therapist.bio}</p>}
-        <p className="mt-1 flex items-center gap-1 text-[12px] text-gray-400">
+        {therapist.bio && <p className="mt-0.5 truncate text-[13px] text-[color:var(--text-secondary)]">{therapist.bio}</p>}
+        <p className="mt-1 flex items-center gap-1 text-[12px] text-[color:var(--text-muted)]">
           <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
           <span className="truncate">{therapist.coverageAreas.join(", ")}</span>
         </p>
@@ -73,12 +73,12 @@ export default function TherapistCard({ therapist, area, gender }: { therapist: 
         </div>
         <div className="mt-1.5">
           {therapist.depositRequired && therapist.depositAmount ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-600">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[11px] font-medium text-brand-600">
               {therapist.paymentMethod === "CASH" ? <CashIcon className="h-3 w-3" /> : <QrIcon className="h-3 w-3" />}
               Deposit RM{Number(therapist.depositAmount).toFixed(0)} &middot; {therapist.paymentMethod === "CASH" ? "Tunai" : "QR"}
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-400">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[11px] font-medium text-[color:var(--text-muted)]">
               Tiada deposit diperlukan
             </span>
           )}

@@ -25,7 +25,7 @@ function Crescent({ cx, cy, r, color, bite }: { cx: number; cy: number; r: numbe
 
 function FlagFrame({ children }: { children: React.ReactNode }) {
   return (
-    <svg viewBox="0 0 30 20" className="h-3.5 w-5 shrink-0 overflow-hidden rounded-[3px] ring-1 ring-black/[0.08]">
+    <svg viewBox="0 0 30 20" className="h-3.5 w-5 shrink-0 overflow-hidden rounded-[3px] ring-1 ring-[color:var(--border-strong)]">
       {children}
     </svg>
   );

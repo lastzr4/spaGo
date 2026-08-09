@@ -31,7 +31,7 @@ export default function FavoriteButton({ therapist }: { therapist: FavoriteThera
       type="button"
       onClick={handleToggle}
       className={`flex h-8 w-8 items-center justify-center rounded-full transition-transform active:scale-90 ${
-        favorited ? "bg-red-50" : "bg-brand-50"
+        favorited ? "bg-red-500/15" : "bg-[color:var(--surface-2)]"
       }`}
       aria-label={favorited ? "Buang dari kegemaran" : "Simpan sebagai kegemaran"}
     >

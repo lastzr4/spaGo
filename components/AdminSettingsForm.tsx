@@ -61,18 +61,18 @@ export default function AdminSettingsForm({
   return (
     <div className="flex flex-col gap-6 px-5 py-5">
       <div className="flex items-center gap-2">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[color:var(--surface-2)] text-brand-600">
           <PaletteIcon className="h-5 w-5" />
         </div>
-        <h1 className="text-lg font-bold text-brand-900">Tetapan Laman</h1>
+        <h1 className="text-lg font-bold text-[color:var(--text-primary)]">Tetapan Laman</h1>
       </div>
 
       <form onSubmit={handleSave} className="flex flex-col gap-5">
         <div className="card flex flex-col gap-5">
-          <p className="text-[15px] font-bold text-brand-900">Seksyen Hero (homepage)</p>
+          <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Seksyen Hero (homepage)</p>
 
           <div>
-            <label className="mb-2 block text-sm font-semibold text-brand-900">Gambar latar belakang</label>
+            <label className="mb-2 block text-sm font-semibold text-[color:var(--text-primary)]">Gambar latar belakang</label>
             {heroBackgroundImage ? (
               <div className="relative overflow-hidden rounded-2xl">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -102,21 +102,21 @@ export default function AdminSettingsForm({
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-semibold text-brand-900">Tajuk utama</label>
+            <label className="mb-2 block text-sm font-semibold text-[color:var(--text-primary)]">Tajuk utama</label>
             <input className="input" value={heroTitle} onChange={(e) => setHeroTitle(e.target.value)} maxLength={120} />
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-semibold text-brand-900">Sub-tajuk</label>
+            <label className="mb-2 block text-sm font-semibold text-[color:var(--text-primary)]">Sub-tajuk</label>
             <textarea className="input" value={heroSubtitle} onChange={(e) => setHeroSubtitle(e.target.value)} rows={3} maxLength={300} />
           </div>
         </div>
 
         <div className="card flex flex-col gap-5">
-          <p className="text-[15px] font-bold text-brand-900">Warna</p>
+          <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Warna</p>
 
           <div>
-            <label className="mb-2 block text-sm font-semibold text-brand-900">Warna tema</label>
+            <label className="mb-2 block text-sm font-semibold text-[color:var(--text-primary)]">Warna tema</label>
             <div className="flex items-center gap-3">
               <input
                 type="color"
@@ -131,11 +131,11 @@ export default function AdminSettingsForm({
                 placeholder="#7a51c9"
               />
             </div>
-            <p className="mt-1.5 text-xs text-gray-400">Digunakan pada butang utama, nav aktif dan hero (jika tiada gambar).</p>
+            <p className="mt-1.5 text-xs text-[color:var(--text-muted)]">Digunakan pada butang utama, nav aktif dan hero (jika tiada gambar).</p>
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-semibold text-brand-900">Warna latar belakang</label>
+            <label className="mb-2 block text-sm font-semibold text-[color:var(--text-primary)]">Warna latar belakang</label>
             <div className="flex items-center gap-3">
               <input
                 type="color"
@@ -154,9 +154,9 @@ export default function AdminSettingsForm({
         </div>
 
         <div className="card flex flex-col gap-3">
-          <p className="text-[15px] font-bold text-brand-900">Notifikasi</p>
+          <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Notifikasi</p>
           <div>
-            <label className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+            <label className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-[color:var(--text-primary)]">
               <MailIcon className="h-4 w-4 text-brand-500" />
               Email admin
             </label>
@@ -167,7 +167,7 @@ export default function AdminSettingsForm({
               onChange={(e) => setAdminEmail(e.target.value)}
               placeholder="admin@contoh.com"
             />
-            <p className="mt-1.5 text-xs text-gray-400">
+            <p className="mt-1.5 text-xs text-[color:var(--text-muted)]">
               Email akan dihantar ke sini setiap kali ada terapis baru daftar melalui Daftar Terapis.
             </p>
           </div>

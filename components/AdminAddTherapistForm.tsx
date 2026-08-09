@@ -66,19 +66,19 @@ export default function AdminAddTherapistForm() {
 
   return (
     <div className="card flex flex-col gap-3">
-      <p className="text-[15px] font-bold text-brand-900">Tambah Terapis</p>
+      <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Tambah Terapis</p>
 
       {createdLink ? (
         <div className="flex flex-col gap-2">
-          <p className="text-sm text-gray-600">Terapis ditambah! Kongsi pautan dashboard ini kepada mereka:</p>
-          <div className="flex items-center gap-2 rounded-xl border border-black/[0.06] bg-white px-3 py-2.5">
-            <span className="flex-1 truncate text-[13px] text-gray-600">{createdLink}</span>
-            <button type="button" onClick={handleCopy} className="btn-ghost shrink-0 bg-brand-50 px-2.5 py-1.5 text-xs">
+          <p className="text-sm text-[color:var(--text-secondary)]">Terapis ditambah! Kongsi pautan dashboard ini kepada mereka:</p>
+          <div className="flex items-center gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3 py-2.5">
+            <span className="flex-1 truncate text-[13px] text-[color:var(--text-secondary)]">{createdLink}</span>
+            <button type="button" onClick={handleCopy} className="btn-ghost shrink-0 bg-[color:var(--surface-2)] px-2.5 py-1.5 text-xs">
               <CopyIcon className="h-3.5 w-3.5" />
               {copied ? "Disalin!" : "Salin"}
             </button>
           </div>
-          <button type="button" onClick={() => { setCreatedLink(null); setOpen(false); }} className="btn-ghost bg-brand-50">
+          <button type="button" onClick={() => { setCreatedLink(null); setOpen(false); }} className="btn-ghost bg-[color:var(--surface-2)]">
             Selesai
           </button>
         </div>
@@ -91,9 +91,9 @@ export default function AdminAddTherapistForm() {
             <button type="button" onClick={() => setGender("MALE")} className={`chip justify-center py-2.5 ${gender === "MALE" ? "chip-active" : ""}`}>Lelaki</button>
           </div>
           <AreaPicker value={areas} onToggle={toggleArea} />
-          {error && <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{error}</p>}
+          {error && <p className="rounded-xl bg-red-500/15 px-3.5 py-2.5 text-sm font-medium text-red-400">{error}</p>}
           <div className="flex gap-2">
-            <button type="button" onClick={() => setOpen(false)} className="btn-ghost flex-1 bg-gray-50">
+            <button type="button" onClick={() => setOpen(false)} className="btn-ghost flex-1 bg-[color:var(--surface-2)]">
               Batal
             </button>
             <button type="button" onClick={handleSubmit} disabled={submitting} className="btn-primary flex-1">

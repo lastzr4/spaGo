@@ -85,37 +85,37 @@ export default async function TherapistDetailPage({
               </div>
             )}
             <div className="min-w-0 flex-1">
-              <h1 className="truncate text-lg font-bold text-brand-900">{therapist.name}</h1>
-              <p className="mt-0.5 flex items-center gap-1 text-[13px] text-gray-500">
+              <h1 className="truncate text-lg font-bold text-[color:var(--text-primary)]">{therapist.name}</h1>
+              <p className="mt-0.5 flex items-center gap-1 text-[13px] text-[color:var(--text-secondary)]">
                 <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
                 <span className="truncate">{therapist.coverageAreas.join(", ")}</span>
               </p>
               {average !== null && (
-                <p className="mt-1 flex items-center gap-1 text-[13px] font-semibold text-brand-900">
+                <p className="mt-1 flex items-center gap-1 text-[13px] font-semibold text-[color:var(--text-primary)]">
                   <StarIcon filled className="h-3.5 w-3.5 text-yellow-400" />
                   {average.toFixed(1)}
-                  <span className="font-normal text-gray-400">({reviews.length} ulasan)</span>
+                  <span className="font-normal text-[color:var(--text-muted)]">({reviews.length} ulasan)</span>
                 </p>
               )}
             </div>
           </div>
 
-          <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-black/[0.04] pt-3">
+          <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-[color:var(--border)] pt-3">
             <TherapistBadges averageRating={average} reviewCount={reviews.length} createdAt={therapist.createdAt.toISOString()} />
             {therapist.depositRequired && therapist.depositAmount ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-2 py-0.5 text-[11px] font-medium text-brand-600">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[11px] font-medium text-brand-600">
                 {therapist.paymentMethod === "CASH" ? <CashIcon className="h-3 w-3" /> : <QrIcon className="h-3 w-3" />}
                 Deposit RM{Number(therapist.depositAmount).toFixed(0)} &middot; {therapist.paymentMethod === "CASH" ? "Tunai" : "QR"}
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium text-gray-400">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[11px] font-medium text-[color:var(--text-muted)]">
                 Tiada deposit diperlukan
               </span>
             )}
           </div>
 
           {therapist.reviewSummary && (
-            <p className="mt-3 flex items-start gap-1.5 border-t border-black/[0.04] pt-3 text-[12.5px] italic leading-relaxed text-gray-500">
+            <p className="mt-3 flex items-start gap-1.5 border-t border-[color:var(--border)] pt-3 text-[12.5px] italic leading-relaxed text-[color:var(--text-secondary)]">
               <SparkleIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-400" />
               &ldquo;{therapist.reviewSummary}&rdquo;
             </p>
@@ -124,7 +124,7 @@ export default async function TherapistDetailPage({
 
         {hasSocial && (
           <div className="mb-6 animate-fade-in">
-            <h2 className="mb-2 text-[13px] font-bold uppercase tracking-wide text-gray-400">Ikuti</h2>
+            <h2 className="mb-2 text-[13px] font-bold uppercase tracking-wide text-[color:var(--text-muted)]">Ikuti</h2>
             <SocialLinks
               instagram={therapist.socialInstagram}
               tiktok={therapist.socialTiktok}
@@ -142,7 +142,7 @@ export default async function TherapistDetailPage({
         />
 
         {therapist.bio && (
-          <p className="mb-6 animate-fade-in rounded-2xl bg-brand-50/60 px-4 py-3 text-[13px] leading-relaxed text-gray-600">
+          <p className="mb-6 animate-fade-in rounded-2xl bg-[color:var(--surface-2)]/60 px-4 py-3 text-[13px] leading-relaxed text-[color:var(--text-secondary)]">
             {therapist.bio}
           </p>
         )}
@@ -173,7 +173,7 @@ export default async function TherapistDetailPage({
           />
         </div>
 
-        <div className="mt-8 animate-fade-in border-t border-black/[0.05] pt-6">
+        <div className="mt-8 animate-fade-in border-t border-[color:var(--border)] pt-6">
           <ReviewSection
             therapistId={therapist.id}
             initialReviews={reviews.map((r) => ({

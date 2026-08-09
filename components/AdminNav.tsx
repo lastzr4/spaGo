@@ -15,10 +15,10 @@ export default function AdminNav() {
   const pathname = usePathname();
 
   return (
-    <div className="safe-top sticky top-0 z-20 border-b border-black/[0.04] bg-white/90 px-5 pt-3 backdrop-blur-md">
+    <div className="safe-top sticky top-0 z-20 border-b border-[color:var(--border)] bg-[rgba(26,18,48,0.9)] px-5 pt-3 backdrop-blur-md">
       <div className="mb-3 flex items-center justify-between">
-        <h1 className="text-lg font-bold text-brand-900">SpaGo Admin</h1>
-        <a href="/api/admin/logout" className="btn-ghost flex items-center gap-1 bg-brand-50 px-3 py-1.5 text-xs">
+        <h1 className="text-lg font-bold text-[color:var(--text-primary)]">SpaGo Admin</h1>
+        <a href="/api/admin/logout" className="btn-ghost flex items-center gap-1 bg-[color:var(--surface-2)] px-3 py-1.5 text-xs">
           <LogOutIcon className="h-3.5 w-3.5" />
           Log Keluar
         </a>

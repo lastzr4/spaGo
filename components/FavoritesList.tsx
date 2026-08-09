@@ -25,8 +25,8 @@ export default function FavoritesList() {
     return (
       <div className="card flex animate-fade-in flex-col items-center gap-2 py-10 text-center">
         <HeartIcon className="h-8 w-8 text-brand-200" />
-        <p className="text-sm font-medium text-gray-600">Belum ada terapis kegemaran.</p>
-        <p className="text-xs text-gray-400">Tekan ikon hati pada profil terapis untuk simpan di sini.</p>
+        <p className="text-sm font-medium text-[color:var(--text-secondary)]">Belum ada terapis kegemaran.</p>
+        <p className="text-xs text-[color:var(--text-muted)]">Tekan ikon hati pada profil terapis untuk simpan di sini.</p>
       </div>
     );
   }
@@ -45,15 +45,15 @@ export default function FavoritesList() {
               </div>
             )}
             <div className="min-w-0">
-              <p className="truncate font-semibold text-brand-900">{t.name}</p>
-              <p className="truncate text-xs text-gray-500">{t.coverageAreas.join(", ")}</p>
+              <p className="truncate font-semibold text-[color:var(--text-primary)]">{t.name}</p>
+              <p className="truncate text-xs text-[color:var(--text-secondary)]">{t.coverageAreas.join(", ")}</p>
               {t.priceFrom && <p className="text-[13px] font-semibold text-brand-700">Dari RM{Number(t.priceFrom).toFixed(0)}</p>}
             </div>
           </Link>
           <button
             type="button"
             onClick={() => handleRemove(t)}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-500 active:scale-90"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-500/15 text-red-500 active:scale-90"
             aria-label="Buang"
           >
             <HeartIcon filled className="h-4 w-4" />

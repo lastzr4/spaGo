@@ -25,21 +25,21 @@ export default async function DashboardHomePage({ params }: { params: { token: s
     <>
       <TopBar title="Dashboard Terapis" />
       <main className="flex-1 overflow-y-auto px-5 py-5">
-        <p className="mb-5 animate-fade-in text-[15px] text-gray-500">
-          Hai, <span className="font-semibold text-brand-900">{therapist.name}</span> 👋
+        <p className="mb-5 animate-fade-in text-[15px] text-[color:var(--text-secondary)]">
+          Hai, <span className="font-semibold text-[color:var(--text-primary)]">{therapist.name}</span> 👋
         </p>
 
         <PendingAlertBanner token={params.token} pendingCount={stats.pendingCount} />
         <ScheduleConflictBanner token={params.token} conflicts={scheduleConflicts} />
 
-        <h2 className="mb-3 text-[13px] font-bold uppercase tracking-wide text-gray-400">Ringkasan</h2>
+        <h2 className="mb-3 text-[13px] font-bold uppercase tracking-wide text-[color:var(--text-muted)]">Ringkasan</h2>
         <div className="mb-6 animate-fade-in">
           <DashboardStats token={params.token} {...stats} />
         </div>
 
         <UpcomingQueue bookings={upcomingQueue} token={params.token} />
 
-        <h2 className="mb-3 text-[13px] font-bold uppercase tracking-wide text-gray-400">Profil Saya</h2>
+        <h2 className="mb-3 text-[13px] font-bold uppercase tracking-wide text-[color:var(--text-muted)]">Profil Saya</h2>
         <div className="card animate-fade-in">
           <ProfileForm
             token={params.token}
@@ -71,7 +71,7 @@ export default async function DashboardHomePage({ params }: { params: { token: s
           />
         </div>
 
-        <p className="mt-5 text-center text-xs text-gray-400">
+        <p className="mt-5 text-center text-xs text-[color:var(--text-muted)]">
           Simpan pautan ini untuk akses dashboard anda pada bila-bila masa.
         </p>
       </main>

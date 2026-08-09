@@ -122,47 +122,47 @@ function CustomerCard({
         <div className="flex min-w-0 items-center gap-3">
           <span
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold"
-            style={{ background: "color-mix(in srgb, var(--brand, #7a51c9) 12%, white)", color: "var(--brand, #7a51c9)" }}
+            style={{ background: "color-mix(in srgb, var(--brand, #7a51c9) 20%, var(--surface-2))", color: "var(--brand, #7a51c9)" }}
           >
             {customer.name.slice(0, 1).toUpperCase()}
           </span>
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-brand-900">{customer.name}</p>
-            <p className="truncate text-xs text-gray-500">
+            <p className="truncate text-sm font-semibold text-[color:var(--text-primary)]">{customer.name}</p>
+            <p className="truncate text-xs text-[color:var(--text-secondary)]">
               {customer.totalBookings} tempahan &middot; kali terakhir {formatDate(customer.lastBookingDate)}
             </p>
           </div>
         </div>
-        <ChevronLeftIcon className={`h-4 w-4 shrink-0 text-gray-400 transition-transform ${open ? "rotate-90" : "-rotate-90"}`} />
+        <ChevronLeftIcon className={`h-4 w-4 shrink-0 text-[color:var(--text-muted)] transition-transform ${open ? "rotate-90" : "-rotate-90"}`} />
       </button>
 
       {customer.needsFollowUp && (
-        <div className="mt-2.5 flex items-center gap-1.5 rounded-xl bg-amber-50 px-3 py-2 text-xs font-medium text-amber-700">
+        <div className="mt-2.5 flex items-center gap-1.5 rounded-xl bg-amber-500/15 px-3 py-2 text-xs font-medium text-amber-400">
           <AlertTriangleIcon className="h-3.5 w-3.5 shrink-0" />
           Dah {customer.daysSinceLast} hari tak book — mungkin masa untuk follow-up.
         </div>
       )}
 
       {open && (
-        <div className="mt-3 flex flex-col gap-3 border-t border-black/[0.04] pt-3">
-          <a href={`tel:${customer.phone}`} className="flex items-center gap-2 text-sm text-gray-600 active:opacity-60">
+        <div className="mt-3 flex flex-col gap-3 border-t border-[color:var(--border)] pt-3">
+          <a href={`tel:${customer.phone}`} className="flex items-center gap-2 text-sm text-[color:var(--text-secondary)] active:opacity-60">
             <PhoneIcon className="h-4 w-4 text-brand-500" />
             {customer.phone}
           </a>
 
-          <p className="text-xs text-gray-500">
-            Servis terakhir: <span className="font-medium text-gray-700">{customer.lastServiceName}</span> &middot; {customer.completedBookings} selesai
+          <p className="text-xs text-[color:var(--text-secondary)]">
+            Servis terakhir: <span className="font-medium text-[color:var(--text-secondary)]">{customer.lastServiceName}</span> &middot; {customer.completedBookings} selesai
           </p>
 
-          <div className="flex items-center justify-between rounded-xl bg-brand-50/60 px-3 py-2.5">
+          <div className="flex items-center justify-between rounded-xl bg-[color:var(--surface-2)]/60 px-3 py-2.5">
             <div>
-              <p className="text-[11px] font-medium text-gray-500">Kod rujukan</p>
+              <p className="text-[11px] font-medium text-[color:var(--text-secondary)]">Kod rujukan</p>
               <p className="text-sm font-bold tracking-wide text-brand-700">{customer.referralCode}</p>
             </div>
             <button
               type="button"
               onClick={copyCode}
-              className="flex items-center gap-1 rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-brand-600 shadow-sm active:scale-95"
+              className="flex items-center gap-1 rounded-full bg-[color:var(--surface-2)] px-3 py-1.5 text-xs font-semibold text-brand-600 shadow-sm active:scale-95"
             >
               {copied ? <CheckCircleIcon filled className="h-3.5 w-3.5 text-green-500" /> : <CopyIcon className="h-3.5 w-3.5" />}
               {copied ? "Disalin" : "Salin"}
@@ -170,19 +170,19 @@ function CustomerCard({
           </div>
 
           <div>
-            <label className="mb-1 block text-[11px] font-medium text-gray-500">Nota pelanggan (tekanan, alahan, dll)</label>
+            <label className="mb-1 block text-[11px] font-medium text-[color:var(--text-secondary)]">Nota pelanggan (tekanan, alahan, dll)</label>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={2}
               placeholder="cth: suka tekanan sederhana, alahan minyak lavender"
-              className="w-full resize-none rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none focus:border-brand-400"
+              className="w-full resize-none rounded-xl border border-[color:var(--border-strong)] px-3 py-2 text-sm outline-none focus:border-brand-400"
             />
             <button
               type="button"
               onClick={saveNote}
               disabled={saving}
-              className="mt-1.5 rounded-full bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-600 active:scale-95 disabled:opacity-50"
+              className="mt-1.5 rounded-full bg-[color:var(--surface-2)] px-3 py-1.5 text-xs font-semibold text-brand-600 active:scale-95 disabled:opacity-50"
             >
               {saving ? "Menyimpan..." : saved ? "Tersimpan ✓" : "Simpan nota"}
             </button>
@@ -194,7 +194,7 @@ function CustomerCard({
                 type="button"
                 onClick={generateDraft}
                 disabled={draftLoading}
-                className="flex items-center justify-center gap-1.5 rounded-xl bg-brand-50 py-2 text-xs font-semibold text-brand-600 active:scale-[0.98] disabled:opacity-50"
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface-2)] py-2 text-xs font-semibold text-brand-600 active:scale-[0.98] disabled:opacity-50"
               >
                 <SparkleIcon className="h-3.5 w-3.5" />
                 {draftLoading ? "Menjana..." : aiDraft ? "Jana semula mesej AI" : "Jana mesej peribadi AI"}
@@ -205,7 +205,7 @@ function CustomerCard({
                   value={aiDraft}
                   onChange={(e) => setAiDraft(e.target.value)}
                   rows={4}
-                  className="w-full resize-none rounded-xl border border-brand-200 bg-brand-50/40 px-3 py-2 text-sm outline-none focus:border-brand-400"
+                  className="w-full resize-none rounded-xl border border-brand-200 bg-[color:var(--surface-2)]/40 px-3 py-2 text-sm outline-none focus:border-brand-400"
                 />
               )}
               <a
@@ -240,9 +240,9 @@ export default function CustomerList({ customers, token, therapistName }: { cust
   if (customers.length === 0) {
     return (
       <div className="card flex flex-col items-center gap-2 py-10 text-center animate-fade-in">
-        <UsersIcon className="h-8 w-8 text-gray-300" />
-        <p className="text-sm font-medium text-gray-600">Belum ada pelanggan lagi.</p>
-        <p className="text-xs text-gray-400">Sejarah pelanggan akan muncul di sini selepas tempahan pertama.</p>
+        <UsersIcon className="h-8 w-8 text-[color:var(--text-muted)]" />
+        <p className="text-sm font-medium text-[color:var(--text-secondary)]">Belum ada pelanggan lagi.</p>
+        <p className="text-xs text-[color:var(--text-muted)]">Sejarah pelanggan akan muncul di sini selepas tempahan pertama.</p>
       </div>
     );
   }
@@ -250,7 +250,7 @@ export default function CustomerList({ customers, token, therapistName }: { cust
   return (
     <div className="flex flex-col gap-3">
       {followUpCount > 0 && (
-        <div className="flex items-center gap-2 rounded-2xl bg-amber-50 px-4 py-3 text-xs font-medium text-amber-700 animate-fade-in">
+        <div className="flex items-center gap-2 rounded-2xl bg-amber-500/15 px-4 py-3 text-xs font-medium text-amber-400 animate-fade-in">
           <AlertTriangleIcon className="h-4 w-4 shrink-0" />
           {followUpCount} pelanggan sudah lama tak book — pertimbangkan follow-up.
         </div>
@@ -260,7 +260,7 @@ export default function CustomerList({ customers, token, therapistName }: { cust
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Cari nama atau nombor telefon..."
-        className="w-full rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm outline-none focus:border-brand-400"
+        className="w-full rounded-xl border border-[color:var(--border-strong)] px-3.5 py-2.5 text-sm outline-none focus:border-brand-400"
       />
 
       {filtered.map((c) => (
@@ -274,7 +274,7 @@ export default function CustomerList({ customers, token, therapistName }: { cust
         />
       ))}
 
-      {filtered.length === 0 && <p className="py-6 text-center text-sm text-gray-400">Tiada pelanggan sepadan.</p>}
+      {filtered.length === 0 && <p className="py-6 text-center text-sm text-[color:var(--text-muted)]">Tiada pelanggan sepadan.</p>}
     </div>
   );
 }

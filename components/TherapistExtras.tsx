@@ -25,13 +25,13 @@ export default function TherapistExtras({
             </span>
           ))}
           {yearsExperience != null && (
-            <span className="chip text-[12px] text-gray-500">{yearsExperience} tahun pengalaman</span>
+            <span className="chip text-[12px] text-[color:var(--text-secondary)]">{yearsExperience} tahun pengalaman</span>
           )}
         </div>
       )}
 
       {workingHoursNote && (
-        <p className="flex items-center gap-1.5 text-[13px] text-gray-500">
+        <p className="flex items-center gap-1.5 text-[13px] text-[color:var(--text-secondary)]">
           <ClockIcon className="h-3.5 w-3.5 shrink-0 text-brand-400" />
           {workingHoursNote}
         </p>

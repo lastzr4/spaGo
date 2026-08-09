@@ -27,7 +27,7 @@ export default function SegmentedToggle<T extends string>({
 
   return (
     <div
-      className={`relative flex w-full rounded-2xl bg-brand-50 p-1 ${size === "sm" ? "text-sm" : "text-[15px]"}`}
+      className={`relative flex w-full rounded-2xl bg-[color:var(--surface-2)] p-1 ${size === "sm" ? "text-sm" : "text-[15px]"}`}
       role="tablist"
     >
       {hasValue && (
