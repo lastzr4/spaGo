@@ -194,21 +194,21 @@ export default function ServiceManager({ token, initialServices }: { token: stri
                 {editingId === s.id ? (
                   <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                     <input
-                      className="w-full rounded-xl border border-[color:var(--border-strong)] px-3 py-1.5 text-sm outline-none focus:border-brand-400"
+                      className="w-full rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3 py-1.5 text-sm text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
                       placeholder="Nama servis"
                     />
                     <div className="flex gap-2">
                       <input
-                        className="w-full rounded-xl border border-[color:var(--border-strong)] px-3 py-1.5 text-sm outline-none focus:border-brand-400"
+                        className="w-full rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3 py-1.5 text-sm text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400"
                         type="number"
                         value={editDuration}
                         onChange={(e) => setEditDuration(e.target.value)}
                         placeholder="Minit"
                       />
                       <input
-                        className="w-full rounded-xl border border-[color:var(--border-strong)] px-3 py-1.5 text-sm outline-none focus:border-brand-400"
+                        className="w-full rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3 py-1.5 text-sm text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400"
                         type="number"
                         value={editPrice}
                         onChange={(e) => setEditPrice(e.target.value)}
@@ -216,7 +216,7 @@ export default function ServiceManager({ token, initialServices }: { token: stri
                       />
                     </div>
                     <textarea
-                      className="w-full resize-none rounded-xl border border-[color:var(--border-strong)] px-3 py-1.5 text-sm outline-none focus:border-brand-400"
+                      className="w-full resize-none rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3 py-1.5 text-sm text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400"
                       rows={2}
                       value={editDescription}
                       onChange={(e) => setEditDescription(e.target.value)}

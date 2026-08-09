@@ -176,7 +176,7 @@ function CustomerCard({
               onChange={(e) => setNote(e.target.value)}
               rows={2}
               placeholder="cth: suka tekanan sederhana, alahan minyak lavender"
-              className="w-full resize-none rounded-xl border border-[color:var(--border-strong)] px-3 py-2 text-sm outline-none focus:border-brand-400"
+              className="w-full resize-none rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3 py-2 text-sm text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400"
             />
             <button
               type="button"
@@ -260,7 +260,7 @@ export default function CustomerList({ customers, token, therapistName }: { cust
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Cari nama atau nombor telefon..."
-        className="w-full rounded-xl border border-[color:var(--border-strong)] px-3.5 py-2.5 text-sm outline-none focus:border-brand-400"
+        className="w-full rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3.5 py-2.5 text-sm text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400"
       />
 
       {filtered.map((c) => (

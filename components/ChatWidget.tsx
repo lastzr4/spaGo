@@ -121,7 +121,7 @@ export default function ChatWidget({ slug, therapistName, therapistPhone }: { sl
                     }
                   }}
                   placeholder="Taip soalan anda..."
-                  className="flex-1 rounded-full border border-[color:var(--border-strong)] px-3.5 py-2 text-[13px] outline-none focus:border-brand-400"
+                  className="flex-1 rounded-full border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3.5 py-2 text-[13px] text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400"
                 />
                 <button
                   type="button"
