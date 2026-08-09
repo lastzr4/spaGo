@@ -38,3 +38,14 @@ export function fileToCompressedDataUrl(
     reader.readAsDataURL(file);
   });
 }
+
+// Plain base64 data-URL read, no compression — used for non-image files
+// (PDF) where canvas-based resizing doesn't apply.
+export function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error("Gagal membaca fail"));
+    reader.onload = () => resolve(reader.result as string);
+    reader.readAsDataURL(file);
+  });
+}

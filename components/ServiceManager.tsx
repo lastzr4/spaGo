@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { fileToCompressedDataUrl } from "@/lib/image";
-import { CameraIcon, PlusIcon, TrashIcon, SparkleIcon } from "@/components/icons";
+import { fileToCompressedDataUrl, fileToDataUrl } from "@/lib/image";
+import { CameraIcon, PlusIcon, TrashIcon, SparkleIcon, FileUpIcon } from "@/components/icons";
 
 type Service = { id: string; name: string; durationMinutes: number; price: string; active: boolean; photoUrl?: string | null; description?: string | null };
 
@@ -23,7 +23,11 @@ export default function ServiceManager({ token, initialServices }: { token: stri
   const [editPrice, setEditPrice] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
+  const [extracting, setExtracting] = useState(false);
+  const [extractError, setExtractError] = useState<string | null>(null);
+  const [extractSuccess, setExtractSuccess] = useState<string | null>(null);
   const newPhotoInputRef = useRef<HTMLInputElement>(null);
+  const extractInputRef = useRef<HTMLInputElement>(null);
 
   function startEdit(service: Service) {
     setEditingId(service.id);
@@ -148,8 +152,76 @@ export default function ServiceManager({ token, initialServices }: { token: stri
     }
   }
 
+  async function handleExtractUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setExtracting(true);
+    setExtractError(null);
+    setExtractSuccess(null);
+    try {
+      const dataUrl = file.type === "application/pdf" ? await fileToDataUrl(file) : await fileToCompressedDataUrl(file, { maxWidth: 1600, maxHeight: 1600, quality: 0.85 });
+      const res = await fetch(`/api/dashboard/${token}/ai/extract-services`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ dataUrl }),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok) {
+        setExtractError(data?.error ?? "Gagal membaca dokumen. Sila cuba lagi atau isi manual.");
+        return;
+      }
+      const newServices: Service[] = (data.services ?? []).map((s: { id: string; name: string; durationMinutes: number; price: string | number; active: boolean; photoUrl: string | null; description: string | null }) => ({
+        id: s.id,
+        name: s.name,
+        durationMinutes: s.durationMinutes,
+        price: String(s.price),
+        active: s.active,
+        photoUrl: s.photoUrl,
+        description: s.description,
+      }));
+      setServices((list) => [...list, ...newServices]);
+      setExtractSuccess(`${newServices.length} servis berjaya ditambah oleh AI daripada dokumen ini.`);
+    } catch {
+      setExtractError("Gagal membaca dokumen. Sila cuba lagi atau isi manual.");
+    } finally {
+      setExtracting(false);
+      if (extractInputRef.current) extractInputRef.current.value = "";
+    }
+  }
+
   return (
     <div className="flex flex-col gap-6">
+      <label
+        className={`card-tap flex items-center gap-3 rounded-2xl border border-dashed border-brand-400/50 bg-[color:var(--surface-2)]/60 px-4 py-3.5 ${
+          extracting ? "pointer-events-none opacity-60" : "cursor-pointer"
+        }`}
+      >
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[color:var(--surface-2)] text-brand-400">
+          {extracting ? (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-brand-400 border-t-transparent" />
+          ) : (
+            <FileUpIcon className="h-5 w-5" />
+          )}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="flex items-center gap-1.5 text-sm font-semibold text-[color:var(--text-primary)]">
+            <SparkleIcon className="h-3.5 w-3.5 text-brand-400" />
+            {extracting ? "AI sedang membaca dokumen..." : "Upload Senarai Harga (AI)"}
+          </span>
+          <span className="block text-xs text-[color:var(--text-secondary)]">Gambar atau PDF — servis diisi automatik</span>
+        </span>
+        <input
+          ref={extractInputRef}
+          type="file"
+          accept="image/*,application/pdf"
+          className="hidden"
+          onChange={handleExtractUpload}
+          disabled={extracting}
+        />
+      </label>
+      {extractError && <p className="-mt-3 rounded-xl bg-red-500/15 px-3.5 py-2.5 text-xs font-medium text-red-400">{extractError}</p>}
+      {extractSuccess && <p className="-mt-3 rounded-xl bg-emerald-500/15 px-3.5 py-2.5 text-xs font-medium text-emerald-400">{extractSuccess}</p>}
+
       <div className="flex flex-col gap-3">
         {services.length === 0 && (
           <div className="card flex flex-col items-center gap-1 py-8 text-center animate-fade-in">

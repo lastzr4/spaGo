@@ -49,3 +49,81 @@ export async function askClaude(params: {
     return null;
   }
 }
+
+export type ExtractedService = { name: string; durationMinutes: number; price: number; description: string | null };
+
+// Vision/document extraction: reads a price-list image or PDF and returns a
+// structured list of services (name/duration/price/description). Used by
+// the "Upload Senarai Harga (AI)" feature on the Urus Servis page so a
+// therapist can skip manually retyping every service. Same fail-open
+// contract as askClaude — returns null on any failure, never throws.
+export async function extractServicesFromDocument(params: {
+  base64Data: string;
+  mediaType: "image/jpeg" | "image/png" | "image/webp" | "image/gif" | "application/pdf";
+}): Promise<ExtractedService[] | null> {
+  const client = getAnthropicClient();
+  if (!client) return null;
+
+  const isPdf = params.mediaType === "application/pdf";
+
+  try {
+    const response = await client.messages.create({
+      model: AI_MODEL,
+      max_tokens: 2000,
+      system:
+        "Anda pembantu yang membaca senarai harga servis spa/urut daripada gambar atau dokumen, dan mengeluarkan SEMATA-MATA JSON array yang sah — tiada teks lain, tiada penjelasan, tiada markdown code fence. Setiap item mesti ada field: name (string, nama servis, kekalkan bahasa asal), durationMinutes (integer minit, anggarkan 60 jika tiada dinyatakan), price (nombor dalam Ringgit Malaysia sahaja, tanpa simbol RM atau koma), description (string ringkas jika ada penerangan berkaitan, jika tiada guna null). Jika tiada servis dapat dikenal pasti dalam dokumen, pulangkan array kosong [].",
+      messages: [
+        {
+          role: "user",
+          content: [
+            isPdf
+              ? { type: "document" as const, source: { type: "base64" as const, media_type: "application/pdf" as const, data: params.base64Data } }
+              : {
+                  type: "image" as const,
+                  source: {
+                    type: "base64" as const,
+                    media_type: params.mediaType as "image/jpeg" | "image/png" | "image/webp" | "image/gif",
+                    data: params.base64Data,
+                  },
+                },
+            { type: "text" as const, text: "Ekstrak semua servis, tempoh, dan harga daripada dokumen/gambar ini sebagai JSON array sahaja." },
+          ],
+        },
+      ],
+    });
+
+    const text = response.content
+      .filter((block): block is Anthropic.TextBlock => block.type === "text")
+      .map((block) => block.text)
+      .join("\n")
+      .trim();
+
+    if (!text) return null;
+
+    const cleaned = text
+      .replace(/^```json\s*/i, "")
+      .replace(/^```\s*/i, "")
+      .replace(/```\s*$/i, "")
+      .trim();
+
+    const parsed: unknown = JSON.parse(cleaned);
+    if (!Array.isArray(parsed)) return null;
+
+    return parsed
+      .filter((item): item is Record<string, unknown> => Boolean(item) && typeof (item as { name?: unknown }).name === "string")
+      .map((item) => {
+        const durationRaw = Number(item.durationMinutes);
+        const priceRaw = Number(item.price);
+        return {
+          name: String(item.name).trim().slice(0, 200),
+          durationMinutes: Number.isFinite(durationRaw) && durationRaw > 0 ? Math.round(durationRaw) : 60,
+          price: Number.isFinite(priceRaw) && priceRaw >= 0 ? priceRaw : 0,
+          description: typeof item.description === "string" && item.description.trim() ? item.description.trim().slice(0, 500) : null,
+        };
+      })
+      .filter((item) => item.name && item.price > 0);
+  } catch (err) {
+    console.error("[extractServicesFromDocument] request failed:", err);
+    return null;
+  }
+}
