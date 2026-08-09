@@ -7,15 +7,15 @@ export default function Footer() {
 
   return (
     <div className="mt-6 flex flex-wrap animate-fade-in items-center justify-center gap-3 pb-8 text-xs">
-      <Link href="/favorites" className="font-semibold" style={{ color: "var(--brand, #7a51c9)" }}>
+      <Link href="/favorites" className="font-semibold text-[color:var(--text-primary)]">
         Kegemaran
       </Link>
       <span className="text-[color:var(--text-muted)]">&middot;</span>
-      <Link href="/dashboard/login" className="font-semibold" style={{ color: "var(--brand, #7a51c9)" }}>
+      <Link href="/dashboard/login" className="font-semibold text-[color:var(--text-primary)]">
         Log Masuk
       </Link>
       <span className="text-[color:var(--text-muted)]">&middot;</span>
-      <Link href="/dashboard/register" className="font-semibold" style={{ color: "var(--brand, #7a51c9)" }}>
+      <Link href="/dashboard/register" className="font-semibold text-[color:var(--text-primary)]">
         Daftar Terapis
       </Link>
       {authed && (
