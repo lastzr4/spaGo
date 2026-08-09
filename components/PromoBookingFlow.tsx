@@ -4,12 +4,14 @@ import { useState } from "react";
 import BookingFlow from "@/components/BookingFlow";
 import SegmentedToggle from "@/components/SegmentedToggle";
 
-type Service = { id: string; name: string; durationMinutes: number; price: string; photoUrl?: string | null };
+type Service = { id: string; name: string; durationMinutes: number; price: string; photoUrl?: string | null; description?: string | null };
 type Slot = { id: string; date: string; startTime: string; endTime: string };
 
 export default function PromoBookingFlow({
   therapistId,
   therapistPhone,
+  therapistRating = null,
+  therapistReviewCount = 0,
   services,
   slots,
   defaultGender,
@@ -21,6 +23,8 @@ export default function PromoBookingFlow({
 }: {
   therapistId: string;
   therapistPhone: string;
+  therapistRating?: number | null;
+  therapistReviewCount?: number;
   services: Service[];
   slots: Slot[];
   defaultGender: "MALE" | "FEMALE";
@@ -49,6 +53,8 @@ export default function PromoBookingFlow({
       <BookingFlow
         therapistId={therapistId}
         therapistPhone={therapistPhone}
+        therapistRating={therapistRating}
+        therapistReviewCount={therapistReviewCount}
         services={services}
         slots={slots}
         customerGender={gender}

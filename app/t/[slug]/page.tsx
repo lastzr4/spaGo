@@ -173,6 +173,8 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
           <PromoBookingFlow
             therapistId={therapist.id}
             therapistPhone={therapist.phone}
+            therapistRating={average}
+            therapistReviewCount={reviews.length}
             defaultGender={defaultGender}
             services={therapist.services.map((s) => ({
               id: s.id,
@@ -180,6 +182,7 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
               durationMinutes: s.durationMinutes,
               price: s.price.toString(),
               photoUrl: s.photoUrl,
+              description: s.description,
             }))}
             slots={slots.map((s) => ({
               id: s.id,

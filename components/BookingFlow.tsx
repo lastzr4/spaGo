@@ -4,9 +4,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { buildWhatsAppBookingMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import { CheckCircleIcon, SendIcon, CalendarIcon, AlertTriangleIcon, QrIcon, CashIcon, ChevronRightIcon } from "@/components/icons";
 import Confetti from "@/components/Confetti";
+import ServiceDetailSheet from "@/components/ServiceDetailSheet";
 import { isPastSlot } from "@/lib/slotTimes";
 
-type Service = { id: string; name: string; durationMinutes: number; price: string; photoUrl?: string | null };
+type Service = { id: string; name: string; durationMinutes: number; price: string; photoUrl?: string | null; description?: string | null };
 type Slot = { id: string; date: string; startTime: string; endTime: string };
 
 const WEEKDAY = ["Ahd", "Isn", "Sel", "Rab", "Kha", "Jum", "Sab"];
@@ -20,6 +21,8 @@ function formatDatePill(d: string) {
 export default function BookingFlow({
   therapistId,
   therapistPhone,
+  therapistRating = null,
+  therapistReviewCount = 0,
   services,
   slots,
   customerGender,
@@ -31,6 +34,8 @@ export default function BookingFlow({
 }: {
   therapistId: string;
   therapistPhone: string;
+  therapistRating?: number | null;
+  therapistReviewCount?: number;
   services: Service[];
   slots: Slot[];
   customerGender: "MALE" | "FEMALE";
@@ -52,7 +57,9 @@ export default function BookingFlow({
   const [showQr, setShowQr] = useState(false);
   const [justBooked, setJustBooked] = useState(false);
   const [detailsRevealed, setDetailsRevealed] = useState(false);
+  const [detailService, setDetailService] = useState<Service | null>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
+  const slotSectionRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
   const phoneRef = useRef<HTMLInputElement>(null);
   const addressRef = useRef<HTMLTextAreaElement>(null);
@@ -180,7 +187,7 @@ export default function BookingFlow({
               <button
                 type="button"
                 key={s.id}
-                onClick={() => setServiceId(s.id)}
+                onClick={() => setDetailService(s)}
                 className={`card-tap flex items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors ${
                   active ? "border-brand-500 bg-[color:var(--surface-2)]/70 shadow-card" : "border-[color:var(--border)] bg-[color:var(--surface-2)]"
                 }`}
@@ -209,7 +216,7 @@ export default function BookingFlow({
         </div>
       </div>
 
-      <div>
+      <div ref={slotSectionRef} className="scroll-mt-5">
         <h2 className="mb-3 flex items-center gap-1.5 text-[15px] font-bold text-[color:var(--text-primary)]">
           <CalendarIcon className="h-4 w-4 text-brand-500" />
           Pilih slot masa
@@ -386,6 +393,23 @@ export default function BookingFlow({
           </button>
         )}
       </div>
+
+      {detailService && (
+        <ServiceDetailSheet
+          service={detailService}
+          therapistRating={therapistRating}
+          therapistReviewCount={therapistReviewCount}
+          depositRequired={depositRequired}
+          depositAmount={depositAmount}
+          paymentMethod={paymentMethod}
+          onClose={() => setDetailService(null)}
+          onBook={() => {
+            setServiceId(detailService.id);
+            setDetailService(null);
+            setTimeout(() => slotSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+          }}
+        />
+      )}
     </form>
   );
 }

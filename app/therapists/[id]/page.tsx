@@ -171,6 +171,8 @@ export default async function TherapistDetailPage({
           <BookingFlow
             therapistId={therapist.id}
             therapistPhone={therapist.phone}
+            therapistRating={average}
+            therapistReviewCount={reviews.length}
             customerGender={customerGender}
             services={therapist.services.map((s) => ({
               id: s.id,
@@ -178,6 +180,7 @@ export default async function TherapistDetailPage({
               durationMinutes: s.durationMinutes,
               price: s.price.toString(),
               photoUrl: s.photoUrl,
+              description: s.description,
             }))}
             slots={slots.map((s) => ({
               id: s.id,

@@ -4,13 +4,14 @@ import { useRef, useState } from "react";
 import { fileToCompressedDataUrl } from "@/lib/image";
 import { CameraIcon, PlusIcon, TrashIcon, SparkleIcon } from "@/components/icons";
 
-type Service = { id: string; name: string; durationMinutes: number; price: string; active: boolean; photoUrl?: string | null };
+type Service = { id: string; name: string; durationMinutes: number; price: string; active: boolean; photoUrl?: string | null; description?: string | null };
 
 export default function ServiceManager({ token, initialServices }: { token: string; initialServices: Service[] }) {
   const [services, setServices] = useState(initialServices);
   const [name, setName] = useState("");
   const [duration, setDuration] = useState("60");
   const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [uploadingFor, setUploadingFor] = useState<string | null>(null);
@@ -20,6 +21,7 @@ export default function ServiceManager({ token, initialServices }: { token: stri
   const [editName, setEditName] = useState("");
   const [editDuration, setEditDuration] = useState("");
   const [editPrice, setEditPrice] = useState("");
+  const [editDescription, setEditDescription] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
   const newPhotoInputRef = useRef<HTMLInputElement>(null);
 
@@ -28,6 +30,7 @@ export default function ServiceManager({ token, initialServices }: { token: stri
     setEditName(service.name);
     setEditDuration(String(service.durationMinutes));
     setEditPrice(service.price);
+    setEditDescription(service.description ?? "");
   }
 
   async function saveEdit(service: Service) {
@@ -36,11 +39,20 @@ export default function ServiceManager({ token, initialServices }: { token: stri
     const res = await fetch(`/api/dashboard/${token}/services/${service.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: editName.trim(), durationMinutes: Number(editDuration), price: Number(editPrice) }),
+      body: JSON.stringify({
+        name: editName.trim(),
+        durationMinutes: Number(editDuration),
+        price: Number(editPrice),
+        description: editDescription.trim() || null,
+      }),
     });
     if (res.ok) {
       setServices((list) =>
-        list.map((s) => (s.id === service.id ? { ...s, name: editName.trim(), durationMinutes: Number(editDuration), price: editPrice } : s))
+        list.map((s) =>
+          s.id === service.id
+            ? { ...s, name: editName.trim(), durationMinutes: Number(editDuration), price: editPrice, description: editDescription.trim() || null }
+            : s
+        )
       );
       setEditingId(null);
     }
@@ -74,7 +86,7 @@ export default function ServiceManager({ token, initialServices }: { token: stri
     const res = await fetch(`/api/dashboard/${token}/services`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, durationMinutes: Number(duration), price: Number(price), photoUrl }),
+      body: JSON.stringify({ name, durationMinutes: Number(duration), price: Number(price), description: description.trim() || null, photoUrl }),
     });
     const data = await res.json();
     if (res.ok) {
@@ -82,6 +94,7 @@ export default function ServiceManager({ token, initialServices }: { token: stri
       setName("");
       setDuration("60");
       setPrice("");
+      setDescription("");
       setPhotoUrl(null);
       if (newPhotoInputRef.current) newPhotoInputRef.current.value = "";
     }
@@ -202,6 +215,13 @@ export default function ServiceManager({ token, initialServices }: { token: stri
                         placeholder="Harga (RM)"
                       />
                     </div>
+                    <textarea
+                      className="w-full resize-none rounded-xl border border-[color:var(--border-strong)] px-3 py-1.5 text-sm outline-none focus:border-brand-400"
+                      rows={2}
+                      value={editDescription}
+                      onChange={(e) => setEditDescription(e.target.value)}
+                      placeholder="Penerangan servis (dipaparkan di skrin Butiran Servis pelanggan)"
+                    />
                     <div className="mt-0.5 flex gap-4">
                       <button
                         type="button"
@@ -259,6 +279,13 @@ export default function ServiceManager({ token, initialServices }: { token: stri
           <input className="input" type="number" placeholder="Minit" value={duration} onChange={(e) => setDuration(e.target.value)} />
           <input className="input" type="number" placeholder="Harga (RM)" value={price} onChange={(e) => setPrice(e.target.value)} />
         </div>
+        <textarea
+          className="input resize-none"
+          rows={2}
+          placeholder="Penerangan servis (optional, dipaparkan di skrin Butiran Servis pelanggan)"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
         <div className="flex items-center gap-3">
           {photoUrl && (
             // eslint-disable-next-line @next/next/no-img-element
