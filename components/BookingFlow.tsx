@@ -266,6 +266,33 @@ export default function BookingFlow({
         )}
       </div>
 
+      {selectedService && selectedSlot && (
+        <div className="card animate-fade-in">
+          <h2 className="mb-1 text-[15px] font-bold text-[color:var(--text-primary)]">Ringkasan tempahan</h2>
+          <div className="detail-row">
+            <span className="text-[color:var(--text-secondary)]">Servis</span>
+            <span className="truncate pl-3 text-right font-semibold text-[color:var(--text-primary)]">{selectedService.name}</span>
+          </div>
+          <div className="detail-row">
+            <span className="text-[color:var(--text-secondary)]">Tarikh &amp; masa</span>
+            <span className="font-semibold text-[color:var(--text-primary)]">
+              {(() => {
+                const { weekday, day, month } = formatDatePill(selectedSlot.date.slice(0, 10));
+                return `${weekday}, ${day} ${month} · ${selectedSlot.startTime}`;
+              })()}
+            </span>
+          </div>
+          <div className="detail-row">
+            <span className="text-[color:var(--text-secondary)]">Tempoh</span>
+            <span className="font-semibold text-[color:var(--text-primary)]">{selectedService.durationMinutes} minit</span>
+          </div>
+          <div className="detail-row">
+            <span className="text-[color:var(--text-secondary)]">Harga</span>
+            <span className="font-bold text-brand-500">RM{Number(selectedService.price).toFixed(0)}</span>
+          </div>
+        </div>
+      )}
+
       {detailsRevealed && (
       <div ref={detailsRef} className="flex animate-fade-in flex-col gap-3 scroll-mt-5">
         <h2 className="text-[15px] font-bold text-[color:var(--text-primary)]">Maklumat anda</h2>

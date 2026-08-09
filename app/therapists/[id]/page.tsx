@@ -9,7 +9,8 @@ import TherapistExtras from "@/components/TherapistExtras";
 import TherapistBadges from "@/components/TherapistBadges";
 import ShareButton from "@/components/ShareButton";
 import FavoriteButton from "@/components/FavoriteButton";
-import { StarIcon, MapPinIcon, QrIcon, CashIcon, SparkleIcon } from "@/components/icons";
+import QuickInfoRow from "@/components/QuickInfoRow";
+import { StarIcon, MapPinIcon, QrIcon, CashIcon, SparkleIcon, AwardIcon, ClockIcon } from "@/components/icons";
 
 export const dynamic = "force-dynamic";
 
@@ -72,50 +73,69 @@ export default async function TherapistDetailPage({
         }
       />
       <main className="flex-1 overflow-y-auto px-5 py-5">
-        {/* Profile card — avatar, name, location, rating grouped together; meta badges
-            separated into their own row below a divider so they read as secondary info. */}
-        <div className="card mb-6 animate-fade-in">
-          <div className="flex items-center gap-4">
+        {/* Large hero photo (Spafy-style) with floating rating + status badges,
+            followed by name/location, a quick-info amenities row, and the AI
+            review summary — replaces the old small-avatar horizontal card. */}
+        <div className="mb-6 animate-fade-in">
+          <div className="relative overflow-hidden rounded-3xl" style={{ aspectRatio: "4 / 3" }}>
             {therapist.photoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={therapist.photoUrl} alt={therapist.name} className="avatar-ring h-20 w-20 shrink-0 rounded-3xl object-cover" />
+              <img src={therapist.photoUrl} alt={therapist.name} className="h-full w-full object-cover" />
             ) : (
-              <div className="avatar-ring flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-brand-400 to-brand-600 text-2xl font-bold text-white">
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-400 to-brand-600 text-6xl font-bold text-white">
                 {therapist.name.charAt(0).toUpperCase()}
               </div>
             )}
-            <div className="min-w-0 flex-1">
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+            {average !== null && (
+              <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1 text-[12px] font-semibold text-white backdrop-blur-md">
+                <StarIcon filled className="h-3 w-3 text-yellow-400" />
+                {average.toFixed(1)}
+                <span className="font-normal text-white/70">({reviews.length})</span>
+              </span>
+            )}
+            <div className="absolute bottom-3 left-3">
+              <TherapistBadges averageRating={average} reviewCount={reviews.length} createdAt={therapist.createdAt.toISOString()} />
+            </div>
+          </div>
+
+          <div className="mt-3 flex items-start justify-between gap-2">
+            <div className="min-w-0">
               <h1 className="truncate text-lg font-bold text-[color:var(--text-primary)]">{therapist.name}</h1>
               <p className="mt-0.5 flex items-center gap-1 text-[13px] text-[color:var(--text-secondary)]">
                 <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
                 <span className="truncate">{therapist.coverageAreas.join(", ")}</span>
               </p>
-              {average !== null && (
-                <p className="mt-1 flex items-center gap-1 text-[13px] font-semibold text-[color:var(--text-primary)]">
-                  <StarIcon filled className="h-3.5 w-3.5 text-yellow-400" />
-                  {average.toFixed(1)}
-                  <span className="font-normal text-[color:var(--text-muted)]">({reviews.length} ulasan)</span>
-                </p>
-              )}
             </div>
           </div>
 
-          <div className="mt-3 flex flex-wrap items-center gap-1.5 border-t border-[color:var(--border)] pt-3">
-            <TherapistBadges averageRating={average} reviewCount={reviews.length} createdAt={therapist.createdAt.toISOString()} />
-            {therapist.depositRequired && therapist.depositAmount ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[11px] font-medium text-brand-600">
-                {therapist.paymentMethod === "CASH" ? <CashIcon className="h-3 w-3" /> : <QrIcon className="h-3 w-3" />}
-                Deposit RM{Number(therapist.depositAmount).toFixed(0)} &middot; {therapist.paymentMethod === "CASH" ? "Tunai" : "QR"}
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[11px] font-medium text-[color:var(--text-muted)]">
-                Tiada deposit diperlukan
-              </span>
-            )}
+          <div className="mt-3">
+            <QuickInfoRow
+              items={[
+                {
+                  icon: <AwardIcon className="h-4 w-4" />,
+                  label: "Pengalaman",
+                  value: therapist.yearsExperience != null ? `${therapist.yearsExperience} thn` : "-",
+                },
+                {
+                  icon: therapist.paymentMethod === "CASH" ? <CashIcon className="h-4 w-4" /> : <QrIcon className="h-4 w-4" />,
+                  label: "Deposit",
+                  value:
+                    therapist.depositRequired && therapist.depositAmount
+                      ? `RM${Number(therapist.depositAmount).toFixed(0)}`
+                      : "Tiada",
+                },
+                {
+                  icon: <ClockIcon className="h-4 w-4" />,
+                  label: "Waktu",
+                  value: therapist.workingHoursNote || "Fleksibel",
+                },
+              ]}
+            />
           </div>
 
           {therapist.reviewSummary && (
-            <p className="mt-3 flex items-start gap-1.5 border-t border-[color:var(--border)] pt-3 text-[12.5px] italic leading-relaxed text-[color:var(--text-secondary)]">
+            <p className="mt-3 flex items-start gap-1.5 rounded-2xl bg-[color:var(--surface-2)]/60 px-3.5 py-3 text-[12.5px] italic leading-relaxed text-[color:var(--text-secondary)]">
               <SparkleIcon className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brand-400" />
               &ldquo;{therapist.reviewSummary}&rdquo;
             </p>

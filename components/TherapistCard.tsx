@@ -39,14 +39,22 @@ export default function TherapistCard({ therapist, area, gender }: { therapist: 
           }}
         />
       </div>
-      {therapist.photoUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={therapist.photoUrl} alt={therapist.name} className="avatar-ring h-16 w-16 shrink-0 rounded-2xl object-cover" />
-      ) : (
-        <div className="avatar-ring flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 text-lg font-bold text-white">
-          {therapist.name.charAt(0).toUpperCase()}
-        </div>
-      )}
+      <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl">
+        {therapist.photoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={therapist.photoUrl} alt={therapist.name} className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-brand-400 to-brand-600 text-lg font-bold text-white">
+            {therapist.name.charAt(0).toUpperCase()}
+          </div>
+        )}
+        {therapist.averageRating != null && (
+          <span className="absolute bottom-1 left-1 right-1 inline-flex items-center justify-center gap-0.5 rounded-full bg-black/55 px-1 py-0.5 text-[10px] font-semibold text-white backdrop-blur-sm">
+            <StarIcon filled className="h-2.5 w-2.5 text-yellow-400" />
+            {therapist.averageRating.toFixed(1)}
+          </span>
+        )}
+      </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2 pr-8">
           <h3 className="truncate font-semibold text-[color:var(--text-primary)]">{therapist.name}</h3>
@@ -60,13 +68,6 @@ export default function TherapistCard({ therapist, area, gender }: { therapist: 
           <span className="truncate">{therapist.coverageAreas.join(", ")}</span>
         </p>
         <div className="mt-2 flex items-center gap-2.5">
-          {therapist.averageRating != null && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-yellow-50 px-2 py-0.5 text-[12px] font-semibold text-yellow-600">
-              <StarIcon filled className="h-3 w-3" />
-              {therapist.averageRating.toFixed(1)}
-              <span className="font-normal text-yellow-500/70">({therapist.reviewCount})</span>
-            </span>
-          )}
           {therapist.priceFrom && (
             <span className="text-[13px] font-semibold text-brand-700">Dari RM{Number(therapist.priceFrom).toFixed(0)}</span>
           )}

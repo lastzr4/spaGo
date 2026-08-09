@@ -50,7 +50,7 @@ body {
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-[15px] font-semibold text-white shadow-[0_8px_20px_-6px_rgba(98,63,163,0.55)] transition-all duration-150 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40 disabled:shadow-none;
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[15px] font-semibold text-white shadow-[0_8px_20px_-6px_rgba(98,63,163,0.55)] transition-all duration-150 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40 disabled:shadow-none;
   background-image: linear-gradient(135deg, var(--brand, #7a51c9), color-mix(in srgb, var(--brand, #7a51c9) 75%, black));
 }
 .btn-primary:active {
@@ -58,7 +58,7 @@ body {
 }
 
 .btn-secondary {
-  @apply inline-flex items-center justify-center gap-2 rounded-2xl border px-5 py-3.5 text-[15px] font-semibold shadow-card transition-all duration-150 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40;
+  @apply inline-flex items-center justify-center gap-2 rounded-full border px-5 py-3.5 text-[15px] font-semibold shadow-card transition-all duration-150 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40;
   background-color: var(--surface-2);
   border-color: color-mix(in srgb, var(--brand, #7a51c9) 35%, transparent);
   color: var(--brand, #7a51c9);
@@ -108,6 +108,15 @@ body {
 
 .skeleton {
   @apply animate-shimmer rounded-xl bg-gradient-to-r from-brand-800/40 via-brand-700/30 to-brand-800/40 bg-[length:800px_100%];
+}
+
+/* Label-left/value-right summary row (Spafy "Confirm Booking" style) —
+   stack several inside a .card, each one gets a divider except the first. */
+.detail-row {
+  @apply flex items-center justify-between gap-3 py-2.5 text-sm;
+}
+.detail-row + .detail-row {
+  border-top: 1px solid var(--border);
 }
 
 .avatar-ring {
