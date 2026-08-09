@@ -27,12 +27,22 @@ export async function PATCH(req: NextRequest) {
       : typeof body?.heroBackgroundImage === "string"
         ? body.heroBackgroundImage
         : undefined;
+  // adminEmail: string to set, "" / null to clear, undefined to leave unchanged
+  const adminEmail =
+    body?.adminEmail === null || body?.adminEmail === ""
+      ? null
+      : typeof body?.adminEmail === "string"
+        ? body.adminEmail.trim().slice(0, 200)
+        : undefined;
 
   if (!HEX_RE.test(themeColor ?? "") || !HEX_RE.test(backgroundColor ?? "")) {
     return NextResponse.json({ error: "INVALID_COLOR" }, { status: 400 });
   }
   if (!heroTitle || !heroSubtitle) {
     return NextResponse.json({ error: "MISSING_HERO_TEXT" }, { status: 400 });
+  }
+  if (adminEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminEmail)) {
+    return NextResponse.json({ error: "INVALID_EMAIL" }, { status: 400 });
   }
 
   const settings = await prisma.siteSettings.upsert({
@@ -44,6 +54,7 @@ export async function PATCH(req: NextRequest) {
       heroTitle,
       heroSubtitle,
       heroBackgroundImage: heroBackgroundImage ?? null,
+      adminEmail: adminEmail ?? null,
     },
     update: {
       themeColor,
@@ -51,6 +62,7 @@ export async function PATCH(req: NextRequest) {
       heroTitle,
       heroSubtitle,
       ...(heroBackgroundImage !== undefined ? { heroBackgroundImage } : {}),
+      ...(adminEmail !== undefined ? { adminEmail } : {}),
     },
   });
 

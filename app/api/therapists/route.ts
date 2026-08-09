@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { isMatch } from "@/lib/gender";
 import { generateUniqueSlug } from "@/lib/slug";
 import { hashPin, isValidUsername, isValidPin } from "@/lib/pin";
+import { getSiteSettings } from "@/lib/siteSettings";
+import { sendEmail } from "@/lib/email";
 import type { Gender } from "@prisma/client";
 
 // GET /api/therapists?area=Bangi&gender=FEMALE
@@ -87,6 +89,27 @@ export async function POST(req: NextRequest) {
       bio: bio ?? null,
     },
   });
+
+  // Notify admin, if an email is configured — fails open, never blocks registration.
+  const { adminEmail } = await getSiteSettings();
+  if (adminEmail) {
+    await sendEmail({
+      to: adminEmail,
+      subject: `SpaGo: Terapis baru daftar — ${therapist.name}`,
+      html: `
+        <div style="font-family: sans-serif; font-size: 14px; color: #1f1530; line-height: 1.6;">
+          <h2 style="margin: 0 0 12px;">Pendaftaran terapis baru</h2>
+          <p><strong>Nama / Username:</strong> ${therapist.name}</p>
+          <p><strong>Telefon:</strong> ${therapist.phone}</p>
+          <p><strong>Jantina:</strong> ${therapist.gender === "MALE" ? "Lelaki" : "Wanita"}</p>
+          <p><strong>Kawasan liputan:</strong> ${therapist.coverageAreas.join(", ")}</p>
+          <p style="margin-top: 16px;">
+            <a href="https://spago.up.railway.app/admin/therapists" style="color: #7a51c9;">Lihat di SpaGo Admin</a>
+          </p>
+        </div>
+      `,
+    });
+  }
 
   return NextResponse.json({ therapist }, { status: 201 });
 }

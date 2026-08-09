@@ -14,5 +14,6 @@ export async function getSiteSettings() {
     heroTitle: settings?.heroTitle ?? DEFAULT_HERO_TITLE,
     heroSubtitle: settings?.heroSubtitle ?? DEFAULT_HERO_SUBTITLE,
     heroBackgroundImage: settings?.heroBackgroundImage ?? null,
+    adminEmail: settings?.adminEmail ?? null,
   };
 }

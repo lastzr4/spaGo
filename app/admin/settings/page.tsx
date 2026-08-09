@@ -22,6 +22,7 @@ export default async function AdminSettingsPage() {
         initialHeroTitle={settings.heroTitle}
         initialHeroSubtitle={settings.heroSubtitle}
         initialHeroBackgroundImage={settings.heroBackgroundImage}
+        initialAdminEmail={settings.adminEmail}
       />
     </main>
   );

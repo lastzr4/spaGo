@@ -182,5 +182,6 @@ model SiteSettings {
   heroTitle           String   @default("Urut rumah, ditempah terus.")
   heroSubtitle        String   @default("Cari terapis mobile berhampiran anda dan tempah terus ke WhatsApp — tanpa PM, tanpa tunggu.")
   heroBackgroundImage String?
+  adminEmail          String?
   updatedAt           DateTime @updatedAt
 }

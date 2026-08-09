@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { PaletteIcon, CheckCircleIcon, CameraIcon, XIcon } from "@/components/icons";
+import { PaletteIcon, CheckCircleIcon, CameraIcon, XIcon, MailIcon } from "@/components/icons";
 import { fileToCompressedDataUrl } from "@/lib/image";
 
 export default function AdminSettingsForm({
@@ -10,18 +10,21 @@ export default function AdminSettingsForm({
   initialHeroTitle,
   initialHeroSubtitle,
   initialHeroBackgroundImage,
+  initialAdminEmail,
 }: {
   initialThemeColor: string;
   initialBackgroundColor: string;
   initialHeroTitle: string;
   initialHeroSubtitle: string;
   initialHeroBackgroundImage: string | null;
+  initialAdminEmail: string | null;
 }) {
   const [themeColor, setThemeColor] = useState(initialThemeColor);
   const [backgroundColor, setBackgroundColor] = useState(initialBackgroundColor);
   const [heroTitle, setHeroTitle] = useState(initialHeroTitle);
   const [heroSubtitle, setHeroSubtitle] = useState(initialHeroSubtitle);
   const [heroBackgroundImage, setHeroBackgroundImage] = useState<string | null>(initialHeroBackgroundImage);
+  const [adminEmail, setAdminEmail] = useState(initialAdminEmail ?? "");
   const [uploadingHero, setUploadingHero] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -46,7 +49,7 @@ export default function AdminSettingsForm({
     const res = await fetch("/api/admin/settings", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ themeColor, backgroundColor, heroTitle, heroSubtitle, heroBackgroundImage }),
+      body: JSON.stringify({ themeColor, backgroundColor, heroTitle, heroSubtitle, heroBackgroundImage, adminEmail }),
     });
     setSaving(false);
     if (res.ok) {
@@ -147,6 +150,26 @@ export default function AdminSettingsForm({
                 placeholder="#faf9fc"
               />
             </div>
+          </div>
+        </div>
+
+        <div className="card flex flex-col gap-3">
+          <p className="text-[15px] font-bold text-brand-900">Notifikasi</p>
+          <div>
+            <label className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-brand-900">
+              <MailIcon className="h-4 w-4 text-brand-500" />
+              Email admin
+            </label>
+            <input
+              className="input"
+              type="email"
+              value={adminEmail}
+              onChange={(e) => setAdminEmail(e.target.value)}
+              placeholder="admin@contoh.com"
+            />
+            <p className="mt-1.5 text-xs text-gray-400">
+              Email akan dihantar ke sini setiap kali ada terapis baru daftar melalui Daftar Terapis.
+            </p>
           </div>
         </div>
 
