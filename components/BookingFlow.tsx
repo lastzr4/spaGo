@@ -333,7 +333,7 @@ export default function BookingFlow({
         <p className="rounded-xl bg-red-50 px-3.5 py-2.5 text-sm font-medium text-red-600">{error}</p>
       )}
 
-      <div className="safe-bottom fixed inset-x-0 bottom-0 z-20 mx-auto max-w-md border-t border-black/[0.05] bg-white/90 px-5 pb-4 pt-3 backdrop-blur-md sm:max-w-lg">
+      <div className="safe-bottom sticky bottom-0 z-20 -mx-5 border-t border-black/[0.05] bg-white/90 px-5 pb-4 pt-3 backdrop-blur-md">
         {!detailsRevealed ? (
           <button
             type="button"
