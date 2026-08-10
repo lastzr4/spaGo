@@ -17,7 +17,11 @@ export default function AdminNav() {
   return (
     <div className="safe-top sticky top-0 z-20 border-b border-[color:var(--border)] bg-[rgba(26,18,48,0.9)] px-5 pt-3 backdrop-blur-md">
       <div className="mb-3 flex items-center justify-between">
-        <h1 className="text-lg font-bold text-[color:var(--text-primary)]">SpaGo Admin</h1>
+        <h1 className="flex items-center gap-2 text-lg font-bold text-[color:var(--text-primary)]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icons/icon-192.png" alt="" className="h-6 w-6 shrink-0 rounded-[6px]" />
+          SpaGo Admin
+        </h1>
         <a href="/api/admin/logout" className="btn-ghost flex items-center gap-1 bg-[color:var(--surface-2)] px-3 py-1.5 text-xs">
           <LogOutIcon className="h-3.5 w-3.5" />
           Log Keluar

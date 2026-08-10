@@ -39,7 +39,9 @@ export default async function HomePage() {
           distortion={0.5}
           blend={6}
         >
-          <span className="inline-flex items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide backdrop-blur-sm">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-wide backdrop-blur-sm">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icons/icon-192.png" alt="" className="h-4 w-4 shrink-0 rounded-[5px]" />
             SpaGo
           </span>
           <h1 className="mt-3 whitespace-pre-line text-[28px] font-bold leading-tight">{settings.heroTitle}</h1>

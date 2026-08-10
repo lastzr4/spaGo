@@ -24,7 +24,11 @@ export default function TopBar({
       ) : (
         <span className="h-9 w-9 shrink-0" />
       )}
-      <h1 className="flex-1 truncate text-center text-[15px] font-semibold text-[color:var(--text-primary)]">{title}</h1>
+      <h1 className="flex flex-1 items-center justify-center gap-1.5 truncate text-center text-[15px] font-semibold text-[color:var(--text-primary)]">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/icons/icon-192.png" alt="" className="h-4 w-4 shrink-0 rounded-[5px]" />
+        <span className="truncate">{title}</span>
+      </h1>
       <div className="flex min-w-9 shrink-0 items-center justify-end gap-1.5">{right}</div>
     </header>
   );
