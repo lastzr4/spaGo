@@ -78,6 +78,23 @@ model Therapist {
   reviews             Review[]
   customerNotes       CustomerNote[]
   chatUsage           ChatUsage[]
+  pushSubscriptions   PushSubscription[]
+}
+
+// One row per browser/device the therapist enabled notifications on (a
+// therapist using two phones gets two rows). Endpoint is the unique push
+// URL the browser's push service issued — used both as the send target and
+// as the natural de-dupe key if they subscribe again from the same device.
+model PushSubscription {
+  id          String    @id @default(cuid())
+  therapistId String
+  therapist   Therapist @relation(fields: [therapistId], references: [id], onDelete: Cascade)
+  endpoint    String    @unique
+  p256dh      String
+  auth        String
+  createdAt   DateTime  @default(now())
+
+  @@index([therapistId])
 }
 
 model Service {

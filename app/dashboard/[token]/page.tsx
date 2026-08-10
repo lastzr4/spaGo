@@ -10,6 +10,7 @@ import { getDashboardStats, getUpcomingQueue, getScheduleConflicts, getSalesTren
 import PendingAlertBanner from "@/components/PendingAlertBanner";
 import UpcomingQueue from "@/components/UpcomingQueue";
 import ScheduleConflictBanner from "@/components/ScheduleConflictBanner";
+import PushNotificationToggle from "@/components/PushNotificationToggle";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,8 @@ export default async function DashboardHomePage({ params }: { params: { token: s
             trend={salesTrend}
           />
         </div>
+
+        <PushNotificationToggle token={params.token} />
 
         <PendingAlertBanner token={params.token} pendingCount={stats.pendingCount} />
         <ScheduleConflictBanner token={params.token} conflicts={scheduleConflicts} />

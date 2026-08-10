@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isMatch } from "@/lib/gender";
+import { sendPushToTherapist } from "@/lib/push";
 
 // POST /api/bookings
 // { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender }
@@ -49,6 +50,14 @@ export async function POST(req: NextRequest) {
 
       return { booking, therapist, service, slot };
     });
+
+    // Fire-and-forget — a push failure must never fail the booking itself,
+    // same fail-open contract as the registration email notification.
+    sendPushToTherapist(result.therapist.id, {
+      title: "Tempahan baru!",
+      body: `${result.booking.customerName} tempah ${result.service.name} — ${result.slot.startTime}`,
+      url: `/dashboard/${result.therapist.dashboardToken}/bookings?status=PENDING`,
+    }).catch(() => {});
 
     return NextResponse.json({ booking: result.booking }, { status: 201 });
   } catch (err: any) {
