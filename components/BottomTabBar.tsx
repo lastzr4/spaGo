@@ -27,13 +27,17 @@ export default function BottomTabBar({ token, pendingCount = 0 }: { token: strin
             href={item.href}
             className="flex flex-1 flex-col items-center gap-1 py-2.5 transition-transform active:scale-95"
           >
-            <span className="relative">
+            <span
+              className="relative flex h-8 w-8 items-center justify-center rounded-full transition-all duration-200"
+              style={active ? { background: "color-mix(in srgb, var(--brand, #7a51c9) 24%, transparent)" } : undefined}
+            >
               <item.Icon
                 className={`h-5 w-5 transition-colors ${active ? "nav-active" : "text-[color:var(--text-muted)]"}`}
                 strokeWidth={active ? 2.2 : 1.9}
+                style={active ? { filter: "drop-shadow(0 0 6px color-mix(in srgb, var(--brand, #7a51c9) 80%, transparent))" } : undefined}
               />
               {badge > 0 && (
-                <span className="animate-badge-blink absolute -right-1.5 -top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white">
+                <span className="animate-badge-blink absolute -right-1 -top-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white">
                   {badge > 9 ? "9+" : badge}
                 </span>
               )}
