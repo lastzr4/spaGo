@@ -22,13 +22,12 @@ export default function TopBar({
           <ChevronLeftIcon className="h-5 w-5" />
         </Link>
       ) : (
-        <span className="h-9 w-9 shrink-0" />
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icons/icon-192.png" alt="SpaGo" className="h-9 w-9 rounded-[10px]" />
+        </span>
       )}
-      <h1 className="flex flex-1 items-center justify-center gap-1.5 truncate text-center text-[15px] font-semibold text-[color:var(--text-primary)]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/icons/icon-192.png" alt="" className="h-4 w-4 shrink-0 rounded-[5px]" />
-        <span className="truncate">{title}</span>
-      </h1>
+      <h1 className="flex-1 truncate text-center text-[15px] font-semibold text-[color:var(--text-primary)]">{title}</h1>
       <div className="flex min-w-9 shrink-0 items-center justify-end gap-1.5">{right}</div>
     </header>
   );
