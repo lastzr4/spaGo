@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { WalletIcon, ClipboardListIcon, CalendarIcon, BriefcaseIcon, UsersIcon } from "@/components/icons";
 import CountUp from "@/components/CountUp";
+import SalesTrendChart from "@/components/SalesTrendChart";
 
 type TrendPoint = { date: string; total: number };
 
 // Balance-card style hero (inspired by finance-app dashboards): headline
 // figure is the therapist's all-time total collected — same number as the
 // old "Jumlah Terkumpul" stat tile — now given top billing plus a 7-day
-// sparkline and one-tap shortcuts to the pages that actually drive sales.
+// sparkline (SalesTrendChart, a client component for the hover tooltip) and
+// one-tap shortcuts to the pages that actually drive sales.
 export default function SalesHeroCard({
   token,
   totalCollected,
@@ -19,16 +21,6 @@ export default function SalesHeroCard({
   customersServed: number;
   trend: TrendPoint[];
 }) {
-  const max = Math.max(1, ...trend.map((t) => t.total));
-  const hasTrendData = trend.some((t) => t.total > 0);
-  const points = trend
-    .map((t, i) => {
-      const x = trend.length > 1 ? (i / (trend.length - 1)) * 100 : 0;
-      const y = 30 - (t.total / max) * 26;
-      return `${x},${y}`;
-    })
-    .join(" ");
-
   const actions = [
     { label: "Tempahan", Icon: ClipboardListIcon, href: `/dashboard/${token}/bookings` },
     { label: "Slot", Icon: CalendarIcon, href: `/dashboard/${token}/slots` },
@@ -53,14 +45,9 @@ export default function SalesHeroCard({
       </p>
       <p className="relative mt-1.5 text-xs text-white/70">{customersServed} pelanggan dilayan setakat ini</p>
 
-      {hasTrendData && (
-        <div className="relative mt-4">
-          <p className="mb-1 text-[10px] font-medium uppercase tracking-wide text-white/50">Trend 7 hari lepas</p>
-          <svg viewBox="0 0 100 32" preserveAspectRatio="none" className="h-9 w-full">
-            <polyline points={points} fill="none" stroke="white" strokeOpacity="0.9" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
-          </svg>
-        </div>
-      )}
+      <div className="relative mt-4">
+        <SalesTrendChart trend={trend} />
+      </div>
 
       <div className="relative mt-4 grid grid-cols-4 gap-1 border-t border-white/15 pt-3.5">
         {actions.map((a) => (
