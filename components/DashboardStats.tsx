@@ -1,11 +1,13 @@
 import Link from "next/link";
-import { UserIcon, WalletIcon, ClockIcon, CalendarIcon, StarIcon, BriefcaseIcon, ChevronRightIcon } from "@/components/icons";
+import { ClockIcon, CalendarIcon, StarIcon, BriefcaseIcon, ChevronRightIcon } from "@/components/icons";
 import CountUp from "@/components/CountUp";
 
+// "Pelanggan Dijumpai" and "Jumlah Terkumpul" moved out of this grid — they
+// now live in SalesHeroCard above, so this stays a focused quick-glance
+// panel for things that need drill-down (pending, upcoming, rating, services)
+// without repeating the sales headline.
 export default function DashboardStats({
   token,
-  customersServed,
-  totalCollected,
   pendingCount,
   confirmedUpcoming,
   activeServicesCount,
@@ -13,8 +15,6 @@ export default function DashboardStats({
   reviewCount,
 }: {
   token: string;
-  customersServed: number;
-  totalCollected: number;
   pendingCount: number;
   confirmedUpcoming: number;
   activeServicesCount: number;
@@ -24,22 +24,6 @@ export default function DashboardStats({
   const needsAttention = pendingCount > 0;
 
   const stats = [
-    {
-      key: "customers",
-      label: "Pelanggan Dijumpai",
-      value: <CountUp value={customersServed} />,
-      Icon: UserIcon,
-      accent: "from-violet-400 to-purple-600",
-      href: `/dashboard/${token}/bookings?status=COMPLETED`,
-    },
-    {
-      key: "collected",
-      label: "Jumlah Terkumpul",
-      value: <CountUp value={totalCollected} prefix="RM" />,
-      Icon: WalletIcon,
-      accent: "from-emerald-400 to-teal-600",
-      href: `/dashboard/${token}/bookings?status=COMPLETED`,
-    },
     {
       key: "pending",
       label: "Menunggu Tindakan",

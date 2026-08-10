@@ -4,7 +4,9 @@ import TopBar from "@/components/TopBar";
 import BottomTabBar from "@/components/BottomTabBar";
 import ProfileForm from "@/components/ProfileForm";
 import DashboardStats from "@/components/DashboardStats";
-import { getDashboardStats, getUpcomingQueue, getScheduleConflicts } from "@/lib/dashboardStats";
+import SalesHeroCard from "@/components/SalesHeroCard";
+import TransactionList from "@/components/TransactionList";
+import { getDashboardStats, getUpcomingQueue, getScheduleConflicts, getSalesTrend, getRecentTransactions } from "@/lib/dashboardStats";
 import PendingAlertBanner from "@/components/PendingAlertBanner";
 import UpcomingQueue from "@/components/UpcomingQueue";
 import ScheduleConflictBanner from "@/components/ScheduleConflictBanner";
@@ -15,10 +17,12 @@ export default async function DashboardHomePage({ params }: { params: { token: s
   const therapist = await getTherapistByToken(params.token);
   if (!therapist) notFound();
 
-  const [stats, upcomingQueue, scheduleConflicts] = await Promise.all([
+  const [stats, upcomingQueue, scheduleConflicts, salesTrend, recentTransactions] = await Promise.all([
     getDashboardStats(therapist.id),
     getUpcomingQueue(therapist.id),
     getScheduleConflicts(therapist.id),
+    getSalesTrend(therapist.id),
+    getRecentTransactions(therapist.id),
   ]);
 
   return (
@@ -29,15 +33,26 @@ export default async function DashboardHomePage({ params }: { params: { token: s
           Hai, <span className="font-semibold text-[color:var(--text-primary)]">{therapist.name}</span> 👋
         </p>
 
+        <div className="mb-6">
+          <SalesHeroCard
+            token={params.token}
+            totalCollected={stats.totalCollected}
+            customersServed={stats.customersServed}
+            trend={salesTrend}
+          />
+        </div>
+
         <PendingAlertBanner token={params.token} pendingCount={stats.pendingCount} />
         <ScheduleConflictBanner token={params.token} conflicts={scheduleConflicts} />
+
+        <UpcomingQueue bookings={upcomingQueue} token={params.token} />
+
+        <TransactionList token={params.token} transactions={recentTransactions} />
 
         <h2 className="mb-3 text-[13px] font-bold uppercase tracking-wide text-[color:var(--text-muted)]">Ringkasan</h2>
         <div className="mb-6 animate-fade-in">
           <DashboardStats token={params.token} {...stats} />
         </div>
-
-        <UpcomingQueue bookings={upcomingQueue} token={params.token} />
 
         <h2 className="mb-3 text-[13px] font-bold uppercase tracking-wide text-[color:var(--text-muted)]">Profil Saya</h2>
         <div className="card animate-fade-in">

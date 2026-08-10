@@ -41,6 +41,55 @@ export async function getPendingBookingCount(therapistId: string) {
   return prisma.booking.count({ where: { therapistId, status: "PENDING" } });
 }
 
+// Daily sales total (completed bookings, keyed by the slot's service date —
+// not booking creation date, so a booking counts on the day the service was
+// actually delivered) for the last `days` days, zero-filled so the sparkline
+// in SalesHeroCard always has a full-width series to draw.
+export async function getSalesTrend(therapistId: string, days = 7) {
+  const since = new Date();
+  since.setHours(0, 0, 0, 0);
+  since.setDate(since.getDate() - (days - 1));
+
+  const bookings = await prisma.booking.findMany({
+    where: { therapistId, status: "COMPLETED", slot: { date: { gte: since } } },
+    include: { service: { select: { price: true } }, slot: { select: { date: true } } },
+  });
+
+  const byDate = new Map<string, number>();
+  for (let i = 0; i < days; i++) {
+    const d = new Date(since);
+    d.setDate(since.getDate() + i);
+    byDate.set(d.toISOString().slice(0, 10), 0);
+  }
+  for (const b of bookings) {
+    const dateStr = b.slot.date.toISOString().slice(0, 10);
+    if (byDate.has(dateStr)) {
+      byDate.set(dateStr, (byDate.get(dateStr) ?? 0) + Number(b.service.price) + Number(b.outcallFee ?? 0));
+    }
+  }
+
+  return Array.from(byDate.entries()).map(([date, total]) => ({ date, total }));
+}
+
+// Most recent completed bookings, newest service-date first — powers the
+// "Transaksi Terkini" list on the dashboard home.
+export async function getRecentTransactions(therapistId: string, limit = 5) {
+  const bookings = await prisma.booking.findMany({
+    where: { therapistId, status: "COMPLETED" },
+    include: { service: { select: { name: true, price: true } }, slot: { select: { date: true } } },
+    orderBy: [{ slot: { date: "desc" } }],
+    take: limit,
+  });
+
+  return bookings.map((b) => ({
+    id: b.id,
+    customerName: b.customerName,
+    serviceName: b.service.name,
+    date: b.slot.date.toISOString().slice(0, 10),
+    amount: Number(b.service.price) + Number(b.outcallFee ?? 0),
+  }));
+}
+
 export async function getUpcomingQueue(therapistId: string, limit = 8) {
   // Every confirmed booking from today onward, soonest first — powers the
   // "Giliran Akan Datang" queue.
