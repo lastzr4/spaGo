@@ -4,7 +4,7 @@
   "description": "Tempah terapis urut mobile berhampiran anda",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#faf9fc",
+  "background_color": "#120a1e",
   "theme_color": "#7a51c9",
   "icons": [
     { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
