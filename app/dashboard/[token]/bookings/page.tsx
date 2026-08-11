@@ -42,6 +42,10 @@ export default async function BookingsPage({ params }: { params: { token: string
               depositForfeited: b.depositForfeited,
               outcallFee: b.outcallFee.toString(),
               travelDistanceKm: b.travelDistanceKm,
+              depositReceiptUrl: b.depositReceiptUrl,
+              depositReceiptUploadedAt: b.depositReceiptUploadedAt ? b.depositReceiptUploadedAt.toISOString() : null,
+              depositReceiptAiVerdict: b.depositReceiptAiVerdict,
+              depositReceiptAiNotes: b.depositReceiptAiNotes,
             }))}
             cancellationWindowHours={therapist.cancellationWindowHours}
           />

@@ -161,6 +161,10 @@ model Booking {
   depositForfeited        Boolean   @default(false)
   lateCancellation        Boolean   @default(false)
   cancelledAt             DateTime?
+  depositReceiptUrl        String?
+  depositReceiptUploadedAt DateTime?
+  depositReceiptAiVerdict  String?
+  depositReceiptAiNotes    String?
   createdAt         DateTime      @default(now())
   review            Review?
 

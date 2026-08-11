@@ -127,3 +127,74 @@ export async function extractServicesFromDocument(params: {
     return null;
   }
 }
+
+export type ReceiptVerdict = "LIKELY_VALID" | "NEEDS_MANUAL_CHECK" | "SUSPICIOUS";
+export type ReceiptVerification = { verdict: ReceiptVerdict; amountDetected: number | null; notes: string };
+
+// Heuristic red-flag check on a payment receipt screenshot — this can NEVER
+// confirm money actually moved (no bank/payment-gateway access), only spot
+// visual inconsistencies a casual fake tends to have: editing artifacts,
+// mismatched fonts/logos, amount that doesn't match the expected deposit,
+// a timestamp that doesn't make sense (too old, future-dated), or a
+// "pending"/"failed" status being passed off as success. The therapist must
+// still check their own bank/e-wallet before confirming — the AI notes
+// always say so explicitly, and the UI must never claim this "verifies" the
+// payment. Same fail-open contract as the other AI helpers.
+export async function verifyPaymentReceipt(params: {
+  base64Data: string;
+  mediaType: "image/jpeg" | "image/png" | "image/webp" | "image/gif";
+  expectedAmount: number;
+}): Promise<ReceiptVerification | null> {
+  const client = getAnthropicClient();
+  if (!client) return null;
+
+  try {
+    const response = await client.messages.create({
+      model: AI_MODEL,
+      max_tokens: 400,
+      system:
+        "Anda pembantu yang memeriksa gambar resit/bukti pemindahan bank atau e-wallet (DuitNow, QR, dll) untuk terapis urut mobile di Malaysia, bagi mengesan tanda-tanda resit palsu atau diedit. PENTING: anda TIDAK boleh mengesahkan wang sebenarnya telah masuk — anda hanya boleh kesan tanda visual yang mencurigakan: kesan edit/tampal (font tak konsisten, susunan pelik, logo bank salah/kabur, latar belakang tidak sepadan), jumlah dalam gambar tidak sepadan dengan jumlah dijangka, tarikh/masa tidak logik (terlalu lama, tarikh masa depan, atau tidak munasabah untuk 'baru sahaja'), status menunjukkan 'Pending', 'Gagal', atau 'Failed' tetapi cuba disamarkan sebagai berjaya, resolusi/kualiti janggal berbanding aplikasi bank sebenar. Balas SEMATA-MATA dengan JSON (tiada teks lain, tiada markdown): { \"verdict\": \"LIKELY_VALID\" | \"NEEDS_MANUAL_CHECK\" | \"SUSPICIOUS\", \"amountDetected\": nombor atau null jika tidak jelas, \"notes\": ayat pendek dalam Bahasa Malaysia (1-2 ayat) menerangkan sebab verdict, DAN sentiasa ingatkan terapis untuk sahkan sendiri di aplikasi bank/e-wallet mereka sebelum mengesahkan tempahan }.",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "image" as const,
+              source: { type: "base64" as const, media_type: params.mediaType, data: params.base64Data },
+            },
+            {
+              type: "text" as const,
+              text: `Jumlah deposit yang dijangka: RM${params.expectedAmount.toFixed(2)}. Semak gambar resit ini dan berikan verdict.`,
+            },
+          ],
+        },
+      ],
+    });
+
+    const text = response.content
+      .filter((block): block is Anthropic.TextBlock => block.type === "text")
+      .map((block) => block.text)
+      .join("\n")
+      .trim();
+    if (!text) return null;
+
+    const cleaned = text
+      .replace(/^```json\s*/i, "")
+      .replace(/^```\s*/i, "")
+      .replace(/```\s*$/i, "")
+      .trim();
+
+    const parsed = JSON.parse(cleaned) as { verdict?: unknown; amountDetected?: unknown; notes?: unknown };
+    const verdict = parsed.verdict === "LIKELY_VALID" || parsed.verdict === "SUSPICIOUS" ? parsed.verdict : "NEEDS_MANUAL_CHECK";
+    const amountDetected = typeof parsed.amountDetected === "number" && Number.isFinite(parsed.amountDetected) ? parsed.amountDetected : null;
+    const notes =
+      typeof parsed.notes === "string" && parsed.notes.trim()
+        ? parsed.notes.trim().slice(0, 500)
+        : "Sila sahkan sendiri di aplikasi bank/e-wallet anda sebelum mengesahkan tempahan.";
+
+    return { verdict, amountDetected, notes };
+  } catch (err) {
+    console.error("[verifyPaymentReceipt] request failed:", err);
+    return null;
+  }
+}

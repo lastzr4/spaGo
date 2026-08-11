@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { buildWhatsAppBookingMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import { haversineKm, buildGoogleMapsDirectionsUrl, computeTravelFee } from "@/lib/geo";
 import { buildHealthDeclarationStatements } from "@/lib/consent";
@@ -82,6 +83,8 @@ export default function BookingFlow({
   const [travelFeeConfirmed, setTravelFeeConfirmed] = useState(false);
   const [showQr, setShowQr] = useState(false);
   const [justBooked, setJustBooked] = useState(false);
+  const [bookedId, setBookedId] = useState<string | null>(null);
+  const [bookedWhatsappLink, setBookedWhatsappLink] = useState<string | null>(null);
   const [detailsRevealed, setDetailsRevealed] = useState(false);
   const [detailService, setDetailService] = useState<Service | null>(null);
   const [customerLat, setCustomerLat] = useState<number | null>(null);
@@ -208,9 +211,16 @@ export default function BookingFlow({
       });
       const link = buildWhatsAppLink(therapistPhone, message);
       setJustBooked(true);
-      setTimeout(() => {
-        window.location.href = link;
-      }, 1100);
+      setBookedId(data.booking?.id ?? null);
+      setBookedWhatsappLink(link);
+      // If a deposit (and thus a receipt to upload) is involved, keep the
+      // customer on this screen so they can act — auto-redirecting away
+      // would mean they never see the upload option.
+      if (!depositRequired) {
+        setTimeout(() => {
+          window.location.href = link;
+        }, 1100);
+      }
     } catch {
       setError("Tempahan gagal. Sila cuba lagi.");
       setSubmitting(false);
@@ -227,13 +237,33 @@ export default function BookingFlow({
 
   if (justBooked) {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 py-24 text-center animate-fade-in">
+      <div className="flex flex-col items-center justify-center gap-3 py-16 text-center animate-fade-in">
         <Confetti />
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-500">
           <CheckCircleIcon filled className="h-8 w-8" />
         </div>
         <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Tempahan dihantar!</p>
-        <p className="max-w-[240px] text-sm text-[color:var(--text-secondary)]">Membuka WhatsApp untuk sahkan dengan terapis...</p>
+        {depositRequired ? (
+          <>
+            <p className="max-w-[260px] text-sm text-[color:var(--text-secondary)]">
+              Selesaikan bayaran deposit, kemudian upload resit di sini supaya terapis dapat sahkan tempahan anda.
+            </p>
+            <div className="mt-2 flex w-full max-w-[280px] flex-col gap-2.5">
+              {bookedId && (
+                <Link href={`/booking/${bookedId}/receipt`} className="btn-primary w-full">
+                  Upload Resit Pembayaran
+                </Link>
+              )}
+              {bookedWhatsappLink && (
+                <a href={bookedWhatsappLink} className="btn-secondary w-full">
+                  Buka WhatsApp
+                </a>
+              )}
+            </div>
+          </>
+        ) : (
+          <p className="max-w-[240px] text-sm text-[color:var(--text-secondary)]">Membuka WhatsApp untuk sahkan dengan terapis...</p>
+        )}
       </div>
     );
   }

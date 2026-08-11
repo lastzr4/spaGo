@@ -24,6 +24,16 @@ type Booking = {
   depositForfeited: boolean;
   outcallFee: string;
   travelDistanceKm: number | null;
+  depositReceiptUrl: string | null;
+  depositReceiptUploadedAt: string | null;
+  depositReceiptAiVerdict: string | null;
+  depositReceiptAiNotes: string | null;
+};
+
+const RECEIPT_VERDICT_STYLE: Record<string, { label: string; className: string }> = {
+  LIKELY_VALID: { label: "AI: Nampak Sah", className: "bg-emerald-500/15 text-emerald-400" },
+  NEEDS_MANUAL_CHECK: { label: "AI: Perlu Semak Manual", className: "bg-amber-500/15 text-amber-400" },
+  SUSPICIOUS: { label: "AI: Mencurigakan", className: "bg-red-500/15 text-red-400" },
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -74,6 +84,7 @@ export default function BookingList({
   const [updating, setUpdating] = useState<string | null>(null);
   const [cancelTarget, setCancelTarget] = useState<Booking | null>(null);
   const [rescheduleTarget, setRescheduleTarget] = useState<Booking | null>(null);
+  const [viewingReceipt, setViewingReceipt] = useState<string | null>(null);
   const [filter, setFilter] = useState<StatusFilter>(
     initialStatus && ["PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"].includes(initialStatus)
       ? (initialStatus as StatusFilter)
@@ -193,6 +204,31 @@ export default function BookingList({
             </p>
           )}
 
+          {b.depositReceiptUrl && (
+            <div className="mt-3 flex items-center gap-2.5 rounded-xl bg-[color:var(--surface-2)]/60 p-2.5">
+              <button type="button" onClick={() => setViewingReceipt(b.depositReceiptUrl)} className="shrink-0">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={b.depositReceiptUrl} alt="Resit pembayaran" className="h-14 w-14 rounded-lg object-cover" />
+              </button>
+              <div className="min-w-0 flex-1">
+                <span
+                  className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                    (b.depositReceiptAiVerdict && RECEIPT_VERDICT_STYLE[b.depositReceiptAiVerdict]?.className) ?? "bg-[color:var(--surface-2)] text-[color:var(--text-muted)]"
+                  }`}
+                >
+                  {(b.depositReceiptAiVerdict && RECEIPT_VERDICT_STYLE[b.depositReceiptAiVerdict]?.label) ?? "AI tidak dapat semak"}
+                </span>
+                {b.depositReceiptAiNotes && <p className="mt-1 text-[11px] leading-snug text-[color:var(--text-secondary)]">{b.depositReceiptAiNotes}</p>}
+              </div>
+            </div>
+          )}
+
+          {b.status === "PENDING" && b.depositAmountSnapshot && Number(b.depositAmountSnapshot) > 0 && (
+            <p className="mt-2 text-[11px] leading-snug text-[color:var(--text-muted)]">
+              Sila sahkan deposit betul-betul masuk di bank/e-wallet anda sebelum tekan Sahkan — semakan AI di atas bukan jaminan.
+            </p>
+          )}
+
           {(b.status === "PENDING" || b.status === "CONFIRMED") && (
             <div className="mt-3 flex gap-2">
               {b.status === "PENDING" && (
@@ -280,6 +316,16 @@ export default function BookingList({
         }}
         onCancel={() => setCancelTarget(null)}
       />
+
+      {viewingReceipt && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+          onClick={() => setViewingReceipt(null)}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={viewingReceipt} alt="Resit pembayaran" className="max-h-full max-w-full rounded-2xl object-contain" />
+        </div>
+      )}
 
       {rescheduleTarget && (
         <RescheduleSheet
