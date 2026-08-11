@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CalendarIcon, CheckCircleIcon, XIcon } from "@/components/icons";
+import { CalendarIcon, CheckCircleIcon, XIcon, ClipboardListIcon } from "@/components/icons";
 import { buildGoogleCalendarLink } from "@/lib/googleCalendar";
 
 type Booking = {
@@ -15,6 +15,8 @@ type Booking = {
   date: string;
   startTime: string;
   endTime: string;
+  healthConsentAccepted: boolean;
+  healthConsentAcceptedAt: string | null;
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -133,6 +135,14 @@ export default function BookingList({ token, initialBookings }: { token: string;
           </div>
           <p className="mt-1.5 text-sm text-[color:var(--text-secondary)]">{b.serviceName} &middot; {b.date} {b.startTime}</p>
           <p className="mt-1 text-xs text-[color:var(--text-muted)]">{b.customerPhone} &middot; {b.customerAddress}</p>
+          {b.healthConsentAccepted && (
+            <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-emerald-400">
+              <ClipboardListIcon className="h-3 w-3" />
+              Penafian kesihatan diterima
+              {b.healthConsentAcceptedAt &&
+                ` — ${new Date(b.healthConsentAcceptedAt).toLocaleString("ms-MY", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`}
+            </p>
+          )}
 
           {(b.status === "PENDING" || b.status === "CONFIRMED") && (
             <div className="mt-3 flex gap-2">

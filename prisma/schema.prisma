@@ -149,6 +149,9 @@ model Booking {
   outcallFee        Decimal       @default(0) @db.Decimal(10, 2)
   status            BookingStatus @default(PENDING)
   referralCodeUsed  String?
+  healthConsentAccepted   Boolean   @default(false)
+  healthConsentAcceptedAt DateTime?
+  healthConsentText       String?
   createdAt         DateTime      @default(now())
   review            Review?
 

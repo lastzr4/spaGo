@@ -36,6 +36,8 @@ export default async function BookingsPage({ params }: { params: { token: string
               date: b.slot.date.toISOString().slice(0, 10),
               startTime: b.slot.startTime,
               endTime: b.slot.endTime,
+              healthConsentAccepted: b.healthConsentAccepted,
+              healthConsentAcceptedAt: b.healthConsentAcceptedAt ? b.healthConsentAcceptedAt.toISOString() : null,
             }))}
           />
         </Suspense>

@@ -2,15 +2,23 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { isMatch } from "@/lib/gender";
 import { sendPushToTherapist } from "@/lib/push";
+import { buildHealthDeclarationText } from "@/lib/consent";
 
 // POST /api/bookings
-// { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender }
+// { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender, healthConsentAccepted }
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender, referralCodeUsed, customerLat, customerLng } = body ?? {};
+  const { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender, referralCodeUsed, customerLat, customerLng, healthConsentAccepted } = body ?? {};
 
   if (!therapistId || !serviceId || !slotId || !customerName || !customerPhone || !customerAddress || !customerGender) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  }
+
+  // Health e-consent is mandatory — never trust the client's own copy of the
+  // declaration text, always regenerate the snapshot server-side from
+  // lib/consent.ts so the stored record can't be tampered with.
+  if (healthConsentAccepted !== true) {
+    return NextResponse.json({ error: "CONSENT_REQUIRED" }, { status: 400 });
   }
 
   try {
@@ -47,6 +55,9 @@ export async function POST(req: NextRequest) {
           customerGender,
           status: "PENDING",
           referralCodeUsed: typeof referralCodeUsed === "string" && referralCodeUsed.trim() ? referralCodeUsed.trim().toUpperCase() : null,
+          healthConsentAccepted: true,
+          healthConsentAcceptedAt: new Date(),
+          healthConsentText: buildHealthDeclarationText(customerGender),
         },
       });
 

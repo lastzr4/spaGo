@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { buildWhatsAppBookingMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import { haversineKm, buildGoogleMapsDirectionsUrl } from "@/lib/geo";
-import { CheckCircleIcon, SendIcon, CalendarIcon, AlertTriangleIcon, QrIcon, CashIcon, ChevronRightIcon } from "@/components/icons";
+import { buildHealthDeclarationStatements } from "@/lib/consent";
+import { CheckCircleIcon, SendIcon, CalendarIcon, AlertTriangleIcon, QrIcon, CashIcon, ChevronRightIcon, ClipboardListIcon } from "@/components/icons";
 import Confetti from "@/components/Confetti";
 import ServiceDetailSheet from "@/components/ServiceDetailSheet";
 import { isPastSlot } from "@/lib/slotTimes";
@@ -64,6 +65,7 @@ export default function BookingFlow({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [depositConfirmed, setDepositConfirmed] = useState(false);
+  const [healthConsentAccepted, setHealthConsentAccepted] = useState(false);
   const [showQr, setShowQr] = useState(false);
   const [justBooked, setJustBooked] = useState(false);
   const [detailsRevealed, setDetailsRevealed] = useState(false);
@@ -136,6 +138,7 @@ export default function BookingFlow({
           customerLng,
           customerGender,
           referralCodeUsed: referralCode || undefined,
+          healthConsentAccepted,
         }),
       });
       const data = await res.json();
@@ -399,6 +402,41 @@ export default function BookingFlow({
         </div>
       )}
 
+      {detailsRevealed && (
+        <div className="rounded-2xl border border-brand-100 bg-[color:var(--surface-2)]/60 p-4">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[color:var(--surface-2)] text-brand-600">
+              <ClipboardListIcon className="h-4 w-4" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Pengisytiharan Kesihatan</p>
+              <p className="text-xs text-[color:var(--text-secondary)]">Sila baca dan sahkan sebelum tempahan diteruskan.</p>
+            </div>
+          </div>
+
+          <ul className="mt-3 flex flex-col gap-1.5 text-xs text-[color:var(--text-secondary)]">
+            {buildHealthDeclarationStatements(customerGender).map((statement, i) => (
+              <li key={i} className="flex gap-2">
+                <span className="text-brand-500">•</span>
+                <span>{statement}</span>
+              </li>
+            ))}
+          </ul>
+
+          <label className="mt-3 flex items-start gap-2.5 rounded-xl bg-[color:var(--surface-2)] px-3.5 py-3">
+            <input
+              type="checkbox"
+              checked={healthConsentAccepted}
+              onChange={(e) => setHealthConsentAccepted(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-brand-600"
+            />
+            <span className="text-sm text-[color:var(--text-secondary)]">
+              Saya bersetuju dengan penafian kesihatan di atas dan sah untuk menjalani sesi ini.
+            </span>
+          </label>
+        </div>
+      )}
+
       {detailsRevealed && error && (
         <p className="rounded-xl bg-red-500/15 px-3.5 py-2.5 text-sm font-medium text-red-400">{error}</p>
       )}
@@ -418,7 +456,7 @@ export default function BookingFlow({
           <button
             type="submit"
             className="btn-primary flex items-center justify-center gap-2"
-            disabled={submitting || !slotId || (depositRequired && !depositConfirmed)}
+            disabled={submitting || !slotId || (depositRequired && !depositConfirmed) || !healthConsentAccepted}
           >
             {submitting ? "Menghantar..." : (
               <>
