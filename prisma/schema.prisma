@@ -64,6 +64,8 @@ model Therapist {
   yearsExperience     Int?
   workingHoursNote    String?
   galleryPhotos       String[]            @default([])
+  baseLat             Float?
+  baseLng             Float?
   aiChatEnabled       Boolean             @default(true)
   reviewSummary       String?
   reviewSummaryUpdatedAt DateTime?
@@ -141,6 +143,8 @@ model Booking {
   customerName      String
   customerPhone     String
   customerAddress   String
+  customerLat       Float?
+  customerLng       Float?
   customerGender    Gender
   outcallFee        Decimal       @default(0) @db.Decimal(10, 2)
   status            BookingStatus @default(PENDING)

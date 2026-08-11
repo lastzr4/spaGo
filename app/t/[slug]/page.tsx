@@ -175,6 +175,8 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
             therapistPhone={therapist.phone}
             therapistRating={average}
             therapistReviewCount={reviews.length}
+            therapistBaseLat={therapist.baseLat}
+            therapistBaseLng={therapist.baseLng}
             defaultGender={defaultGender}
             services={therapist.services.map((s) => ({
               id: s.id,

@@ -12,6 +12,8 @@ export default function PromoBookingFlow({
   therapistPhone,
   therapistRating = null,
   therapistReviewCount = 0,
+  therapistBaseLat = null,
+  therapistBaseLng = null,
   services,
   slots,
   defaultGender,
@@ -25,6 +27,8 @@ export default function PromoBookingFlow({
   therapistPhone: string;
   therapistRating?: number | null;
   therapistReviewCount?: number;
+  therapistBaseLat?: number | null;
+  therapistBaseLng?: number | null;
   services: Service[];
   slots: Slot[];
   defaultGender: "MALE" | "FEMALE";
@@ -55,6 +59,8 @@ export default function PromoBookingFlow({
         therapistPhone={therapistPhone}
         therapistRating={therapistRating}
         therapistReviewCount={therapistReviewCount}
+        therapistBaseLat={therapistBaseLat}
+        therapistBaseLng={therapistBaseLng}
         services={services}
         slots={slots}
         customerGender={gender}

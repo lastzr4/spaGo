@@ -88,6 +88,8 @@ export default async function DashboardHomePage({ params }: { params: { token: s
               yearsExperience: therapist.yearsExperience,
               workingHoursNote: therapist.workingHoursNote,
               galleryPhotos: therapist.galleryPhotos,
+              baseLat: therapist.baseLat,
+              baseLng: therapist.baseLng,
             }}
           />
         </div>

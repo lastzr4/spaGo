@@ -19,7 +19,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
     depositRequired, depositAmount, paymentMethod, qrCodeUrl, extraChargesNote,
     socialInstagram, socialTiktok, socialThreads, socialX,
     specialties, yearsExperience, workingHoursNote, galleryPhotos,
+    baseLat, baseLng,
   } = body ?? {};
+
+  if (baseLat !== undefined && baseLat !== null && (typeof baseLat !== "number" || baseLat < -90 || baseLat > 90)) {
+    return NextResponse.json({ error: "BASE_LAT_INVALID" }, { status: 400 });
+  }
+  if (baseLng !== undefined && baseLng !== null && (typeof baseLng !== "number" || baseLng < -180 || baseLng > 180)) {
+    return NextResponse.json({ error: "BASE_LNG_INVALID" }, { status: 400 });
+  }
 
   if (paymentMethod !== undefined && paymentMethod !== null && paymentMethod !== "QR" && paymentMethod !== "CASH") {
     return NextResponse.json({ error: "PAYMENT_METHOD_INVALID" }, { status: 400 });
@@ -68,6 +76,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
       ...(yearsExperience !== undefined ? { yearsExperience: yearsExperience === null || yearsExperience === "" ? null : Number(yearsExperience) } : {}),
       ...(workingHoursNote !== undefined ? { workingHoursNote } : {}),
       ...(galleryPhotos !== undefined ? { galleryPhotos: Array.isArray(galleryPhotos) ? galleryPhotos.slice(0, 6) : [] } : {}),
+      ...(baseLat !== undefined ? { baseLat } : {}),
+      ...(baseLng !== undefined ? { baseLng } : {}),
     },
   });
 

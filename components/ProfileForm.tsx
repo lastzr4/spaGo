@@ -32,6 +32,8 @@ type Props = {
     yearsExperience: number | null;
     workingHoursNote: string | null;
     galleryPhotos: string[];
+    baseLat: number | null;
+    baseLng: number | null;
   };
 };
 
@@ -68,6 +70,8 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
   const [editingCreds, setEditingCreds] = useState(false);
   const [polishingBio, setPolishingBio] = useState(false);
   const [polishError, setPolishError] = useState<string | null>(null);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   // Collapsed-by-default sections: cleaner UI, less scrolling. Tap "Edit" to expand.
   const [editingProfile, setEditingProfile] = useState(false);
@@ -169,6 +173,26 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
     } finally {
       setPolishingBio(false);
     }
+  }
+
+  function setMyLocation() {
+    if (!("geolocation" in navigator)) {
+      setLocationError("Peranti ini tidak menyokong GPS.");
+      return;
+    }
+    setLocating(true);
+    setLocationError(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setForm((f) => ({ ...f, baseLat: pos.coords.latitude, baseLng: pos.coords.longitude }));
+        setLocating(false);
+      },
+      () => {
+        setLocationError("Gagal mendapatkan lokasi. Pastikan kebenaran GPS dibenarkan.");
+        setLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
   }
 
   function toggleArea(a: string) {
@@ -457,6 +481,34 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
           <ChevronLeftIcon className="mt-1 h-3.5 w-3.5 shrink-0 rotate-180 text-brand-300" />
         </button>
       )}
+
+      {/* Lokasi Asas — used to estimate travel distance to customers at booking time */}
+      <div className="rounded-2xl bg-[color:var(--surface-2)]/60 p-4">
+        <p className="mb-1.5 flex items-center gap-1.5 text-sm font-semibold text-[color:var(--text-primary)]">
+          <MapPinIcon className="h-4 w-4" />
+          Lokasi Asas Anda
+        </p>
+        <p className="mb-3 text-xs text-[color:var(--text-secondary)]">
+          Digunakan untuk kira jarak anggaran ke rumah pelanggan semasa tempahan, supaya senang anda commit sama ada perlu caj tambahan atau tidak.
+        </p>
+        {form.baseLat != null && form.baseLng != null ? (
+          <p className="mb-3 flex items-center gap-1.5 text-xs font-medium text-emerald-400">
+            <CheckCircleIcon filled className="h-3.5 w-3.5" />
+            Lokasi ditetapkan
+          </p>
+        ) : (
+          <p className="mb-3 text-xs text-[color:var(--text-muted)]">Lokasi belum ditetapkan.</p>
+        )}
+        <button
+          type="button"
+          onClick={setMyLocation}
+          disabled={locating}
+          className="btn-ghost bg-[color:var(--surface-2)] text-xs disabled:opacity-60"
+        >
+          {locating ? "Mengesan lokasi..." : form.baseLat != null ? "Kemas Kini Lokasi Semasa" : "Guna Lokasi Semasa (GPS)"}
+        </button>
+        {locationError && <p className="mt-2 text-xs font-medium text-red-400">{locationError}</p>}
+      </div>
 
       {/* Kepakaran & Pengalaman — collapsed by default; tap the card itself to edit */}
       {editingSpecialties ? (

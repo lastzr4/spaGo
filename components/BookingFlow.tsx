@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { buildWhatsAppBookingMessage, buildWhatsAppLink } from "@/lib/whatsapp";
+import { haversineKm, buildGoogleMapsDirectionsUrl } from "@/lib/geo";
 import { CheckCircleIcon, SendIcon, CalendarIcon, AlertTriangleIcon, QrIcon, CashIcon, ChevronRightIcon } from "@/components/icons";
 import Confetti from "@/components/Confetti";
 import ServiceDetailSheet from "@/components/ServiceDetailSheet";
@@ -23,6 +24,8 @@ export default function BookingFlow({
   therapistPhone,
   therapistRating = null,
   therapistReviewCount = 0,
+  therapistBaseLat = null,
+  therapistBaseLng = null,
   services,
   slots,
   customerGender,
@@ -36,6 +39,13 @@ export default function BookingFlow({
   therapistPhone: string;
   therapistRating?: number | null;
   therapistReviewCount?: number;
+  // Therapist's base location (set once in their dashboard) — used to show
+  // an estimated distance + Google Maps link in the WhatsApp booking
+  // message, so the therapist can decide upfront whether to commit or
+  // charge extra for far bookings. Free straight-line estimate, no paid
+  // geocoding/directions API involved.
+  therapistBaseLat?: number | null;
+  therapistBaseLng?: number | null;
   services: Service[];
   slots: Slot[];
   customerGender: "MALE" | "FEMALE";
@@ -58,6 +68,8 @@ export default function BookingFlow({
   const [justBooked, setJustBooked] = useState(false);
   const [detailsRevealed, setDetailsRevealed] = useState(false);
   const [detailService, setDetailService] = useState<Service | null>(null);
+  const [customerLat, setCustomerLat] = useState<number | null>(null);
+  const [customerLng, setCustomerLng] = useState<number | null>(null);
   const detailsRef = useRef<HTMLDivElement>(null);
   const slotSectionRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -82,6 +94,19 @@ export default function BookingFlow({
   useEffect(() => {
     if (detailsRevealed) {
       detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      // Best-effort GPS capture — silent, no error shown if denied/unavailable.
+      // Lets the therapist see an estimated distance in the WhatsApp message;
+      // the text address field above still works fine without it.
+      if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            setCustomerLat(pos.coords.latitude);
+            setCustomerLng(pos.coords.longitude);
+          },
+          () => {},
+          { enableHighAccuracy: true, timeout: 8000 }
+        );
+      }
     }
   }, [detailsRevealed]);
 
@@ -107,6 +132,8 @@ export default function BookingFlow({
           customerName: name,
           customerPhone: phone,
           customerAddress: address,
+          customerLat,
+          customerLng,
           customerGender,
           referralCodeUsed: referralCode || undefined,
         }),
@@ -122,6 +149,13 @@ export default function BookingFlow({
         return;
       }
 
+      const hasTherapistBase = therapistBaseLat != null && therapistBaseLng != null;
+      const hasCustomerGps = customerLat != null && customerLng != null;
+      const distanceKm = hasTherapistBase && hasCustomerGps ? haversineKm(therapistBaseLat!, therapistBaseLng!, customerLat!, customerLng!) : undefined;
+      const mapsUrl = hasTherapistBase
+        ? buildGoogleMapsDirectionsUrl({ lat: therapistBaseLat!, lng: therapistBaseLng! }, hasCustomerGps ? { lat: customerLat!, lng: customerLng! } : address)
+        : undefined;
+
       const message = buildWhatsAppBookingMessage({
         customerName: name,
         serviceName: selectedService?.name ?? "",
@@ -129,6 +163,8 @@ export default function BookingFlow({
         date: selectedSlot?.date.slice(0, 10) ?? "",
         startTime: selectedSlot?.startTime ?? "",
         address,
+        distanceKm,
+        mapsUrl,
         depositInfo: depositRequired && depositAmount
           ? paymentMethod === "CASH"
             ? `RM${Number(depositAmount).toFixed(0)} (tunai semasa terapis tiba)`

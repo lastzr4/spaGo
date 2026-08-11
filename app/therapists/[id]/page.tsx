@@ -173,6 +173,8 @@ export default async function TherapistDetailPage({
             therapistPhone={therapist.phone}
             therapistRating={average}
             therapistReviewCount={reviews.length}
+            therapistBaseLat={therapist.baseLat}
+            therapistBaseLng={therapist.baseLng}
             customerGender={customerGender}
             services={therapist.services.map((s) => ({
               id: s.id,

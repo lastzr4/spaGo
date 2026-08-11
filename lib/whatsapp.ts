@@ -8,14 +8,22 @@ export function buildWhatsAppBookingMessage(params: {
   depositInfo?: string;
   extraChargesNote?: string;
   referralCode?: string;
+  // Straight-line estimate (haversine, free — no geocoding API involved)
+  // and a Google Maps link the therapist can tap for the real driving
+  // route. Both are optional: only present when we have GPS coords for
+  // both the therapist's base location and the customer.
+  distanceKm?: number;
+  mapsUrl?: string;
 }) {
-  const { customerName, serviceName, durationMinutes, date, startTime, address, depositInfo, extraChargesNote, referralCode } = params;
+  const { customerName, serviceName, durationMinutes, date, startTime, address, depositInfo, extraChargesNote, referralCode, distanceKm, mapsUrl } = params;
   const lines = [
     `Salam SpaGo! Tempahan Baru daripada ${customerName}.`,
     `Servis: ${serviceName} (${durationMinutes} min).`,
     `Tarikh: ${date}, ${startTime}.`,
     `Alamat: ${address}.`,
   ];
+  if (distanceKm != null) lines.push(`Jarak anggaran: ${distanceKm.toFixed(1)} km dari lokasi anda.`);
+  if (mapsUrl) lines.push(`Peta & jarak sebenar: ${mapsUrl}`);
   if (depositInfo) lines.push(`Deposit: ${depositInfo}.`);
   if (extraChargesNote) lines.push(`Caj tambahan: ${extraChargesNote}.`);
   if (referralCode) lines.push(`Kod rujukan digunakan: ${referralCode}.`);

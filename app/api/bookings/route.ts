@@ -7,7 +7,7 @@ import { sendPushToTherapist } from "@/lib/push";
 // { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender }
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender, referralCodeUsed } = body ?? {};
+  const { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender, referralCodeUsed, customerLat, customerLng } = body ?? {};
 
   if (!therapistId || !serviceId || !slotId || !customerName || !customerPhone || !customerAddress || !customerGender) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -42,6 +42,8 @@ export async function POST(req: NextRequest) {
           customerName,
           customerPhone,
           customerAddress,
+          customerLat: typeof customerLat === "number" ? customerLat : null,
+          customerLng: typeof customerLng === "number" ? customerLng : null,
           customerGender,
           status: "PENDING",
           referralCodeUsed: typeof referralCodeUsed === "string" && referralCodeUsed.trim() ? referralCodeUsed.trim().toUpperCase() : null,
