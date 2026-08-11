@@ -172,6 +172,7 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
         <div className="animate-fade-in">
           <PromoBookingFlow
             therapistId={therapist.id}
+            therapistName={therapist.name}
             therapistPhone={therapist.phone}
             therapistRating={average}
             therapistReviewCount={reviews.length}

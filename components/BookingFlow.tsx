@@ -22,6 +22,7 @@ function formatDatePill(d: string) {
 
 export default function BookingFlow({
   therapistId,
+  therapistName,
   therapistPhone,
   therapistRating = null,
   therapistReviewCount = 0,
@@ -41,6 +42,7 @@ export default function BookingFlow({
   travelRatePerKm = 1,
 }: {
   therapistId: string;
+  therapistName: string;
   therapistPhone: string;
   therapistRating?: number | null;
   therapistReviewCount?: number;
@@ -186,6 +188,7 @@ export default function BookingFlow({
         : undefined;
 
       const message = buildWhatsAppBookingMessage({
+        therapistName,
         customerName: name,
         serviceName: selectedService?.name ?? "",
         durationMinutes: selectedService?.durationMinutes ?? 0,

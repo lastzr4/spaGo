@@ -9,6 +9,7 @@ type Slot = { id: string; date: string; startTime: string; endTime: string };
 
 export default function PromoBookingFlow({
   therapistId,
+  therapistName,
   therapistPhone,
   therapistRating = null,
   therapistReviewCount = 0,
@@ -28,6 +29,7 @@ export default function PromoBookingFlow({
   travelRatePerKm = 1,
 }: {
   therapistId: string;
+  therapistName: string;
   therapistPhone: string;
   therapistRating?: number | null;
   therapistReviewCount?: number;
@@ -64,6 +66,7 @@ export default function PromoBookingFlow({
       </div>
       <BookingFlow
         therapistId={therapistId}
+        therapistName={therapistName}
         therapistPhone={therapistPhone}
         therapistRating={therapistRating}
         therapistReviewCount={therapistReviewCount}

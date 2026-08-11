@@ -1,4 +1,5 @@
 export function buildWhatsAppBookingMessage(params: {
+  therapistName: string;
   customerName: string;
   serviceName: string;
   durationMinutes: number;
@@ -19,9 +20,9 @@ export function buildWhatsAppBookingMessage(params: {
   // included here as the therapist's own record of what was agreed.
   travelFee?: number;
 }) {
-  const { customerName, serviceName, durationMinutes, date, startTime, address, depositInfo, extraChargesNote, referralCode, distanceKm, mapsUrl, travelFee } = params;
+  const { therapistName, customerName, serviceName, durationMinutes, date, startTime, address, depositInfo, extraChargesNote, referralCode, distanceKm, mapsUrl, travelFee } = params;
   const lines = [
-    `Salam SpaGo! Tempahan Baru daripada ${customerName}.`,
+    `Salam ${therapistName}! Tempahan Baru daripada ${customerName}.`,
     `Servis: ${serviceName} (${durationMinutes} min).`,
     `Tarikh: ${date}, ${startTime}.`,
     `Alamat: ${address}.`,

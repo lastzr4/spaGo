@@ -170,6 +170,7 @@ export default async function TherapistDetailPage({
         <div className="animate-fade-in">
           <BookingFlow
             therapistId={therapist.id}
+            therapistName={therapist.name}
             therapistPhone={therapist.phone}
             therapistRating={average}
             therapistReviewCount={reviews.length}
