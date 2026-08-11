@@ -24,6 +24,9 @@ export default async function ServicesPage({ params }: { params: { token: string
         <ServiceManager
           token={params.token}
           initialServices={services.map((s) => ({ id: s.id, name: s.name, durationMinutes: s.durationMinutes, price: s.price.toString(), active: s.active, photoUrl: s.photoUrl, description: s.description }))}
+          depositRequired={therapist.depositRequired}
+          depositAmount={therapist.depositAmount ? therapist.depositAmount.toString() : null}
+          paymentMethod={therapist.paymentMethod}
         />
       </main>
       <BottomTabBar token={params.token} pendingCount={pendingCount} />

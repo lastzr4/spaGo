@@ -2,11 +2,24 @@
 
 import { useRef, useState } from "react";
 import { fileToCompressedDataUrl, fileToDataUrl } from "@/lib/image";
-import { CameraIcon, PlusIcon, TrashIcon, SparkleIcon, FileUpIcon } from "@/components/icons";
+import { CameraIcon, PlusIcon, TrashIcon, SparkleIcon, FileUpIcon, EyeIcon } from "@/components/icons";
+import ServiceDetailSheet from "@/components/ServiceDetailSheet";
 
 type Service = { id: string; name: string; durationMinutes: number; price: string; active: boolean; photoUrl?: string | null; description?: string | null };
 
-export default function ServiceManager({ token, initialServices }: { token: string; initialServices: Service[] }) {
+export default function ServiceManager({
+  token,
+  initialServices,
+  depositRequired = false,
+  depositAmount = null,
+  paymentMethod = null,
+}: {
+  token: string;
+  initialServices: Service[];
+  depositRequired?: boolean;
+  depositAmount?: string | null;
+  paymentMethod?: "QR" | "CASH" | null;
+}) {
   const [services, setServices] = useState(initialServices);
   const [name, setName] = useState("");
   const [duration, setDuration] = useState("60");
@@ -26,6 +39,7 @@ export default function ServiceManager({ token, initialServices }: { token: stri
   const [extracting, setExtracting] = useState(false);
   const [extractError, setExtractError] = useState<string | null>(null);
   const [extractSuccess, setExtractSuccess] = useState<string | null>(null);
+  const [previewService, setPreviewService] = useState<Service | null>(null);
   const newPhotoInputRef = useRef<HTMLInputElement>(null);
   const extractInputRef = useRef<HTMLInputElement>(null);
 
@@ -316,6 +330,10 @@ export default function ServiceManager({ token, initialServices }: { token: stri
                 )}
               </div>
               <div className="flex shrink-0 flex-col items-end gap-2">
+                <button onClick={() => setPreviewService(s)} className="flex items-center gap-1 text-xs font-semibold text-brand-600 active:opacity-60">
+                  <EyeIcon className="h-3.5 w-3.5" />
+                  Pratonton
+                </button>
                 <button onClick={() => toggleActive(s)} className="text-xs font-semibold text-brand-600 active:opacity-60">
                   {s.active ? "Nyahaktif" : "Aktifkan"}
                 </button>
@@ -374,6 +392,17 @@ export default function ServiceManager({ token, initialServices }: { token: stri
           {adding ? "Menambah..." : "Tambah Servis"}
         </button>
       </form>
+
+      {previewService && (
+        <ServiceDetailSheet
+          service={previewService}
+          depositRequired={depositRequired}
+          depositAmount={depositAmount}
+          paymentMethod={paymentMethod}
+          previewOnly
+          onClose={() => setPreviewService(null)}
+        />
+      )}
     </div>
   );
 }

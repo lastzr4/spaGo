@@ -13,6 +13,7 @@ export default function ServiceDetailSheet({
   depositRequired = false,
   depositAmount = null,
   paymentMethod = null,
+  previewOnly = false,
   onClose,
   onBook,
 }: {
@@ -22,8 +23,11 @@ export default function ServiceDetailSheet({
   depositRequired?: boolean;
   depositAmount?: string | null;
   paymentMethod?: "QR" | "CASH" | null;
+  // Therapist-side "how does this look to customers?" preview — same sheet,
+  // minus the booking CTA (there's nothing to book from the dashboard).
+  previewOnly?: boolean;
   onClose: () => void;
-  onBook: () => void;
+  onBook?: () => void;
 }) {
   const items = [
     { icon: <ClockIcon className="h-4 w-4" />, label: "Tempoh", value: `${service.durationMinutes} minit` },
@@ -67,6 +71,11 @@ export default function ServiceDetailSheet({
           >
             <ChevronLeftIcon className="h-5 w-5" />
           </button>
+          {previewOnly && (
+            <span className="absolute right-3 top-3 rounded-full bg-black/50 px-3 py-1 text-[11px] font-semibold text-white backdrop-blur-md">
+              Pratonton pelanggan
+            </span>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
@@ -88,9 +97,15 @@ export default function ServiceDetailSheet({
         </div>
 
         <div className="safe-bottom shrink-0 border-t border-[color:var(--border)] px-5 pb-4 pt-3">
-          <button type="button" onClick={onBook} className="btn-primary w-full">
-            Tempah Sekarang
-          </button>
+          {previewOnly ? (
+            <button type="button" onClick={onClose} className="btn-secondary w-full">
+              Tutup Pratonton
+            </button>
+          ) : (
+            <button type="button" onClick={onBook} className="btn-primary w-full">
+              Tempah Sekarang
+            </button>
+          )}
         </div>
       </div>
     </div>
