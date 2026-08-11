@@ -1,4 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { RECEIPT_FORMAT_REFERENCE } from "@/lib/receiptFormats";
 
 // Shared client + helper for every AI-assisted feature in the dashboard
 // (bio polish, review summary, follow-up drafting, pricing guidance,
@@ -129,7 +130,7 @@ export async function extractServicesFromDocument(params: {
 }
 
 export type ReceiptVerdict = "LIKELY_VALID" | "NEEDS_MANUAL_CHECK" | "SUSPICIOUS";
-export type ReceiptVerification = { verdict: ReceiptVerdict; amountDetected: number | null; notes: string };
+export type ReceiptVerification = { verdict: ReceiptVerdict; amountDetected: number | null; detectedProvider: string | null; notes: string };
 
 // Heuristic red-flag check on a payment receipt screenshot — this can NEVER
 // confirm money actually moved (no bank/payment-gateway access), only spot
@@ -153,7 +154,9 @@ export async function verifyPaymentReceipt(params: {
       model: AI_MODEL,
       max_tokens: 400,
       system:
-        "Anda pembantu yang memeriksa gambar resit/bukti pemindahan bank atau e-wallet (DuitNow, QR, dll) untuk terapis urut mobile di Malaysia, bagi mengesan tanda-tanda resit palsu atau diedit. PENTING: anda TIDAK boleh mengesahkan wang sebenarnya telah masuk — anda hanya boleh kesan tanda visual yang mencurigakan: kesan edit/tampal (font tak konsisten, susunan pelik, logo bank salah/kabur, latar belakang tidak sepadan), jumlah dalam gambar tidak sepadan dengan jumlah dijangka, tarikh/masa tidak logik (terlalu lama, tarikh masa depan, atau tidak munasabah untuk 'baru sahaja'), status menunjukkan 'Pending', 'Gagal', atau 'Failed' tetapi cuba disamarkan sebagai berjaya, resolusi/kualiti janggal berbanding aplikasi bank sebenar. Balas SEMATA-MATA dengan JSON (tiada teks lain, tiada markdown): { \"verdict\": \"LIKELY_VALID\" | \"NEEDS_MANUAL_CHECK\" | \"SUSPICIOUS\", \"amountDetected\": nombor atau null jika tidak jelas, \"notes\": ayat pendek dalam Bahasa Malaysia (1-2 ayat) menerangkan sebab verdict, DAN sentiasa ingatkan terapis untuk sahkan sendiri di aplikasi bank/e-wallet mereka sebelum mengesahkan tempahan }.",
+        "Anda pembantu yang memeriksa gambar resit/bukti pemindahan bank atau e-wallet (DuitNow, QR, dll) untuk terapis urut mobile di Malaysia, bagi mengesan tanda-tanda resit palsu atau diedit. PENTING: anda TIDAK boleh mengesahkan wang sebenarnya telah masuk — anda hanya boleh kesan tanda visual yang mencurigakan. Guna panduan format resit bank/e-wallet Malaysia di bawah untuk kenal pasti platform yang didakwa dan bandingkan dengan corak sebenar (warna tema, logo, terminologi, susunan medan) — kalau resit didakwa dari satu bank tapi tak sepadan dengan corak biasa bank tersebut, ini tanda kuat ia palsu/diedit.\n\n" +
+        RECEIPT_FORMAT_REFERENCE +
+        "\n\nBalas SEMATA-MATA dengan JSON (tiada teks lain, tiada markdown): { \"verdict\": \"LIKELY_VALID\" | \"NEEDS_MANUAL_CHECK\" | \"SUSPICIOUS\", \"amountDetected\": nombor atau null jika tidak jelas, \"detectedProvider\": nama bank/e-wallet yang dikesan (cth \"Maybank2u\", \"Touch 'n Go eWallet\") atau null jika tidak dapat dikenal pasti, \"notes\": ayat pendek dalam Bahasa Malaysia (1-2 ayat) menerangkan sebab verdict — sebut platform yang dikesan dan sama ada ia sepadan dengan corak biasa, DAN sentiasa ingatkan terapis untuk sahkan sendiri di aplikasi bank/e-wallet mereka sebelum mengesahkan tempahan }.",
       messages: [
         {
           role: "user",
@@ -184,15 +187,16 @@ export async function verifyPaymentReceipt(params: {
       .replace(/```\s*$/i, "")
       .trim();
 
-    const parsed = JSON.parse(cleaned) as { verdict?: unknown; amountDetected?: unknown; notes?: unknown };
+    const parsed = JSON.parse(cleaned) as { verdict?: unknown; amountDetected?: unknown; detectedProvider?: unknown; notes?: unknown };
     const verdict = parsed.verdict === "LIKELY_VALID" || parsed.verdict === "SUSPICIOUS" ? parsed.verdict : "NEEDS_MANUAL_CHECK";
     const amountDetected = typeof parsed.amountDetected === "number" && Number.isFinite(parsed.amountDetected) ? parsed.amountDetected : null;
+    const detectedProvider = typeof parsed.detectedProvider === "string" && parsed.detectedProvider.trim() ? parsed.detectedProvider.trim().slice(0, 60) : null;
     const notes =
       typeof parsed.notes === "string" && parsed.notes.trim()
         ? parsed.notes.trim().slice(0, 500)
         : "Sila sahkan sendiri di aplikasi bank/e-wallet anda sebelum mengesahkan tempahan.";
 
-    return { verdict, amountDetected, notes };
+    return { verdict, amountDetected, detectedProvider, notes };
   } catch (err) {
     console.error("[verifyPaymentReceipt] request failed:", err);
     return null;
