@@ -11,6 +11,7 @@ import PendingAlertBanner from "@/components/PendingAlertBanner";
 import UpcomingQueue from "@/components/UpcomingQueue";
 import ScheduleConflictBanner from "@/components/ScheduleConflictBanner";
 import PushNotificationToggle from "@/components/PushNotificationToggle";
+import InstallPrompt from "@/components/InstallPrompt";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,8 @@ export default async function DashboardHomePage({ params }: { params: { token: s
             trend={salesTrend}
           />
         </div>
+
+        <InstallPrompt />
 
         <PushNotificationToggle token={params.token} />
 
