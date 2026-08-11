@@ -58,6 +58,11 @@ export async function POST(req: NextRequest) {
           healthConsentAccepted: true,
           healthConsentAcceptedAt: new Date(),
           healthConsentText: buildHealthDeclarationText(customerGender),
+          // Snapshot the deposit amount as it stood at booking time — the
+          // therapist's deposit settings can change later, but forfeiture
+          // accounting on this booking should always reflect what was
+          // actually agreed to when it was made.
+          depositAmountSnapshot: therapist.depositRequired && therapist.depositAmount ? therapist.depositAmount : null,
         },
       });
 

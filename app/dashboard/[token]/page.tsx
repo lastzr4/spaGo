@@ -6,7 +6,7 @@ import ProfileForm from "@/components/ProfileForm";
 import DashboardStats from "@/components/DashboardStats";
 import SalesHeroCard from "@/components/SalesHeroCard";
 import TransactionList from "@/components/TransactionList";
-import { getDashboardStats, getUpcomingQueue, getScheduleConflicts, getSalesTrend, getRecentTransactions } from "@/lib/dashboardStats";
+import { getDashboardStats, getUpcomingQueue, getScheduleConflicts, getSalesTrend, getRecentTransactions, getLateCancellationCompensation } from "@/lib/dashboardStats";
 import PendingAlertBanner from "@/components/PendingAlertBanner";
 import UpcomingQueue from "@/components/UpcomingQueue";
 import ScheduleConflictBanner from "@/components/ScheduleConflictBanner";
@@ -19,12 +19,13 @@ export default async function DashboardHomePage({ params }: { params: { token: s
   const therapist = await getTherapistByToken(params.token);
   if (!therapist) notFound();
 
-  const [stats, upcomingQueue, scheduleConflicts, salesTrend, recentTransactions] = await Promise.all([
+  const [stats, upcomingQueue, scheduleConflicts, salesTrend, recentTransactions, lateCancellationCompensation] = await Promise.all([
     getDashboardStats(therapist.id),
     getUpcomingQueue(therapist.id),
     getScheduleConflicts(therapist.id),
     getSalesTrend(therapist.id),
     getRecentTransactions(therapist.id),
+    getLateCancellationCompensation(therapist.id),
   ]);
 
   return (
@@ -41,6 +42,7 @@ export default async function DashboardHomePage({ params }: { params: { token: s
             totalCollected={stats.totalCollected}
             customersServed={stats.customersServed}
             trend={salesTrend}
+            lateCancellationCompensation={lateCancellationCompensation}
           />
         </div>
 
@@ -90,6 +92,7 @@ export default async function DashboardHomePage({ params }: { params: { token: s
               galleryPhotos: therapist.galleryPhotos,
               baseLat: therapist.baseLat,
               baseLng: therapist.baseLng,
+              cancellationWindowHours: therapist.cancellationWindowHours,
             }}
           />
         </div>

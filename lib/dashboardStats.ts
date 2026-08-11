@@ -37,6 +37,17 @@ export async function getDashboardStats(therapistId: string) {
   };
 }
 
+// Total deposit value forfeited to the therapist as compensation for
+// late-cancelled bookings (see lib/cancellation.ts) — shown separately from
+// totalCollected since it's compensation, not service revenue.
+export async function getLateCancellationCompensation(therapistId: string) {
+  const forfeited = await prisma.booking.findMany({
+    where: { therapistId, status: "CANCELLED", depositForfeited: true },
+    select: { depositAmountSnapshot: true },
+  });
+  return forfeited.reduce((sum, b) => sum + Number(b.depositAmountSnapshot ?? 0), 0);
+}
+
 export async function getPendingBookingCount(therapistId: string) {
   return prisma.booking.count({ where: { therapistId, status: "PENDING" } });
 }

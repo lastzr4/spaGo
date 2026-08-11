@@ -19,8 +19,12 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
     depositRequired, depositAmount, paymentMethod, qrCodeUrl, extraChargesNote,
     socialInstagram, socialTiktok, socialThreads, socialX,
     specialties, yearsExperience, workingHoursNote, galleryPhotos,
-    baseLat, baseLng,
+    baseLat, baseLng, cancellationWindowHours,
   } = body ?? {};
+
+  if (cancellationWindowHours !== undefined && (typeof cancellationWindowHours !== "number" || cancellationWindowHours < 0 || cancellationWindowHours > 72)) {
+    return NextResponse.json({ error: "CANCELLATION_WINDOW_INVALID" }, { status: 400 });
+  }
 
   if (baseLat !== undefined && baseLat !== null && (typeof baseLat !== "number" || baseLat < -90 || baseLat > 90)) {
     return NextResponse.json({ error: "BASE_LAT_INVALID" }, { status: 400 });
@@ -78,6 +82,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
       ...(galleryPhotos !== undefined ? { galleryPhotos: Array.isArray(galleryPhotos) ? galleryPhotos.slice(0, 6) : [] } : {}),
       ...(baseLat !== undefined ? { baseLat } : {}),
       ...(baseLng !== undefined ? { baseLng } : {}),
+      ...(cancellationWindowHours !== undefined ? { cancellationWindowHours } : {}),
     },
   });
 

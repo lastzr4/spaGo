@@ -35,6 +35,7 @@ export default function BookingFlow({
   paymentMethod = null,
   qrCodeUrl = null,
   extraChargesNote = null,
+  cancellationWindowHours = 2,
 }: {
   therapistId: string;
   therapistPhone: string;
@@ -55,6 +56,7 @@ export default function BookingFlow({
   paymentMethod?: "QR" | "CASH" | null;
   qrCodeUrl?: string | null;
   extraChargesNote?: string | null;
+  cancellationWindowHours?: number;
 }) {
   const [serviceId, setServiceId] = useState(services[0]?.id ?? "");
   const [slotId, setSlotId] = useState("");
@@ -387,6 +389,11 @@ export default function BookingFlow({
               )}
             </>
           )}
+
+          <p className="mt-3 flex items-start gap-2 rounded-xl bg-amber-500/15 px-3.5 py-2.5 text-xs font-medium text-amber-400">
+            <AlertTriangleIcon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            Pembatalan tempahan yang telah disahkan kurang daripada {cancellationWindowHours} jam sebelum sesi akan menyebabkan deposit tidak dikembalikan, sebagai pampasan masa &amp; perjalanan terapis.
+          </p>
 
           <label className="mt-3 flex items-start gap-2.5 rounded-xl bg-[color:var(--surface-2)] px-3.5 py-3">
             <input

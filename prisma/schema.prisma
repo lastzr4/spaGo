@@ -66,6 +66,7 @@ model Therapist {
   galleryPhotos       String[]            @default([])
   baseLat             Float?
   baseLng             Float?
+  cancellationWindowHours Int             @default(2)
   aiChatEnabled       Boolean             @default(true)
   reviewSummary       String?
   reviewSummaryUpdatedAt DateTime?
@@ -152,6 +153,10 @@ model Booking {
   healthConsentAccepted   Boolean   @default(false)
   healthConsentAcceptedAt DateTime?
   healthConsentText       String?
+  depositAmountSnapshot   Decimal?  @db.Decimal(10, 2)
+  depositForfeited        Boolean   @default(false)
+  lateCancellation        Boolean   @default(false)
+  cancelledAt             DateTime?
   createdAt         DateTime      @default(now())
   review            Review?
 

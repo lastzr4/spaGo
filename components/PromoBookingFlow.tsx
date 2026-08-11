@@ -22,6 +22,7 @@ export default function PromoBookingFlow({
   paymentMethod = null,
   qrCodeUrl = null,
   extraChargesNote = null,
+  cancellationWindowHours = 2,
 }: {
   therapistId: string;
   therapistPhone: string;
@@ -37,6 +38,7 @@ export default function PromoBookingFlow({
   paymentMethod?: "QR" | "CASH" | null;
   qrCodeUrl?: string | null;
   extraChargesNote?: string | null;
+  cancellationWindowHours?: number;
 }) {
   const [gender, setGender] = useState<"MALE" | "FEMALE">(defaultGender);
 
@@ -69,6 +71,7 @@ export default function PromoBookingFlow({
         paymentMethod={paymentMethod}
         qrCodeUrl={qrCodeUrl}
         extraChargesNote={extraChargesNote}
+        cancellationWindowHours={cancellationWindowHours}
       />
     </div>
   );

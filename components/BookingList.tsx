@@ -2,8 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CalendarIcon, CheckCircleIcon, XIcon, ClipboardListIcon } from "@/components/icons";
+import { CalendarIcon, CheckCircleIcon, XIcon, ClipboardListIcon, AlertTriangleIcon } from "@/components/icons";
 import { buildGoogleCalendarLink } from "@/lib/googleCalendar";
+import { isLateCancellation } from "@/lib/cancellation";
+import ConfirmDialog from "@/components/ConfirmDialog";
+import RescheduleSheet from "@/components/RescheduleSheet";
 
 type Booking = {
   id: string;
@@ -17,6 +20,8 @@ type Booking = {
   endTime: string;
   healthConsentAccepted: boolean;
   healthConsentAcceptedAt: string | null;
+  depositAmountSnapshot: string | null;
+  depositForfeited: boolean;
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -52,11 +57,21 @@ const FILTERS: { value: StatusFilter; label: string }[] = [
   { value: "CANCELLED", label: "Dibatalkan" },
 ];
 
-export default function BookingList({ token, initialBookings }: { token: string; initialBookings: Booking[] }) {
+export default function BookingList({
+  token,
+  initialBookings,
+  cancellationWindowHours = 2,
+}: {
+  token: string;
+  initialBookings: Booking[];
+  cancellationWindowHours?: number;
+}) {
   const searchParams = useSearchParams();
   const initialStatus = searchParams.get("status");
   const [bookings, setBookings] = useState(initialBookings);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [cancelTarget, setCancelTarget] = useState<Booking | null>(null);
+  const [rescheduleTarget, setRescheduleTarget] = useState<Booking | null>(null);
   const [filter, setFilter] = useState<StatusFilter>(
     initialStatus && ["PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"].includes(initialStatus)
       ? (initialStatus as StatusFilter)
@@ -75,10 +90,29 @@ export default function BookingList({ token, initialBookings }: { token: string;
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status }),
     });
+    const data = await res.json().catch(() => null);
     if (res.ok) {
-      setBookings((list) => list.map((b) => (b.id === id ? { ...b, status } : b)));
+      setBookings((list) =>
+        list.map((b) => (b.id === id ? { ...b, status, depositForfeited: data?.depositForfeited ?? false } : b))
+      );
     }
     setUpdating(null);
+  }
+
+  // Cancelling a booking that's already CONFIRMED and inside the
+  // late-cancellation window forfeits the deposit — warn before acting on
+  // it instead of silently applying the policy.
+  function handleCancelTap(b: Booking) {
+    const willForfeit =
+      b.status === "CONFIRMED" &&
+      b.depositAmountSnapshot != null &&
+      Number(b.depositAmountSnapshot) > 0 &&
+      isLateCancellation(b.date, b.startTime, cancellationWindowHours);
+    if (willForfeit) {
+      setCancelTarget(b);
+    } else {
+      updateStatus(b.id, "CANCELLED");
+    }
   }
 
   if (bookings.length === 0) {
@@ -143,6 +177,12 @@ export default function BookingList({ token, initialBookings }: { token: string;
                 ` — ${new Date(b.healthConsentAcceptedAt).toLocaleString("ms-MY", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`}
             </p>
           )}
+          {b.depositForfeited && b.depositAmountSnapshot && (
+            <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-amber-400">
+              <AlertTriangleIcon className="h-3 w-3" />
+              Deposit RM{Number(b.depositAmountSnapshot).toFixed(0)} dirampas — pembatalan lewat
+            </p>
+          )}
 
           {(b.status === "PENDING" || b.status === "CONFIRMED") && (
             <div className="mt-3 flex gap-2">
@@ -170,7 +210,7 @@ export default function BookingList({ token, initialBookings }: { token: string;
               )}
               <button
                 type="button"
-                onClick={() => updateStatus(b.id, "CANCELLED")}
+                onClick={() => handleCancelTap(b)}
                 disabled={updating === b.id}
                 className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-red-500/15 px-3 py-2 text-xs font-semibold text-red-500 active:scale-[0.97] disabled:opacity-40"
               >
@@ -178,6 +218,18 @@ export default function BookingList({ token, initialBookings }: { token: string;
                 Batal
               </button>
             </div>
+          )}
+
+          {b.status === "CONFIRMED" && (
+            <button
+              type="button"
+              onClick={() => setRescheduleTarget(b)}
+              disabled={updating === b.id}
+              className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[color:var(--border)] px-3 py-2 text-xs font-semibold text-[color:var(--text-secondary)] active:scale-[0.97] disabled:opacity-40"
+            >
+              <CalendarIcon className="h-3.5 w-3.5" />
+              Jadual Semula
+            </button>
           )}
 
           {b.status === "CONFIRMED" && (
@@ -201,6 +253,38 @@ export default function BookingList({ token, initialBookings }: { token: string;
         </div>
         );
       })}
+
+      <ConfirmDialog
+        open={cancelTarget !== null}
+        title="Pembatalan Lewat"
+        message={
+          cancelTarget
+            ? `Tempahan ini kurang daripada ${cancellationWindowHours} jam sebelum sesi. Deposit RM${Number(cancelTarget.depositAmountSnapshot).toFixed(0)} akan direkod sebagai pampasan mengikut polisi anda. Teruskan batalkan?`
+            : ""
+        }
+        confirmLabel="Ya, Batalkan"
+        danger
+        busy={updating !== null}
+        onConfirm={() => {
+          if (cancelTarget) updateStatus(cancelTarget.id, "CANCELLED");
+          setCancelTarget(null);
+        }}
+        onCancel={() => setCancelTarget(null)}
+      />
+
+      {rescheduleTarget && (
+        <RescheduleSheet
+          token={token}
+          bookingId={rescheduleTarget.id}
+          onClose={() => setRescheduleTarget(null)}
+          onRescheduled={(slot) => {
+            setBookings((list) =>
+              list.map((b) => (b.id === rescheduleTarget.id ? { ...b, date: slot.date, startTime: slot.startTime, endTime: slot.endTime } : b))
+            );
+            setRescheduleTarget(null);
+          }}
+        />
+      )}
     </div>
   );
 }

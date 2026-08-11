@@ -38,7 +38,10 @@ export default async function BookingsPage({ params }: { params: { token: string
               endTime: b.slot.endTime,
               healthConsentAccepted: b.healthConsentAccepted,
               healthConsentAcceptedAt: b.healthConsentAcceptedAt ? b.healthConsentAcceptedAt.toISOString() : null,
+              depositAmountSnapshot: b.depositAmountSnapshot ? b.depositAmountSnapshot.toString() : null,
+              depositForfeited: b.depositForfeited,
             }))}
+            cancellationWindowHours={therapist.cancellationWindowHours}
           />
         </Suspense>
       </main>

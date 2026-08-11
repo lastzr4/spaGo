@@ -34,6 +34,7 @@ type Props = {
     galleryPhotos: string[];
     baseLat: number | null;
     baseLng: number | null;
+    cancellationWindowHours: number;
   };
 };
 
@@ -56,6 +57,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
     socialX: therapist.socialX ?? "",
     yearsExperience: therapist.yearsExperience?.toString() ?? "",
     workingHoursNote: therapist.workingHoursNote ?? "",
+    cancellationWindowHours: therapist.cancellationWindowHours.toString(),
   });
   const [specialtyInput, setSpecialtyInput] = useState("");
   const [uploadingGallery, setUploadingGallery] = useState(false);
@@ -282,6 +284,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
       body.paymentMethod = null;
     }
     body.yearsExperience = form.yearsExperience === "" ? null : Number(form.yearsExperience);
+    body.cancellationWindowHours = form.cancellationWindowHours === "" ? 2 : Number(form.cancellationWindowHours);
 
     const res = await fetch(`/api/dashboard/${token}`, {
       method: "PATCH",
@@ -788,6 +791,24 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
                   <p className="mt-2 text-xs text-[color:var(--text-muted)]">Kod QR ini akan ditunjukkan kepada pelanggan semasa tempahan.</p>
                 </div>
               )}
+
+              <div>
+                <label className="mb-1.5 block text-sm font-semibold text-[color:var(--text-primary)]">Polisi Pembatalan Lewat</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    className="input"
+                    type="number"
+                    min="0"
+                    max="72"
+                    value={form.cancellationWindowHours}
+                    onChange={(e) => setForm({ ...form, cancellationWindowHours: e.target.value })}
+                  />
+                  <span className="shrink-0 text-sm text-[color:var(--text-secondary)]">jam sebelum sesi</span>
+                </div>
+                <p className="mt-1.5 text-xs text-[color:var(--text-muted)]">
+                  Jika pelanggan batalkan tempahan yang telah disahkan dalam tempoh ini, deposit direkod sebagai pampasan dan boleh disimpan.
+                </p>
+              </div>
             </div>
           )}
 

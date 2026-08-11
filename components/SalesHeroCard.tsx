@@ -15,11 +15,13 @@ export default function SalesHeroCard({
   totalCollected,
   customersServed,
   trend,
+  lateCancellationCompensation = 0,
 }: {
   token: string;
   totalCollected: number;
   customersServed: number;
   trend: TrendPoint[];
+  lateCancellationCompensation?: number;
 }) {
   const actions = [
     { label: "Tempahan", Icon: ClipboardListIcon, href: `/dashboard/${token}/bookings` },
@@ -44,6 +46,9 @@ export default function SalesHeroCard({
         <CountUp value={totalCollected} prefix="RM" />
       </p>
       <p className="relative mt-1.5 text-xs text-white/70">{customersServed} pelanggan dilayan setakat ini</p>
+      {lateCancellationCompensation > 0 && (
+        <p className="relative mt-0.5 text-[11px] text-amber-200">+RM{lateCancellationCompensation.toFixed(0)} pampasan pembatalan lewat</p>
+      )}
 
       <div className="relative mt-4">
         <SalesTrendChart trend={trend} />
