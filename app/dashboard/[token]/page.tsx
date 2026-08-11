@@ -93,6 +93,9 @@ export default async function DashboardHomePage({ params }: { params: { token: s
               baseLat: therapist.baseLat,
               baseLng: therapist.baseLng,
               cancellationWindowHours: therapist.cancellationWindowHours,
+              travelFeeEnabled: therapist.travelFeeEnabled,
+              travelFreeRadiusKm: therapist.travelFreeRadiusKm,
+              travelRatePerKm: therapist.travelRatePerKm,
             }}
           />
         </div>

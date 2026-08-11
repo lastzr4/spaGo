@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { buildWhatsAppBookingMessage, buildWhatsAppLink } from "@/lib/whatsapp";
-import { haversineKm, buildGoogleMapsDirectionsUrl } from "@/lib/geo";
+import { haversineKm, buildGoogleMapsDirectionsUrl, computeTravelFee } from "@/lib/geo";
 import { buildHealthDeclarationStatements } from "@/lib/consent";
 import { CheckCircleIcon, SendIcon, CalendarIcon, AlertTriangleIcon, QrIcon, CashIcon, ChevronRightIcon, ClipboardListIcon } from "@/components/icons";
 import Confetti from "@/components/Confetti";
@@ -36,6 +36,9 @@ export default function BookingFlow({
   qrCodeUrl = null,
   extraChargesNote = null,
   cancellationWindowHours = 2,
+  travelFeeEnabled = false,
+  travelFreeRadiusKm = 5,
+  travelRatePerKm = 1,
 }: {
   therapistId: string;
   therapistPhone: string;
@@ -57,6 +60,12 @@ export default function BookingFlow({
   qrCodeUrl?: string | null;
   extraChargesNote?: string | null;
   cancellationWindowHours?: number;
+  // Dynamic travel fee: computed from GPS distance, shown to the customer
+  // and requires their explicit agreement before submitting — never
+  // silently applied. Off by default (therapist must opt in).
+  travelFeeEnabled?: boolean;
+  travelFreeRadiusKm?: number;
+  travelRatePerKm?: number;
 }) {
   const [serviceId, setServiceId] = useState(services[0]?.id ?? "");
   const [slotId, setSlotId] = useState("");
@@ -68,12 +77,14 @@ export default function BookingFlow({
   const [error, setError] = useState<string | null>(null);
   const [depositConfirmed, setDepositConfirmed] = useState(false);
   const [healthConsentAccepted, setHealthConsentAccepted] = useState(false);
+  const [travelFeeConfirmed, setTravelFeeConfirmed] = useState(false);
   const [showQr, setShowQr] = useState(false);
   const [justBooked, setJustBooked] = useState(false);
   const [detailsRevealed, setDetailsRevealed] = useState(false);
   const [detailService, setDetailService] = useState<Service | null>(null);
   const [customerLat, setCustomerLat] = useState<number | null>(null);
   const [customerLng, setCustomerLng] = useState<number | null>(null);
+  const [locationAttempted, setLocationAttempted] = useState(false);
   const detailsRef = useRef<HTMLDivElement>(null);
   const slotSectionRef = useRef<HTMLDivElement>(null);
   const nameRef = useRef<HTMLInputElement>(null);
@@ -95,6 +106,16 @@ export default function BookingFlow({
   const selectedService = services.find((s) => s.id === serviceId);
   const selectedSlot = slots.find((s) => s.id === slotId);
 
+  // Computed reactively (not just at submit time) so it can be shown in the
+  // booking summary before the customer commits — the whole point is
+  // advance disclosure + explicit agreement, never a surprise charge after
+  // the fact.
+  const distanceKm =
+    therapistBaseLat != null && therapistBaseLng != null && customerLat != null && customerLng != null
+      ? haversineKm(therapistBaseLat, therapistBaseLng, customerLat, customerLng)
+      : null;
+  const travelFee = travelFeeEnabled && distanceKm != null ? computeTravelFee(distanceKm, travelFreeRadiusKm, travelRatePerKm) : null;
+
   useEffect(() => {
     if (detailsRevealed) {
       detailsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -106,10 +127,13 @@ export default function BookingFlow({
           (pos) => {
             setCustomerLat(pos.coords.latitude);
             setCustomerLng(pos.coords.longitude);
+            setLocationAttempted(true);
           },
-          () => {},
+          () => setLocationAttempted(true),
           { enableHighAccuracy: true, timeout: 8000 }
         );
+      } else {
+        setLocationAttempted(true);
       }
     }
   }, [detailsRevealed]);
@@ -141,6 +165,7 @@ export default function BookingFlow({
           customerGender,
           referralCodeUsed: referralCode || undefined,
           healthConsentAccepted,
+          travelFeeConfirmed,
         }),
       });
       const data = await res.json();
@@ -156,7 +181,6 @@ export default function BookingFlow({
 
       const hasTherapistBase = therapistBaseLat != null && therapistBaseLng != null;
       const hasCustomerGps = customerLat != null && customerLng != null;
-      const distanceKm = hasTherapistBase && hasCustomerGps ? haversineKm(therapistBaseLat!, therapistBaseLng!, customerLat!, customerLng!) : undefined;
       const mapsUrl = hasTherapistBase
         ? buildGoogleMapsDirectionsUrl({ lat: therapistBaseLat!, lng: therapistBaseLng! }, hasCustomerGps ? { lat: customerLat!, lng: customerLng! } : address)
         : undefined;
@@ -168,8 +192,9 @@ export default function BookingFlow({
         date: selectedSlot?.date.slice(0, 10) ?? "",
         startTime: selectedSlot?.startTime ?? "",
         address,
-        distanceKm,
+        distanceKm: distanceKm ?? undefined,
         mapsUrl,
+        travelFee: travelFee ?? undefined,
         depositInfo: depositRequired && depositAmount
           ? paymentMethod === "CASH"
             ? `RM${Number(depositAmount).toFixed(0)} (tunai semasa terapis tiba)`
@@ -338,6 +363,20 @@ export default function BookingFlow({
             <span className="text-[color:var(--text-secondary)]">Harga</span>
             <span className="font-bold text-brand-500">RM{Number(selectedService.price).toFixed(0)}</span>
           </div>
+          {travelFeeEnabled && detailsRevealed && (
+            <div className="detail-row">
+              <span className="text-[color:var(--text-secondary)]">Caj Perjalanan{distanceKm != null ? ` (~${distanceKm.toFixed(1)} km)` : ""}</span>
+              <span className="font-semibold text-[color:var(--text-primary)]">
+                {distanceKm != null
+                  ? travelFee && travelFee > 0
+                    ? `RM${travelFee}`
+                    : "Percuma"
+                  : locationAttempted
+                    ? "Akan dibincang dengan terapis"
+                    : "Mengira lokasi..."}
+              </span>
+            </div>
+          )}
         </div>
       )}
 
@@ -444,6 +483,26 @@ export default function BookingFlow({
         </div>
       )}
 
+      {detailsRevealed && travelFeeEnabled && distanceKm != null && travelFee != null && travelFee > 0 && (
+        <div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 animate-fade-in">
+          <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Caj Perjalanan Tambahan</p>
+          <p className="mt-1 text-xs text-[color:var(--text-secondary)]">
+            Lokasi anda ~{distanceKm.toFixed(1)} km dari terapis, melebihi jarak percuma yang ditetapkan. Caj perjalanan RM{travelFee} dikira secara automatik berdasarkan jarak ini.
+          </p>
+          <label className="mt-3 flex items-start gap-2.5 rounded-xl bg-[color:var(--surface-2)] px-3.5 py-3">
+            <input
+              type="checkbox"
+              checked={travelFeeConfirmed}
+              onChange={(e) => setTravelFeeConfirmed(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 accent-brand-600"
+            />
+            <span className="text-sm text-[color:var(--text-secondary)]">
+              Saya faham dan bersetuju dengan caj perjalanan tambahan RM{travelFee} ini.
+            </span>
+          </label>
+        </div>
+      )}
+
       {detailsRevealed && error && (
         <p className="rounded-xl bg-red-500/15 px-3.5 py-2.5 text-sm font-medium text-red-400">{error}</p>
       )}
@@ -463,7 +522,13 @@ export default function BookingFlow({
           <button
             type="submit"
             className="btn-primary flex items-center justify-center gap-2"
-            disabled={submitting || !slotId || (depositRequired && !depositConfirmed) || !healthConsentAccepted}
+            disabled={
+              submitting ||
+              !slotId ||
+              (depositRequired && !depositConfirmed) ||
+              !healthConsentAccepted ||
+              (travelFeeEnabled && travelFee != null && travelFee > 0 && !travelFeeConfirmed)
+            }
           >
             {submitting ? "Menghantar..." : (
               <>

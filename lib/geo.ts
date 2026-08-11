@@ -32,3 +32,13 @@ export function buildGoogleMapsDirectionsUrl(origin: GeoPoint, destination: GeoP
   });
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
+
+// Dynamic travel fee: free within freeRadiusKm, then ratePerKm beyond that,
+// rounded to the nearest RM. Pure function so the client (for display, and
+// for gating the "I agree" checkbox) and the server (for the trusted,
+// never-client-supplied recomputation at booking time) always agree on the
+// same number given the same inputs.
+export function computeTravelFee(distanceKm: number, freeRadiusKm: number, ratePerKm: number): number {
+  const billableKm = Math.max(0, distanceKm - freeRadiusKm);
+  return Math.round(billableKm * ratePerKm);
+}

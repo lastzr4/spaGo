@@ -20,10 +20,17 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
     socialInstagram, socialTiktok, socialThreads, socialX,
     specialties, yearsExperience, workingHoursNote, galleryPhotos,
     baseLat, baseLng, cancellationWindowHours,
+    travelFeeEnabled, travelFreeRadiusKm, travelRatePerKm,
   } = body ?? {};
 
   if (cancellationWindowHours !== undefined && (typeof cancellationWindowHours !== "number" || cancellationWindowHours < 0 || cancellationWindowHours > 72)) {
     return NextResponse.json({ error: "CANCELLATION_WINDOW_INVALID" }, { status: 400 });
+  }
+  if (travelFreeRadiusKm !== undefined && (typeof travelFreeRadiusKm !== "number" || travelFreeRadiusKm < 0 || travelFreeRadiusKm > 200)) {
+    return NextResponse.json({ error: "TRAVEL_FREE_RADIUS_INVALID" }, { status: 400 });
+  }
+  if (travelRatePerKm !== undefined && (typeof travelRatePerKm !== "number" || travelRatePerKm < 0 || travelRatePerKm > 50)) {
+    return NextResponse.json({ error: "TRAVEL_RATE_INVALID" }, { status: 400 });
   }
 
   if (baseLat !== undefined && baseLat !== null && (typeof baseLat !== "number" || baseLat < -90 || baseLat > 90)) {
@@ -83,6 +90,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
       ...(baseLat !== undefined ? { baseLat } : {}),
       ...(baseLng !== undefined ? { baseLng } : {}),
       ...(cancellationWindowHours !== undefined ? { cancellationWindowHours } : {}),
+      ...(travelFeeEnabled !== undefined ? { travelFeeEnabled } : {}),
+      ...(travelFreeRadiusKm !== undefined ? { travelFreeRadiusKm } : {}),
+      ...(travelRatePerKm !== undefined ? { travelRatePerKm } : {}),
     },
   });
 

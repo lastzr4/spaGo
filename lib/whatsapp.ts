@@ -14,8 +14,12 @@ export function buildWhatsAppBookingMessage(params: {
   // both the therapist's base location and the customer.
   distanceKm?: number;
   mapsUrl?: string;
+  // Dynamic travel fee (see lib/geo.ts computeTravelFee) — already shown to
+  // and explicitly agreed to by the customer before this message is built,
+  // included here as the therapist's own record of what was agreed.
+  travelFee?: number;
 }) {
-  const { customerName, serviceName, durationMinutes, date, startTime, address, depositInfo, extraChargesNote, referralCode, distanceKm, mapsUrl } = params;
+  const { customerName, serviceName, durationMinutes, date, startTime, address, depositInfo, extraChargesNote, referralCode, distanceKm, mapsUrl, travelFee } = params;
   const lines = [
     `Salam SpaGo! Tempahan Baru daripada ${customerName}.`,
     `Servis: ${serviceName} (${durationMinutes} min).`,
@@ -24,6 +28,7 @@ export function buildWhatsAppBookingMessage(params: {
   ];
   if (distanceKm != null) lines.push(`Jarak anggaran: ${distanceKm.toFixed(1)} km dari lokasi anda.`);
   if (mapsUrl) lines.push(`Peta & jarak sebenar: ${mapsUrl}`);
+  if (travelFee != null && travelFee > 0) lines.push(`Caj perjalanan: RM${travelFee} (dipersetujui pelanggan semasa tempahan).`);
   if (depositInfo) lines.push(`Deposit: ${depositInfo}.`);
   if (extraChargesNote) lines.push(`Caj tambahan: ${extraChargesNote}.`);
   if (referralCode) lines.push(`Kod rujukan digunakan: ${referralCode}.`);

@@ -3,12 +3,16 @@ import { prisma } from "@/lib/prisma";
 import { isMatch } from "@/lib/gender";
 import { sendPushToTherapist } from "@/lib/push";
 import { buildHealthDeclarationText } from "@/lib/consent";
+import { haversineKm, computeTravelFee } from "@/lib/geo";
 
 // POST /api/bookings
 // { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender, healthConsentAccepted }
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender, referralCodeUsed, customerLat, customerLng, healthConsentAccepted } = body ?? {};
+  const {
+    therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender,
+    referralCodeUsed, customerLat, customerLng, healthConsentAccepted, travelFeeConfirmed,
+  } = body ?? {};
 
   if (!therapistId || !serviceId || !slotId || !customerName || !customerPhone || !customerAddress || !customerGender) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -40,6 +44,27 @@ export async function POST(req: NextRequest) {
         throw new Error("SERVICE_NOT_FOUND");
       }
 
+      // Dynamic travel fee — never trust a client-supplied amount. Recompute
+      // from the therapist's own settings + GPS coords server-side; the
+      // client only ever displayed a preview of this same calculation. If
+      // there's a real fee to charge, the customer must have explicitly
+      // confirmed it (mirrors the health-consent gate above).
+      let travelDistanceKm: number | null = null;
+      let outcallFee = 0;
+      if (
+        therapist.travelFeeEnabled &&
+        therapist.baseLat != null &&
+        therapist.baseLng != null &&
+        typeof customerLat === "number" &&
+        typeof customerLng === "number"
+      ) {
+        travelDistanceKm = haversineKm(therapist.baseLat, therapist.baseLng, customerLat, customerLng);
+        outcallFee = computeTravelFee(travelDistanceKm, therapist.travelFreeRadiusKm, therapist.travelRatePerKm);
+        if (outcallFee > 0 && travelFeeConfirmed !== true) {
+          throw new Error("TRAVEL_FEE_CONFIRMATION_REQUIRED");
+        }
+      }
+
       await tx.slot.update({ where: { id: slotId }, data: { status: "BOOKED" } });
 
       const booking = await tx.booking.create({
@@ -63,6 +88,8 @@ export async function POST(req: NextRequest) {
           // accounting on this booking should always reflect what was
           // actually agreed to when it was made.
           depositAmountSnapshot: therapist.depositRequired && therapist.depositAmount ? therapist.depositAmount : null,
+          outcallFee,
+          travelDistanceKm,
         },
       });
 
@@ -85,6 +112,7 @@ export async function POST(req: NextRequest) {
       THERAPIST_NOT_FOUND: 404,
       SERVICE_NOT_FOUND: 404,
       GENDER_MISMATCH: 403,
+      TRAVEL_FEE_CONFIRMATION_REQUIRED: 400,
     };
     return NextResponse.json({ error: message }, { status: statusMap[message] ?? 500 });
   }

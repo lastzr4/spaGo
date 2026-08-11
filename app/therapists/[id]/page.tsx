@@ -196,6 +196,9 @@ export default async function TherapistDetailPage({
             qrCodeUrl={therapist.qrCodeUrl}
             extraChargesNote={therapist.extraChargesNote}
             cancellationWindowHours={therapist.cancellationWindowHours}
+            travelFeeEnabled={therapist.travelFeeEnabled}
+            travelFreeRadiusKm={therapist.travelFreeRadiusKm}
+            travelRatePerKm={therapist.travelRatePerKm}
           />
         </div>
 

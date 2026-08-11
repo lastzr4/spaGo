@@ -67,6 +67,9 @@ model Therapist {
   baseLat             Float?
   baseLng             Float?
   cancellationWindowHours Int             @default(2)
+  travelFeeEnabled    Boolean             @default(false)
+  travelFreeRadiusKm  Float               @default(5)
+  travelRatePerKm     Float               @default(1)
   aiChatEnabled       Boolean             @default(true)
   reviewSummary       String?
   reviewSummaryUpdatedAt DateTime?
@@ -148,6 +151,7 @@ model Booking {
   customerLng       Float?
   customerGender    Gender
   outcallFee        Decimal       @default(0) @db.Decimal(10, 2)
+  travelDistanceKm  Float?
   status            BookingStatus @default(PENDING)
   referralCodeUsed  String?
   healthConsentAccepted   Boolean   @default(false)

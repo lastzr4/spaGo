@@ -198,6 +198,9 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
             qrCodeUrl={therapist.qrCodeUrl}
             extraChargesNote={therapist.extraChargesNote}
             cancellationWindowHours={therapist.cancellationWindowHours}
+            travelFeeEnabled={therapist.travelFeeEnabled}
+            travelFreeRadiusKm={therapist.travelFreeRadiusKm}
+            travelRatePerKm={therapist.travelRatePerKm}
           />
         </div>
 

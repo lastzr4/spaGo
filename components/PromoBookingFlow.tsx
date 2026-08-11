@@ -23,6 +23,9 @@ export default function PromoBookingFlow({
   qrCodeUrl = null,
   extraChargesNote = null,
   cancellationWindowHours = 2,
+  travelFeeEnabled = false,
+  travelFreeRadiusKm = 5,
+  travelRatePerKm = 1,
 }: {
   therapistId: string;
   therapistPhone: string;
@@ -39,6 +42,9 @@ export default function PromoBookingFlow({
   qrCodeUrl?: string | null;
   extraChargesNote?: string | null;
   cancellationWindowHours?: number;
+  travelFeeEnabled?: boolean;
+  travelFreeRadiusKm?: number;
+  travelRatePerKm?: number;
 }) {
   const [gender, setGender] = useState<"MALE" | "FEMALE">(defaultGender);
 
@@ -72,6 +78,9 @@ export default function PromoBookingFlow({
         qrCodeUrl={qrCodeUrl}
         extraChargesNote={extraChargesNote}
         cancellationWindowHours={cancellationWindowHours}
+        travelFeeEnabled={travelFeeEnabled}
+        travelFreeRadiusKm={travelFreeRadiusKm}
+        travelRatePerKm={travelRatePerKm}
       />
     </div>
   );

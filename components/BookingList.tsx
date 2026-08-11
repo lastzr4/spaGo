@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CalendarIcon, CheckCircleIcon, XIcon, ClipboardListIcon, AlertTriangleIcon } from "@/components/icons";
+import { CalendarIcon, CheckCircleIcon, XIcon, ClipboardListIcon, AlertTriangleIcon, WalletIcon } from "@/components/icons";
 import { buildGoogleCalendarLink } from "@/lib/googleCalendar";
 import { isLateCancellation } from "@/lib/cancellation";
 import ConfirmDialog from "@/components/ConfirmDialog";
@@ -22,6 +22,8 @@ type Booking = {
   healthConsentAcceptedAt: string | null;
   depositAmountSnapshot: string | null;
   depositForfeited: boolean;
+  outcallFee: string;
+  travelDistanceKm: number | null;
 };
 
 const STATUS_LABEL: Record<string, string> = {
@@ -169,6 +171,13 @@ export default function BookingList({
           </div>
           <p className="mt-1.5 text-sm text-[color:var(--text-secondary)]">{b.serviceName} &middot; {b.date} {b.startTime}</p>
           <p className="mt-1 text-xs text-[color:var(--text-muted)]">{b.customerPhone} &middot; {b.customerAddress}</p>
+          {Number(b.outcallFee) > 0 && (
+            <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-brand-500">
+              <WalletIcon className="h-3 w-3" />
+              Caj perjalanan: RM{Number(b.outcallFee).toFixed(0)}
+              {b.travelDistanceKm != null && ` (~${b.travelDistanceKm.toFixed(1)} km)`}
+            </p>
+          )}
           {b.healthConsentAccepted && (
             <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-emerald-400">
               <ClipboardListIcon className="h-3 w-3" />

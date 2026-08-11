@@ -35,6 +35,9 @@ type Props = {
     baseLat: number | null;
     baseLng: number | null;
     cancellationWindowHours: number;
+    travelFeeEnabled: boolean;
+    travelFreeRadiusKm: number;
+    travelRatePerKm: number;
   };
 };
 
@@ -58,6 +61,8 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
     yearsExperience: therapist.yearsExperience?.toString() ?? "",
     workingHoursNote: therapist.workingHoursNote ?? "",
     cancellationWindowHours: therapist.cancellationWindowHours.toString(),
+    travelFreeRadiusKm: therapist.travelFreeRadiusKm.toString(),
+    travelRatePerKm: therapist.travelRatePerKm.toString(),
   });
   const [specialtyInput, setSpecialtyInput] = useState("");
   const [uploadingGallery, setUploadingGallery] = useState(false);
@@ -285,6 +290,8 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
     }
     body.yearsExperience = form.yearsExperience === "" ? null : Number(form.yearsExperience);
     body.cancellationWindowHours = form.cancellationWindowHours === "" ? 2 : Number(form.cancellationWindowHours);
+    body.travelFreeRadiusKm = form.travelFreeRadiusKm === "" ? 5 : Number(form.travelFreeRadiusKm);
+    body.travelRatePerKm = form.travelRatePerKm === "" ? 1 : Number(form.travelRatePerKm);
 
     const res = await fetch(`/api/dashboard/${token}`, {
       method: "PATCH",
@@ -811,6 +818,47 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
               </div>
             </div>
           )}
+
+          <div className="mb-3 rounded-xl bg-[color:var(--surface-2)] px-4 py-3">
+            <label className="flex items-center justify-between">
+              <span className="text-sm font-medium text-[color:var(--text-secondary)]">Kira caj perjalanan automatik?</span>
+              <input
+                type="checkbox"
+                checked={form.travelFeeEnabled}
+                onChange={(e) => setForm({ ...form, travelFeeEnabled: e.target.checked })}
+                className="h-4 w-4 accent-brand-600"
+              />
+            </label>
+            {form.travelFeeEnabled && (
+              <div className="mt-3 flex flex-col gap-3 animate-fade-in">
+                <p className="text-xs text-[color:var(--text-secondary)]">
+                  Dikira berdasarkan jarak GPS antara lokasi asas anda dan pelanggan. Dipaparkan &amp; perlu dipersetujui pelanggan sebelum tempahan dihantar — tiada kejutan caj.
+                </p>
+                <div className="flex items-center gap-2">
+                  <input
+                    className="input"
+                    type="number"
+                    min="0"
+                    max="200"
+                    value={form.travelFreeRadiusKm}
+                    onChange={(e) => setForm({ ...form, travelFreeRadiusKm: e.target.value })}
+                  />
+                  <span className="shrink-0 text-xs text-[color:var(--text-secondary)]">km percuma</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    className="input"
+                    type="number"
+                    min="0"
+                    max="50"
+                    value={form.travelRatePerKm}
+                    onChange={(e) => setForm({ ...form, travelRatePerKm: e.target.value })}
+                  />
+                  <span className="shrink-0 text-xs text-[color:var(--text-secondary)]">RM setiap km selepas itu</span>
+                </div>
+              </div>
+            )}
+          </div>
 
           <textarea
             className="input"
