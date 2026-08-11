@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import { ChevronLeftIcon, ClockIcon, StarIcon, QrIcon, CashIcon } from "@/components/icons";
 import QuickInfoRow from "@/components/QuickInfoRow";
 
@@ -29,6 +32,28 @@ export default function ServiceDetailSheet({
   onClose: () => void;
   onBook?: () => void;
 }) {
+  // Trap the phone/browser back button: pushing a history entry when the
+  // sheet opens means "back" closes the sheet (via popstate) instead of
+  // navigating away from the page underneath it. If the sheet is closed via
+  // the UI instead (X, backdrop, buttons), we pop that same entry on unmount
+  // so the history stack stays clean and a later back-tap behaves normally.
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
+  useEffect(() => {
+    let closedByPopState = false;
+    window.history.pushState({ spagoSheet: true }, "");
+    function handlePopState() {
+      closedByPopState = true;
+      onCloseRef.current();
+    }
+    window.addEventListener("popstate", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      if (!closedByPopState) window.history.back();
+    };
+  }, []);
+
   const items = [
     { icon: <ClockIcon className="h-4 w-4" />, label: "Tempoh", value: `${service.durationMinutes} minit` },
     ...(therapistRating != null
