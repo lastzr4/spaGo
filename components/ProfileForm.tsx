@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import AreaPicker from "@/components/AreaPicker";
 import { fileToCompressedDataUrl } from "@/lib/image";
 import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon, LockIcon, ChevronLeftIcon, ImageOffIcon, InstagramIcon, TiktokIcon, ThreadsIcon, SocialXIcon, PlusIcon, XIcon, ClockIcon, StarIcon, UserIcon, MapPinIcon, WalletIcon, SparkleIcon, EyeIcon } from "@/components/icons";
@@ -318,10 +319,10 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
                 <SendIcon className="h-3 w-3" />
                 Kongsi ke WhatsApp
               </a>
-              <a href={`/t/${slug}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600">
+              <Link href={`/t/${slug}`} className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600">
                 <EyeIcon className="h-3 w-3" />
                 Lihat Pratonton
-              </a>
+              </Link>
             </div>
           </>
         ) : (
