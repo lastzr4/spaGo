@@ -3,7 +3,7 @@
 import { useState } from "react";
 import AreaPicker from "@/components/AreaPicker";
 import { fileToCompressedDataUrl } from "@/lib/image";
-import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon, LockIcon, ChevronLeftIcon, ImageOffIcon, InstagramIcon, TiktokIcon, ThreadsIcon, SocialXIcon, PlusIcon, XIcon, ClockIcon, StarIcon, UserIcon, MapPinIcon, WalletIcon, SparkleIcon } from "@/components/icons";
+import { CameraIcon, CheckCircleIcon, LinkIcon, CopyIcon, SendIcon, LockIcon, ChevronLeftIcon, ImageOffIcon, InstagramIcon, TiktokIcon, ThreadsIcon, SocialXIcon, PlusIcon, XIcon, ClockIcon, StarIcon, UserIcon, MapPinIcon, WalletIcon, SparkleIcon, EyeIcon } from "@/components/icons";
 
 type Props = {
   token: string;
@@ -308,15 +308,21 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
                 {copied ? "Disalin!" : "Salin"}
               </button>
             </div>
-            <a
-              href={`https://wa.me/?text=${encodeURIComponent(`Tempah urut dengan saya di sini: ${promoUrl}`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600"
-            >
-              <SendIcon className="h-3 w-3" />
-              Kongsi ke WhatsApp
-            </a>
+            <div className="mt-2 flex items-center gap-4">
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(`Tempah urut dengan saya di sini: ${promoUrl}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600"
+              >
+                <SendIcon className="h-3 w-3" />
+                Kongsi ke WhatsApp
+              </a>
+              <a href={`/t/${slug}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600">
+                <EyeIcon className="h-3 w-3" />
+                Lihat Pratonton
+              </a>
+            </div>
           </>
         ) : (
           <p className="text-[13px] text-[color:var(--text-muted)]">Pautan sedang dijana, sila muat semula sebentar lagi.</p>
