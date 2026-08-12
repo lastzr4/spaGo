@@ -115,9 +115,19 @@ model Service {
   description     String?
   photoUrl        String?
   active          Boolean   @default(true)
+  isPackage       Boolean   @default(false)
   createdAt       DateTime  @default(now())
 
   bookings        Booking[]
+
+  // Self many-to-many, directional: packageItems = "the plain services this
+  // package bundles together" (only meaningful when isPackage is true).
+  // includedInPackages is the reverse lookup, kept mainly so Prisma can
+  // model the relation — not used for querying today. A service can be
+  // listed inside a package, or be a package, but never both at once
+  // (nested packages are rejected at the API layer, not the schema layer).
+  packageItems        Service[] @relation("PackageItems")
+  includedInPackages  Service[] @relation("PackageItems")
 
   @@index([therapistId])
 }

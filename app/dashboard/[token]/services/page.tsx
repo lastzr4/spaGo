@@ -13,7 +13,11 @@ export default async function ServicesPage({ params }: { params: { token: string
   if (!therapist) notFound();
 
   const [services, pendingCount] = await Promise.all([
-    prisma.service.findMany({ where: { therapistId: therapist.id }, orderBy: { createdAt: "asc" } }),
+    prisma.service.findMany({
+      where: { therapistId: therapist.id },
+      orderBy: { createdAt: "asc" },
+      include: { packageItems: { select: { id: true, name: true, durationMinutes: true, price: true } } },
+    }),
     getPendingBookingCount(therapist.id),
   ]);
 
@@ -23,7 +27,19 @@ export default async function ServicesPage({ params }: { params: { token: string
       <main className="flex-1 overflow-y-auto px-5 py-5">
         <ServiceManager
           token={params.token}
-          initialServices={services.map((s) => ({ id: s.id, name: s.name, durationMinutes: s.durationMinutes, price: s.price.toString(), active: s.active, photoUrl: s.photoUrl, description: s.description }))}
+          initialServices={services.map((s) => ({
+            id: s.id,
+            name: s.name,
+            durationMinutes: s.durationMinutes,
+            price: s.price.toString(),
+            promoPrice: s.promoPrice ? s.promoPrice.toString() : null,
+            badge: s.badge,
+            isPackage: s.isPackage,
+            packageItems: s.packageItems.map((p) => ({ id: p.id, name: p.name, durationMinutes: p.durationMinutes, price: p.price.toString() })),
+            active: s.active,
+            photoUrl: s.photoUrl,
+            description: s.description,
+          }))}
           depositRequired={therapist.depositRequired}
           depositAmount={therapist.depositAmount ? therapist.depositAmount.toString() : null}
           paymentMethod={therapist.paymentMethod}

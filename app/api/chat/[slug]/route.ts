@@ -25,7 +25,13 @@ function todayStrMYT() {
 export async function POST(req: NextRequest, { params }: { params: { slug: string } }) {
   const therapist = await prisma.therapist.findUnique({
     where: { slug: params.slug },
-    include: { services: { where: { active: true }, orderBy: { price: "asc" } } },
+    include: {
+      services: {
+        where: { active: true },
+        orderBy: { price: "asc" },
+        include: { packageItems: { select: { name: true } } },
+      },
+    },
   });
 
   if (!therapist || !therapist.active) {
@@ -67,7 +73,8 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
       .map((s) => {
         const effectivePrice = getEffectivePrice(s.price.toString(), s.promoPrice?.toString() ?? null);
         const promoNote = hasPromo(s.price.toString(), s.promoPrice?.toString() ?? null) ? ` (promo, harga asal RM${Number(s.price).toFixed(0)})` : "";
-        return `- ${s.name}: RM${effectivePrice.toFixed(0)}${promoNote} (${s.durationMinutes} minit)`;
+        const packageNote = s.isPackage && s.packageItems.length ? ` — Pakej, termasuk: ${s.packageItems.map((p) => p.name).join(", ")}` : "";
+        return `- ${s.name}: RM${effectivePrice.toFixed(0)}${promoNote} (${s.durationMinutes} minit)${packageNote}`;
       })
       .join("\n") || "Belum ada servis disenaraikan.";
 

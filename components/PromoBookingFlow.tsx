@@ -13,6 +13,8 @@ type Service = {
   description?: string | null;
   promoPrice?: string | null;
   badge?: string | null;
+  isPackage?: boolean;
+  packageItems?: { id: string; name: string; durationMinutes: number; price: string }[];
 };
 type Slot = { id: string; date: string; startTime: string; endTime: string };
 

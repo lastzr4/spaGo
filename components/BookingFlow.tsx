@@ -21,6 +21,8 @@ type Service = {
   description?: string | null;
   promoPrice?: string | null;
   badge?: string | null;
+  isPackage?: boolean;
+  packageItems?: { id: string; name: string; durationMinutes: number; price: string }[];
 };
 type Slot = { id: string; date: string; startTime: string; endTime: string };
 
@@ -317,8 +319,18 @@ export default function BookingFlow({
                 </span>
                 <span className="flex flex-1 items-center justify-between gap-2">
                   <span className="min-w-0">
-                    <span className="block truncate font-semibold text-[color:var(--text-primary)]">{s.name}</span>
+                    <span className="flex flex-wrap items-center gap-1.5">
+                      <span className="block truncate font-semibold text-[color:var(--text-primary)]">{s.name}</span>
+                      {s.isPackage && (
+                        <span className="rounded-full bg-[color:var(--surface)] px-1.5 py-0.5 text-[9px] font-bold text-brand-500">Pakej</span>
+                      )}
+                    </span>
                     <span className="block text-xs text-[color:var(--text-secondary)]">{s.durationMinutes} minit</span>
+                    {s.isPackage && s.packageItems && s.packageItems.length > 0 && (
+                      <span className="block truncate text-[11px] text-[color:var(--text-muted)]">
+                        Termasuk: {s.packageItems.map((p) => p.name).join(", ")}
+                      </span>
+                    )}
                   </span>
                   <span className="flex shrink-0 items-center gap-1.5 font-semibold text-brand-700">
                     {hasPromo(s.price, s.promoPrice) ? (

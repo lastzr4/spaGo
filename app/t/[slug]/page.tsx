@@ -21,7 +21,13 @@ export const dynamic = "force-dynamic";
 export default async function TherapistPromoPage({ params }: { params: { slug: string } }) {
   const therapist = await prisma.therapist.findUnique({
     where: { slug: params.slug },
-    include: { services: { where: { active: true }, orderBy: { price: "asc" } } },
+    include: {
+      services: {
+        where: { active: true },
+        orderBy: { price: "asc" },
+        include: { packageItems: { select: { id: true, name: true, durationMinutes: true, price: true } } },
+      },
+    },
   });
 
   if (!therapist || !therapist.active) notFound();
@@ -189,6 +195,8 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
               price: s.price.toString(),
               promoPrice: s.promoPrice ? s.promoPrice.toString() : null,
               badge: s.badge,
+              isPackage: s.isPackage,
+              packageItems: s.packageItems.map((p) => ({ id: p.id, name: p.name, durationMinutes: p.durationMinutes, price: p.price.toString() })),
               photoUrl: s.photoUrl,
               description: s.description,
             }))}

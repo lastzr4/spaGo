@@ -15,6 +15,8 @@ type Service = {
   description?: string | null;
   promoPrice?: string | null;
   badge?: string | null;
+  isPackage?: boolean;
+  packageItems?: { id: string; name: string; durationMinutes: number; price: string }[];
 };
 
 // Package-details bottom sheet (Spafy-style): large hero image, price, a
@@ -133,6 +135,20 @@ export default function ServiceDetailSheet({
           <div className="mt-3">
             <QuickInfoRow items={items} />
           </div>
+
+          {service.isPackage && service.packageItems && service.packageItems.length > 0 && (
+            <div className="mt-4">
+              <h3 className="mb-1.5 text-sm font-bold text-[color:var(--text-primary)]">Termasuk dalam pakej ini</h3>
+              <ul className="flex flex-col gap-1">
+                {service.packageItems.map((item) => (
+                  <li key={item.id} className="flex items-center justify-between gap-2 text-[13px] text-[color:var(--text-secondary)]">
+                    <span className="truncate">{item.name}</span>
+                    <span className="shrink-0 text-[12px] text-[color:var(--text-muted)]">{item.durationMinutes} minit</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {service.description && (
             <div className="mt-4">

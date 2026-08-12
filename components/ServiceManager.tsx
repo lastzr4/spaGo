@@ -5,11 +5,13 @@ import { fileToCompressedDataUrl, fileToDataUrl } from "@/lib/image";
 import { CameraIcon, PlusIcon, TrashIcon, SparkleIcon, FileUpIcon, EyeIcon } from "@/components/icons";
 import ServiceDetailSheet from "@/components/ServiceDetailSheet";
 import ServiceBadgeRibbon from "@/components/ServiceBadgeRibbon";
-import { SERVICE_BADGES, BADGE_LABELS, ServiceBadge, hasPromo } from "@/lib/pricing";
+import { SERVICE_BADGES, BADGE_LABELS, ServiceBadge, hasPromo, getEffectivePrice } from "@/lib/pricing";
 
 const fieldLabelClass = "mb-1 block text-[10px] font-semibold uppercase tracking-wide text-[color:var(--text-muted)]";
 const fieldInputClass =
   "w-full rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3 py-1.5 text-sm text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400";
+
+type PackageItem = { id: string; name: string; durationMinutes: number; price: string };
 
 type Service = {
   id: string;
@@ -21,7 +23,65 @@ type Service = {
   description?: string | null;
   promoPrice?: string | null;
   badge?: string | null;
+  isPackage?: boolean;
+  packageItems?: PackageItem[];
 };
+
+// Compact checkbox picker shared by the add + edit forms for choosing which
+// existing (non-package) services get bundled into a package, plus a
+// one-tap "use this total" shortcut that fills the duration/price inputs
+// with the sum of whatever's currently ticked — therapist can still edit
+// the numbers afterwards, this is just a starting point.
+function PackageItemPicker({
+  candidates,
+  selectedIds,
+  onToggle,
+  onUseSuggestion,
+}: {
+  candidates: Service[];
+  selectedIds: string[];
+  onToggle: (id: string) => void;
+  onUseSuggestion: (durationMinutes: number, price: number) => void;
+}) {
+  const selected = candidates.filter((c) => selectedIds.includes(c.id));
+  const sumDuration = selected.reduce((sum, s) => sum + s.durationMinutes, 0);
+  const sumPrice = selected.reduce((sum, s) => sum + getEffectivePrice(s.price, s.promoPrice), 0);
+
+  return (
+    <div className="rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] p-2.5">
+      <p className={fieldLabelClass}>Servis dalam pakej ini</p>
+      {candidates.length === 0 ? (
+        <p className="text-xs text-[color:var(--text-muted)]">Tambah servis biasa dahulu sebelum buat pakej.</p>
+      ) : (
+        <div className="flex max-h-40 flex-col gap-1 overflow-y-auto">
+          {candidates.map((c) => (
+            <label key={c.id} className="flex cursor-pointer items-center gap-2 rounded-lg px-1.5 py-1 active:bg-[color:var(--surface)]">
+              <input type="checkbox" checked={selectedIds.includes(c.id)} onChange={() => onToggle(c.id)} className="h-3.5 w-3.5 accent-brand-500" />
+              <span className="min-w-0 flex-1 truncate text-xs text-[color:var(--text-primary)]">{c.name}</span>
+              <span className="shrink-0 text-[11px] text-[color:var(--text-muted)]">
+                {c.durationMinutes}m &middot; RM{getEffectivePrice(c.price, c.promoPrice).toFixed(0)}
+              </span>
+            </label>
+          ))}
+        </div>
+      )}
+      {selected.length > 0 && (
+        <div className="mt-2 flex items-center justify-between gap-2 border-t border-[color:var(--border)] pt-2">
+          <p className="text-[11px] text-[color:var(--text-secondary)]">
+            Jumlah: {sumDuration} minit &middot; RM{sumPrice.toFixed(0)}
+          </p>
+          <button
+            type="button"
+            onClick={() => onUseSuggestion(sumDuration, sumPrice)}
+            className="shrink-0 text-[11px] font-semibold text-brand-600 active:opacity-60"
+          >
+            Guna cadangan ini
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function ServiceManager({
   token,
@@ -42,6 +102,8 @@ export default function ServiceManager({
   const [price, setPrice] = useState("");
   const [promoPrice, setPromoPrice] = useState("");
   const [badge, setBadge] = useState<ServiceBadge | null>(null);
+  const [isPackage, setIsPackage] = useState(false);
+  const [packageItemIds, setPackageItemIds] = useState<string[]>([]);
   const [description, setDescription] = useState("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
@@ -53,6 +115,8 @@ export default function ServiceManager({
   const [editPrice, setEditPrice] = useState("");
   const [editPromoPrice, setEditPromoPrice] = useState("");
   const [editBadge, setEditBadge] = useState<ServiceBadge | null>(null);
+  const [editIsPackage, setEditIsPackage] = useState(false);
+  const [editPackageItemIds, setEditPackageItemIds] = useState<string[]>([]);
   const [editDescription, setEditDescription] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
@@ -70,6 +134,8 @@ export default function ServiceManager({
     setEditPrice(service.price);
     setEditPromoPrice(service.promoPrice ?? "");
     setEditBadge(SERVICE_BADGES.includes(service.badge as ServiceBadge) ? (service.badge as ServiceBadge) : null);
+    setEditIsPackage(Boolean(service.isPackage));
+    setEditPackageItemIds(service.packageItems?.map((p) => p.id) ?? []);
     setEditDescription(service.description ?? "");
     setEditError(null);
   }
@@ -87,32 +153,22 @@ export default function ServiceManager({
         price: Number(editPrice),
         promoPrice: editPromoPrice.trim() ? Number(editPromoPrice) : null,
         badge: editBadge,
+        isPackage: editIsPackage,
+        packageItemIds: editIsPackage ? editPackageItemIds : [],
         description: editDescription.trim() || null,
       }),
     });
+    const data = await res.json().catch(() => null);
     if (res.ok) {
-      setServices((list) =>
-        list.map((s) =>
-          s.id === service.id
-            ? {
-                ...s,
-                name: editName.trim(),
-                durationMinutes: Number(editDuration),
-                price: editPrice,
-                promoPrice: editPromoPrice.trim() ? editPromoPrice : null,
-                badge: editBadge,
-                description: editDescription.trim() || null,
-              }
-            : s
-        )
-      );
+      setServices((list) => list.map((s) => (s.id === service.id ? data.service : s)));
       setEditingId(null);
     } else {
-      const data = await res.json().catch(() => null);
       setEditError(
         data?.error === "PROMO_PRICE_INVALID"
           ? "Harga promo mesti kurang daripada harga asal."
-          : "Gagal menyimpan. Sila cuba lagi."
+          : data?.error === "ALREADY_PACKAGE_ITEM"
+            ? "Servis ini sudah termasuk dalam pakej lain — buang dahulu sebelum jadikan pakej."
+            : "Gagal menyimpan. Sila cuba lagi."
       );
     }
     setSavingEdit(false);
@@ -132,6 +188,8 @@ export default function ServiceManager({
         price: Number(price),
         promoPrice: promoPrice.trim() ? Number(promoPrice) : null,
         badge,
+        isPackage,
+        packageItemIds: isPackage ? packageItemIds : [],
         description: description.trim() || null,
         photoUrl,
       }),
@@ -144,6 +202,8 @@ export default function ServiceManager({
       setPrice("");
       setPromoPrice("");
       setBadge(null);
+      setIsPackage(false);
+      setPackageItemIds([]);
       setDescription("");
       setPhotoUrl(null);
       if (newPhotoInputRef.current) newPhotoInputRef.current.value = "";
@@ -232,6 +292,8 @@ export default function ServiceManager({
         description: s.description,
         promoPrice: null,
         badge: null,
+        isPackage: false,
+        packageItems: [],
       }));
       setServices((list) => [...list, ...newServices]);
       setExtractSuccess(`${newServices.length} servis berjaya ditambah oleh AI daripada dokumen ini.`);
@@ -384,6 +446,28 @@ export default function ServiceManager({
                         <span className="font-semibold text-brand-500">RM{Number(editPromoPrice).toFixed(0)}</span>
                       </p>
                     )}
+                    <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-[color:var(--text-primary)]">
+                      <input
+                        type="checkbox"
+                        checked={editIsPackage}
+                        onChange={(e) => setEditIsPackage(e.target.checked)}
+                        className="h-3.5 w-3.5 accent-brand-500"
+                      />
+                      Ini pakej (gabungan beberapa servis)?
+                    </label>
+                    {editIsPackage && (
+                      <PackageItemPicker
+                        candidates={services.filter((c) => !c.isPackage && c.id !== s.id)}
+                        selectedIds={editPackageItemIds}
+                        onToggle={(id) =>
+                          setEditPackageItemIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))
+                        }
+                        onUseSuggestion={(d, p) => {
+                          setEditDuration(String(d));
+                          setEditPrice(String(p));
+                        }}
+                      />
+                    )}
                     <textarea
                       className="w-full resize-none rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3 py-1.5 text-sm text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400"
                       rows={2}
@@ -408,7 +492,12 @@ export default function ServiceManager({
                   </div>
                 ) : (
                   <button type="button" onClick={() => startEdit(s)} className="min-w-0 flex-1 text-left">
-                    <p className="truncate font-semibold text-[color:var(--text-primary)]">{s.name}</p>
+                    <span className="flex flex-wrap items-center gap-1.5">
+                      <p className="truncate font-semibold text-[color:var(--text-primary)]">{s.name}</p>
+                      {s.isPackage && (
+                        <span className="rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[10px] font-bold text-brand-500">Pakej</span>
+                      )}
+                    </span>
                     <p className="text-xs text-[color:var(--text-secondary)]">
                       {s.durationMinutes} minit &middot;{" "}
                       {hasPromo(s.price, s.promoPrice) ? (
@@ -420,6 +509,11 @@ export default function ServiceManager({
                         <>RM{Number(s.price).toFixed(0)}</>
                       )}
                     </p>
+                    {s.isPackage && s.packageItems && s.packageItems.length > 0 && (
+                      <p className="mt-0.5 truncate text-[11px] text-[color:var(--text-muted)]">
+                        Termasuk: {s.packageItems.map((p) => p.name).join(", ")}
+                      </p>
+                    )}
                   </button>
                 )}
               </div>
@@ -486,6 +580,21 @@ export default function ServiceManager({
             Pelanggan nampak: <span className="text-[color:var(--text-muted)] line-through">RM{Number(price).toFixed(0)}</span>{" "}
             <span className="font-semibold text-brand-500">RM{Number(promoPrice).toFixed(0)}</span>
           </p>
+        )}
+        <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-[color:var(--text-primary)]">
+          <input type="checkbox" checked={isPackage} onChange={(e) => setIsPackage(e.target.checked)} className="h-3.5 w-3.5 accent-brand-500" />
+          Ini pakej (gabungan beberapa servis)?
+        </label>
+        {isPackage && (
+          <PackageItemPicker
+            candidates={services.filter((c) => !c.isPackage)}
+            selectedIds={packageItemIds}
+            onToggle={(id) => setPackageItemIds((ids) => (ids.includes(id) ? ids.filter((x) => x !== id) : [...ids, id]))}
+            onUseSuggestion={(d, p) => {
+              setDuration(String(d));
+              setPrice(String(p));
+            }}
+          />
         )}
         <textarea
           className="input resize-none"
