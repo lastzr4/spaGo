@@ -6,6 +6,10 @@ import { CameraIcon, PlusIcon, TrashIcon, SparkleIcon, FileUpIcon, EyeIcon } fro
 import ServiceDetailSheet from "@/components/ServiceDetailSheet";
 import { SERVICE_BADGES, BADGE_LABELS, BADGE_STYLE, ServiceBadge, hasPromo } from "@/lib/pricing";
 
+const fieldLabelClass = "mb-1 block text-[10px] font-semibold uppercase tracking-wide text-[color:var(--text-muted)]";
+const fieldInputClass =
+  "w-full rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3 py-1.5 text-sm text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400";
+
 type Service = {
   id: string;
   name: string;
@@ -42,8 +46,6 @@ export default function ServiceManager({
   const [adding, setAdding] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
   const [uploadingFor, setUploadingFor] = useState<string | null>(null);
-  const [guidance, setGuidance] = useState<Record<string, string>>({});
-  const [guidanceLoading, setGuidanceLoading] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editDuration, setEditDuration] = useState("");
@@ -113,26 +115,6 @@ export default function ServiceManager({
       );
     }
     setSavingEdit(false);
-  }
-
-  async function fetchGuidance(service: Service) {
-    setGuidanceLoading(service.id);
-    try {
-      const res = await fetch(`/api/dashboard/${token}/ai/pricing-guidance`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ serviceId: service.id }),
-      });
-      const data = await res.json().catch(() => null);
-      setGuidance((g) => ({
-        ...g,
-        [service.id]: data?.guidance ?? "Gagal menjana panduan harga. Sila cuba lagi.",
-      }));
-    } catch {
-      setGuidance((g) => ({ ...g, [service.id]: "Gagal menjana panduan harga. Sila cuba lagi." }));
-    } finally {
-      setGuidanceLoading(null);
-    }
   }
 
   async function addService(e: React.FormEvent) {
@@ -342,52 +324,60 @@ export default function ServiceManager({
                       onChange={(e) => setEditName(e.target.value)}
                       placeholder="Nama servis"
                     />
-                    <div className="flex gap-2">
-                      <input
-                        className="w-full rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3 py-1.5 text-sm text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400"
-                        type="number"
-                        value={editDuration}
-                        onChange={(e) => setEditDuration(e.target.value)}
-                        placeholder="Minit"
-                      />
-                      <input
-                        className="w-full rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3 py-1.5 text-sm text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400"
-                        type="number"
-                        value={editPrice}
-                        onChange={(e) => setEditPrice(e.target.value)}
-                        placeholder="Harga (RM)"
-                      />
-                      <input
-                        className="w-full rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3 py-1.5 text-sm text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400"
-                        type="number"
-                        value={editPromoPrice}
-                        onChange={(e) => setEditPromoPrice(e.target.value)}
-                        placeholder="Harga promo (optional)"
-                      />
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className={fieldLabelClass}>Tempoh (minit)</label>
+                        <input
+                          className={fieldInputClass}
+                          type="number"
+                          value={editDuration}
+                          onChange={(e) => setEditDuration(e.target.value)}
+                        />
+                      </div>
+                      <div>
+                        <label className={fieldLabelClass}>Harga asal (RM)</label>
+                        <input
+                          className={fieldInputClass}
+                          type="number"
+                          value={editPrice}
+                          onChange={(e) => setEditPrice(e.target.value)}
+                        />
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => setEditBadge(null)}
-                        className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                          editBadge === null ? "bg-brand-500 text-white" : "bg-[color:var(--surface-2)] text-[color:var(--text-secondary)]"
-                        }`}
-                      >
-                        Tiada tag
-                      </button>
-                      {SERVICE_BADGES.map((b) => (
-                        <button
-                          key={b}
-                          type="button"
-                          onClick={() => setEditBadge(b)}
-                          className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-                            editBadge === b ? "bg-brand-500 text-white" : BADGE_STYLE[b]
-                          }`}
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className={fieldLabelClass}>Harga promo (RM)</label>
+                        <input
+                          className={fieldInputClass}
+                          type="number"
+                          value={editPromoPrice}
+                          onChange={(e) => setEditPromoPrice(e.target.value)}
+                          placeholder="Tiada promo"
+                        />
+                      </div>
+                      <div>
+                        <label className={fieldLabelClass}>Tag</label>
+                        <select
+                          className={fieldInputClass}
+                          value={editBadge ?? ""}
+                          onChange={(e) => setEditBadge(e.target.value ? (e.target.value as ServiceBadge) : null)}
                         >
-                          {BADGE_LABELS[b]}
-                        </button>
-                      ))}
+                          <option value="">Tiada tag</option>
+                          {SERVICE_BADGES.map((b) => (
+                            <option key={b} value={b}>
+                              {BADGE_LABELS[b]}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
+                    {hasPromo(editPrice || "0", editPromoPrice || null) && (
+                      <p className="text-[11px] text-[color:var(--text-secondary)]">
+                        Pelanggan nampak:{" "}
+                        <span className="text-[color:var(--text-muted)] line-through">RM{Number(editPrice).toFixed(0)}</span>{" "}
+                        <span className="font-semibold text-brand-500">RM{Number(editPromoPrice).toFixed(0)}</span>
+                      </p>
+                    )}
                     <textarea
                       className="w-full resize-none rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3 py-1.5 text-sm text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400"
                       rows={2}
@@ -448,21 +438,6 @@ export default function ServiceManager({
                 </button>
               </div>
             </div>
-
-            <div className="border-t border-[color:var(--border)] pt-2">
-              <button
-                type="button"
-                onClick={() => fetchGuidance(s)}
-                disabled={guidanceLoading === s.id}
-                className="flex items-center gap-1.5 text-xs font-semibold text-brand-600 active:opacity-60 disabled:opacity-50"
-              >
-                <SparkleIcon className="h-3.5 w-3.5" />
-                {guidanceLoading === s.id ? "Menjana..." : guidance[s.id] ? "Jana semula panduan harga AI" : "Panduan harga AI"}
-              </button>
-              {guidance[s.id] && (
-                <p className="mt-1.5 rounded-xl bg-[color:var(--surface-2)]/60 px-3 py-2 text-xs leading-relaxed text-[color:var(--text-secondary)]">{guidance[s.id]}</p>
-              )}
-            </div>
           </div>
         ))}
       </div>
@@ -470,38 +445,49 @@ export default function ServiceManager({
       <form onSubmit={addService} className="card flex flex-col gap-3">
         <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Tambah servis baru</p>
         <input className="input" placeholder="Nama servis (cth: Urut Badan)" value={name} onChange={(e) => setName(e.target.value)} />
-        <div className="flex gap-3">
-          <input className="input" type="number" placeholder="Minit" value={duration} onChange={(e) => setDuration(e.target.value)} />
-          <input className="input" type="number" placeholder="Harga (RM)" value={price} onChange={(e) => setPrice(e.target.value)} />
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className={fieldLabelClass}>Tempoh (minit)</label>
+            <input className={fieldInputClass} type="number" value={duration} onChange={(e) => setDuration(e.target.value)} />
+          </div>
+          <div>
+            <label className={fieldLabelClass}>Harga asal (RM)</label>
+            <input className={fieldInputClass} type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+          </div>
         </div>
-        <input
-          className="input"
-          type="number"
-          placeholder="Harga promo (optional, cth: 100)"
-          value={promoPrice}
-          onChange={(e) => setPromoPrice(e.target.value)}
-        />
-        <div className="flex flex-wrap gap-1.5">
-          <button
-            type="button"
-            onClick={() => setBadge(null)}
-            className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-              badge === null ? "bg-brand-500 text-white" : "bg-[color:var(--surface-2)] text-[color:var(--text-secondary)]"
-            }`}
-          >
-            Tiada tag
-          </button>
-          {SERVICE_BADGES.map((b) => (
-            <button
-              key={b}
-              type="button"
-              onClick={() => setBadge(b)}
-              className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${badge === b ? "bg-brand-500 text-white" : BADGE_STYLE[b]}`}
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className={fieldLabelClass}>Harga promo (RM)</label>
+            <input
+              className={fieldInputClass}
+              type="number"
+              placeholder="Tiada promo"
+              value={promoPrice}
+              onChange={(e) => setPromoPrice(e.target.value)}
+            />
+          </div>
+          <div>
+            <label className={fieldLabelClass}>Tag</label>
+            <select
+              className={fieldInputClass}
+              value={badge ?? ""}
+              onChange={(e) => setBadge(e.target.value ? (e.target.value as ServiceBadge) : null)}
             >
-              {BADGE_LABELS[b]}
-            </button>
-          ))}
+              <option value="">Tiada tag</option>
+              {SERVICE_BADGES.map((b) => (
+                <option key={b} value={b}>
+                  {BADGE_LABELS[b]}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
+        {hasPromo(price || "0", promoPrice || null) && (
+          <p className="text-[11px] text-[color:var(--text-secondary)]">
+            Pelanggan nampak: <span className="text-[color:var(--text-muted)] line-through">RM{Number(price).toFixed(0)}</span>{" "}
+            <span className="font-semibold text-brand-500">RM{Number(promoPrice).toFixed(0)}</span>
+          </p>
+        )}
         <textarea
           className="input resize-none"
           rows={2}
