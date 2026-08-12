@@ -3,8 +3,18 @@
 import { useEffect, useRef } from "react";
 import { ChevronLeftIcon, ClockIcon, StarIcon, QrIcon, CashIcon } from "@/components/icons";
 import QuickInfoRow from "@/components/QuickInfoRow";
+import { BADGE_LABELS, BADGE_STYLE, ServiceBadge, hasPromo } from "@/lib/pricing";
 
-type Service = { id: string; name: string; durationMinutes: number; price: string; photoUrl?: string | null; description?: string | null };
+type Service = {
+  id: string;
+  name: string;
+  durationMinutes: number;
+  price: string;
+  photoUrl?: string | null;
+  description?: string | null;
+  promoPrice?: string | null;
+  badge?: string | null;
+};
 
 // Package-details bottom sheet (Spafy-style): large hero image, price, a
 // quick-info amenities row, description, and a sticky "Tempah Sekarang" CTA
@@ -101,12 +111,26 @@ export default function ServiceDetailSheet({
               Pratonton pelanggan
             </span>
           )}
+          {service.badge && Object.prototype.hasOwnProperty.call(BADGE_LABELS, service.badge) && (
+            <span
+              className={`absolute left-3 bottom-3 rounded-full px-3 py-1 text-[11px] font-bold backdrop-blur-md ${BADGE_STYLE[service.badge as ServiceBadge]}`}
+            >
+              {BADGE_LABELS[service.badge as ServiceBadge]}
+            </span>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
           <div className="flex items-start justify-between gap-3">
             <h2 className="text-lg font-bold text-[color:var(--text-primary)]">{service.name}</h2>
-            <span className="shrink-0 text-lg font-bold text-brand-500">RM{Number(service.price).toFixed(0)}</span>
+            {hasPromo(service.price, service.promoPrice) ? (
+              <span className="flex shrink-0 items-baseline gap-1.5">
+                <span className="text-xs font-medium text-[color:var(--text-muted)] line-through">RM{Number(service.price).toFixed(0)}</span>
+                <span className="text-lg font-bold text-brand-500">RM{Number(service.promoPrice).toFixed(0)}</span>
+              </span>
+            ) : (
+              <span className="shrink-0 text-lg font-bold text-brand-500">RM{Number(service.price).toFixed(0)}</span>
+            )}
           </div>
 
           <div className="mt-3">

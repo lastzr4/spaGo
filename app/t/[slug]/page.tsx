@@ -12,6 +12,7 @@ import FavoriteButton from "@/components/FavoriteButton";
 import ChatWidget from "@/components/ChatWidget";
 import QuickInfoRow from "@/components/QuickInfoRow";
 import { StarIcon, MapPinIcon, QrIcon, CashIcon, SparkleIcon, AwardIcon, ClockIcon } from "@/components/icons";
+import { getEffectivePrice } from "@/lib/pricing";
 
 const CHAT_TRIAL_DAYS = 30;
 
@@ -63,7 +64,9 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
                 gender: therapist.gender,
                 photoUrl: therapist.photoUrl,
                 coverageAreas: therapist.coverageAreas,
-                priceFrom: therapist.services[0]?.price.toString() ?? null,
+                priceFrom: therapist.services.length
+                  ? Math.min(...therapist.services.map((s) => getEffectivePrice(s.price.toString(), s.promoPrice?.toString() ?? null))).toString()
+                  : null,
                 slug: therapist.slug,
               }}
             />
@@ -184,6 +187,8 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
               name: s.name,
               durationMinutes: s.durationMinutes,
               price: s.price.toString(),
+              promoPrice: s.promoPrice ? s.promoPrice.toString() : null,
+              badge: s.badge,
               photoUrl: s.photoUrl,
               description: s.description,
             }))}

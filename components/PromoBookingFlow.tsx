@@ -4,7 +4,16 @@ import { useState } from "react";
 import BookingFlow from "@/components/BookingFlow";
 import SegmentedToggle from "@/components/SegmentedToggle";
 
-type Service = { id: string; name: string; durationMinutes: number; price: string; photoUrl?: string | null; description?: string | null };
+type Service = {
+  id: string;
+  name: string;
+  durationMinutes: number;
+  price: string;
+  photoUrl?: string | null;
+  description?: string | null;
+  promoPrice?: string | null;
+  badge?: string | null;
+};
 type Slot = { id: string; date: string; startTime: string; endTime: string };
 
 export default function PromoBookingFlow({

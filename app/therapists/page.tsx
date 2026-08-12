@@ -3,6 +3,7 @@ import { isMatch } from "@/lib/gender";
 import TherapistCard from "@/components/TherapistCard";
 import TopBar from "@/components/TopBar";
 import Footer from "@/components/Footer";
+import { getEffectivePrice } from "@/lib/pricing";
 import type { Gender } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -65,7 +66,9 @@ export default async function TherapistsPage({
                         durationMinutes: s.durationMinutes,
                         price: s.price.toString(),
                       })),
-                      priceFrom: t.services.length ? t.services[0].price.toString() : null,
+                      priceFrom: t.services.length
+                        ? Math.min(...t.services.map((s) => getEffectivePrice(s.price.toString(), s.promoPrice?.toString() ?? null))).toString()
+                        : null,
                       averageRating,
                       reviewCount,
                       depositRequired: t.depositRequired,

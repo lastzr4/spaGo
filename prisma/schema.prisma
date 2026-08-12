@@ -110,6 +110,8 @@ model Service {
   name            String
   durationMinutes Int
   price           Decimal   @db.Decimal(10, 2)
+  promoPrice      Decimal?  @db.Decimal(10, 2)
+  badge           String?
   description     String?
   photoUrl        String?
   active          Boolean   @default(true)

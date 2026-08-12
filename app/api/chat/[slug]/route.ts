@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type Anthropic from "@anthropic-ai/sdk";
 import { prisma } from "@/lib/prisma";
 import { getAnthropicClient, AI_MODEL } from "@/lib/anthropic";
+import { getEffectivePrice, hasPromo } from "@/lib/pricing";
 
 export const dynamic = "force-dynamic";
 
@@ -62,8 +63,13 @@ export async function POST(req: NextRequest, { params }: { params: { slug: strin
   }
 
   const servicesLines =
-    therapist.services.map((s) => `- ${s.name}: RM${Number(s.price).toFixed(0)} (${s.durationMinutes} minit)`).join("\n") ||
-    "Belum ada servis disenaraikan.";
+    therapist.services
+      .map((s) => {
+        const effectivePrice = getEffectivePrice(s.price.toString(), s.promoPrice?.toString() ?? null);
+        const promoNote = hasPromo(s.price.toString(), s.promoPrice?.toString() ?? null) ? ` (promo, harga asal RM${Number(s.price).toFixed(0)})` : "";
+        return `- ${s.name}: RM${effectivePrice.toFixed(0)}${promoNote} (${s.durationMinutes} minit)`;
+      })
+      .join("\n") || "Belum ada servis disenaraikan.";
 
   const depositLine =
     therapist.depositRequired && therapist.depositAmount

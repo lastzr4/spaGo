@@ -9,8 +9,18 @@ import { CheckCircleIcon, SendIcon, CalendarIcon, AlertTriangleIcon, QrIcon, Cas
 import Confetti from "@/components/Confetti";
 import ServiceDetailSheet from "@/components/ServiceDetailSheet";
 import { isPastSlot } from "@/lib/slotTimes";
+import { BADGE_LABELS, BADGE_STYLE, ServiceBadge, hasPromo } from "@/lib/pricing";
 
-type Service = { id: string; name: string; durationMinutes: number; price: string; photoUrl?: string | null; description?: string | null };
+type Service = {
+  id: string;
+  name: string;
+  durationMinutes: number;
+  price: string;
+  photoUrl?: string | null;
+  description?: string | null;
+  promoPrice?: string | null;
+  badge?: string | null;
+};
 type Slot = { id: string; date: string; startTime: string; endTime: string };
 
 const WEEKDAY = ["Ahd", "Isn", "Sel", "Rab", "Kha", "Jum", "Sab"];
@@ -301,11 +311,25 @@ export default function BookingFlow({
                 )}
                 <span className="flex flex-1 items-center justify-between gap-2">
                   <span className="min-w-0">
-                    <span className="block truncate font-semibold text-[color:var(--text-primary)]">{s.name}</span>
+                    <span className="flex flex-wrap items-center gap-1.5">
+                      <span className="block truncate font-semibold text-[color:var(--text-primary)]">{s.name}</span>
+                      {s.badge && Object.prototype.hasOwnProperty.call(BADGE_LABELS, s.badge) && (
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${BADGE_STYLE[s.badge as ServiceBadge]}`}>
+                          {BADGE_LABELS[s.badge as ServiceBadge]}
+                        </span>
+                      )}
+                    </span>
                     <span className="block text-xs text-[color:var(--text-secondary)]">{s.durationMinutes} minit</span>
                   </span>
                   <span className="flex shrink-0 items-center gap-1.5 font-semibold text-brand-700">
-                    RM{Number(s.price).toFixed(0)}
+                    {hasPromo(s.price, s.promoPrice) ? (
+                      <span className="flex items-baseline gap-1">
+                        <span className="text-[11px] font-medium text-[color:var(--text-muted)] line-through">RM{Number(s.price).toFixed(0)}</span>
+                        <span>RM{Number(s.promoPrice).toFixed(0)}</span>
+                      </span>
+                    ) : (
+                      <>RM{Number(s.price).toFixed(0)}</>
+                    )}
                     {active && <CheckCircleIcon filled className="h-4 w-4 text-brand-600" />}
                   </span>
                 </span>
@@ -394,7 +418,14 @@ export default function BookingFlow({
           </div>
           <div className="detail-row">
             <span className="text-[color:var(--text-secondary)]">Harga</span>
-            <span className="font-bold text-brand-500">RM{Number(selectedService.price).toFixed(0)}</span>
+            {hasPromo(selectedService.price, selectedService.promoPrice) ? (
+              <span className="flex items-baseline gap-1.5">
+                <span className="text-xs font-medium text-[color:var(--text-muted)] line-through">RM{Number(selectedService.price).toFixed(0)}</span>
+                <span className="font-bold text-brand-500">RM{Number(selectedService.promoPrice).toFixed(0)}</span>
+              </span>
+            ) : (
+              <span className="font-bold text-brand-500">RM{Number(selectedService.price).toFixed(0)}</span>
+            )}
           </div>
           {travelFeeEnabled && detailsRevealed && (
             <div className="detail-row">

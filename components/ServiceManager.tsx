@@ -4,8 +4,19 @@ import { useRef, useState } from "react";
 import { fileToCompressedDataUrl, fileToDataUrl } from "@/lib/image";
 import { CameraIcon, PlusIcon, TrashIcon, SparkleIcon, FileUpIcon, EyeIcon } from "@/components/icons";
 import ServiceDetailSheet from "@/components/ServiceDetailSheet";
+import { SERVICE_BADGES, BADGE_LABELS, BADGE_STYLE, ServiceBadge, hasPromo } from "@/lib/pricing";
 
-type Service = { id: string; name: string; durationMinutes: number; price: string; active: boolean; photoUrl?: string | null; description?: string | null };
+type Service = {
+  id: string;
+  name: string;
+  durationMinutes: number;
+  price: string;
+  active: boolean;
+  photoUrl?: string | null;
+  description?: string | null;
+  promoPrice?: string | null;
+  badge?: string | null;
+};
 
 export default function ServiceManager({
   token,
@@ -24,9 +35,12 @@ export default function ServiceManager({
   const [name, setName] = useState("");
   const [duration, setDuration] = useState("60");
   const [price, setPrice] = useState("");
+  const [promoPrice, setPromoPrice] = useState("");
+  const [badge, setBadge] = useState<ServiceBadge | null>(null);
   const [description, setDescription] = useState("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
   const [uploadingFor, setUploadingFor] = useState<string | null>(null);
   const [guidance, setGuidance] = useState<Record<string, string>>({});
   const [guidanceLoading, setGuidanceLoading] = useState<string | null>(null);
@@ -34,8 +48,11 @@ export default function ServiceManager({
   const [editName, setEditName] = useState("");
   const [editDuration, setEditDuration] = useState("");
   const [editPrice, setEditPrice] = useState("");
+  const [editPromoPrice, setEditPromoPrice] = useState("");
+  const [editBadge, setEditBadge] = useState<ServiceBadge | null>(null);
   const [editDescription, setEditDescription] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
   const [extracting, setExtracting] = useState(false);
   const [extractError, setExtractError] = useState<string | null>(null);
   const [extractSuccess, setExtractSuccess] = useState<string | null>(null);
@@ -48,12 +65,16 @@ export default function ServiceManager({
     setEditName(service.name);
     setEditDuration(String(service.durationMinutes));
     setEditPrice(service.price);
+    setEditPromoPrice(service.promoPrice ?? "");
+    setEditBadge(SERVICE_BADGES.includes(service.badge as ServiceBadge) ? (service.badge as ServiceBadge) : null);
     setEditDescription(service.description ?? "");
+    setEditError(null);
   }
 
   async function saveEdit(service: Service) {
     if (!editName.trim() || !editDuration || !editPrice) return;
     setSavingEdit(true);
+    setEditError(null);
     const res = await fetch(`/api/dashboard/${token}/services/${service.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -61,6 +82,8 @@ export default function ServiceManager({
         name: editName.trim(),
         durationMinutes: Number(editDuration),
         price: Number(editPrice),
+        promoPrice: editPromoPrice.trim() ? Number(editPromoPrice) : null,
+        badge: editBadge,
         description: editDescription.trim() || null,
       }),
     });
@@ -68,11 +91,26 @@ export default function ServiceManager({
       setServices((list) =>
         list.map((s) =>
           s.id === service.id
-            ? { ...s, name: editName.trim(), durationMinutes: Number(editDuration), price: editPrice, description: editDescription.trim() || null }
+            ? {
+                ...s,
+                name: editName.trim(),
+                durationMinutes: Number(editDuration),
+                price: editPrice,
+                promoPrice: editPromoPrice.trim() ? editPromoPrice : null,
+                badge: editBadge,
+                description: editDescription.trim() || null,
+              }
             : s
         )
       );
       setEditingId(null);
+    } else {
+      const data = await res.json().catch(() => null);
+      setEditError(
+        data?.error === "PROMO_PRICE_INVALID"
+          ? "Harga promo mesti kurang daripada harga asal."
+          : "Gagal menyimpan. Sila cuba lagi."
+      );
     }
     setSavingEdit(false);
   }
@@ -101,20 +139,37 @@ export default function ServiceManager({
     e.preventDefault();
     if (!name || !duration || !price) return;
     setAdding(true);
+    setAddError(null);
     const res = await fetch(`/api/dashboard/${token}/services`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, durationMinutes: Number(duration), price: Number(price), description: description.trim() || null, photoUrl }),
+      body: JSON.stringify({
+        name,
+        durationMinutes: Number(duration),
+        price: Number(price),
+        promoPrice: promoPrice.trim() ? Number(promoPrice) : null,
+        badge,
+        description: description.trim() || null,
+        photoUrl,
+      }),
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => null);
     if (res.ok) {
       setServices((s) => [...s, data.service]);
       setName("");
       setDuration("60");
       setPrice("");
+      setPromoPrice("");
+      setBadge(null);
       setDescription("");
       setPhotoUrl(null);
       if (newPhotoInputRef.current) newPhotoInputRef.current.value = "";
+    } else {
+      setAddError(
+        data?.error === "PROMO_PRICE_INVALID"
+          ? "Harga promo mesti kurang daripada harga asal."
+          : "Gagal menambah servis. Sila cuba lagi."
+      );
     }
     setAdding(false);
   }
@@ -192,6 +247,8 @@ export default function ServiceManager({
         active: s.active,
         photoUrl: s.photoUrl,
         description: s.description,
+        promoPrice: null,
+        badge: null,
       }));
       setServices((list) => [...list, ...newServices]);
       setExtractSuccess(`${newServices.length} servis berjaya ditambah oleh AI daripada dokumen ini.`);
@@ -300,6 +357,36 @@ export default function ServiceManager({
                         onChange={(e) => setEditPrice(e.target.value)}
                         placeholder="Harga (RM)"
                       />
+                      <input
+                        className="w-full rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3 py-1.5 text-sm text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400"
+                        type="number"
+                        value={editPromoPrice}
+                        onChange={(e) => setEditPromoPrice(e.target.value)}
+                        placeholder="Harga promo (optional)"
+                      />
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <button
+                        type="button"
+                        onClick={() => setEditBadge(null)}
+                        className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                          editBadge === null ? "bg-brand-500 text-white" : "bg-[color:var(--surface-2)] text-[color:var(--text-secondary)]"
+                        }`}
+                      >
+                        Tiada tag
+                      </button>
+                      {SERVICE_BADGES.map((b) => (
+                        <button
+                          key={b}
+                          type="button"
+                          onClick={() => setEditBadge(b)}
+                          className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                            editBadge === b ? "bg-brand-500 text-white" : BADGE_STYLE[b]
+                          }`}
+                        >
+                          {BADGE_LABELS[b]}
+                        </button>
+                      ))}
                     </div>
                     <textarea
                       className="w-full resize-none rounded-xl border border-[color:var(--border-strong)] bg-[color:var(--surface-2)] px-3 py-1.5 text-sm text-[color:var(--text-primary)] outline-none placeholder:text-[color:var(--text-muted)] focus:border-brand-400"
@@ -308,6 +395,7 @@ export default function ServiceManager({
                       onChange={(e) => setEditDescription(e.target.value)}
                       placeholder="Penerangan servis (dipaparkan di skrin Butiran Servis pelanggan)"
                     />
+                    {editError && <p className="text-xs font-medium text-red-400">{editError}</p>}
                     <div className="mt-0.5 flex gap-4">
                       <button
                         type="button"
@@ -324,8 +412,25 @@ export default function ServiceManager({
                   </div>
                 ) : (
                   <button type="button" onClick={() => startEdit(s)} className="min-w-0 flex-1 text-left">
-                    <p className="truncate font-semibold text-[color:var(--text-primary)]">{s.name}</p>
-                    <p className="text-xs text-[color:var(--text-secondary)]">{s.durationMinutes} minit &middot; RM{Number(s.price).toFixed(0)}</p>
+                    <span className="flex flex-wrap items-center gap-1.5">
+                      <p className="truncate font-semibold text-[color:var(--text-primary)]">{s.name}</p>
+                      {s.badge && SERVICE_BADGES.includes(s.badge as ServiceBadge) && (
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${BADGE_STYLE[s.badge as ServiceBadge]}`}>
+                          {BADGE_LABELS[s.badge as ServiceBadge]}
+                        </span>
+                      )}
+                    </span>
+                    <p className="text-xs text-[color:var(--text-secondary)]">
+                      {s.durationMinutes} minit &middot;{" "}
+                      {hasPromo(s.price, s.promoPrice) ? (
+                        <>
+                          <span className="text-[color:var(--text-muted)] line-through">RM{Number(s.price).toFixed(0)}</span>{" "}
+                          <span className="font-semibold text-brand-500">RM{Number(s.promoPrice).toFixed(0)}</span>
+                        </>
+                      ) : (
+                        <>RM{Number(s.price).toFixed(0)}</>
+                      )}
+                    </p>
                   </button>
                 )}
               </div>
@@ -369,6 +474,34 @@ export default function ServiceManager({
           <input className="input" type="number" placeholder="Minit" value={duration} onChange={(e) => setDuration(e.target.value)} />
           <input className="input" type="number" placeholder="Harga (RM)" value={price} onChange={(e) => setPrice(e.target.value)} />
         </div>
+        <input
+          className="input"
+          type="number"
+          placeholder="Harga promo (optional, cth: 100)"
+          value={promoPrice}
+          onChange={(e) => setPromoPrice(e.target.value)}
+        />
+        <div className="flex flex-wrap gap-1.5">
+          <button
+            type="button"
+            onClick={() => setBadge(null)}
+            className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+              badge === null ? "bg-brand-500 text-white" : "bg-[color:var(--surface-2)] text-[color:var(--text-secondary)]"
+            }`}
+          >
+            Tiada tag
+          </button>
+          {SERVICE_BADGES.map((b) => (
+            <button
+              key={b}
+              type="button"
+              onClick={() => setBadge(b)}
+              className={`rounded-full px-2.5 py-1 text-[11px] font-semibold ${badge === b ? "bg-brand-500 text-white" : BADGE_STYLE[b]}`}
+            >
+              {BADGE_LABELS[b]}
+            </button>
+          ))}
+        </div>
         <textarea
           className="input resize-none"
           rows={2}
@@ -387,6 +520,7 @@ export default function ServiceManager({
             <input ref={newPhotoInputRef} type="file" accept="image/*" className="hidden" onChange={handleNewPhoto} />
           </label>
         </div>
+        {addError && <p className="text-xs font-medium text-red-400">{addError}</p>}
         <button type="submit" className="btn-secondary flex items-center justify-center gap-1.5" disabled={adding}>
           <PlusIcon className="h-4 w-4" />
           {adding ? "Menambah..." : "Tambah Servis"}

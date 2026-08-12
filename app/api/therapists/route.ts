@@ -5,6 +5,7 @@ import { generateUniqueSlug } from "@/lib/slug";
 import { hashPin, isValidUsername, isValidPin } from "@/lib/pin";
 import { getSiteSettings } from "@/lib/siteSettings";
 import { sendEmail } from "@/lib/email";
+import { getEffectivePrice } from "@/lib/pricing";
 import type { Gender } from "@prisma/client";
 
 // GET /api/therapists?area=Bangi&gender=FEMALE
@@ -40,9 +41,13 @@ export async function GET(req: NextRequest) {
         name: s.name,
         durationMinutes: s.durationMinutes,
         price: s.price,
+        promoPrice: s.promoPrice,
+        badge: s.badge,
         photoUrl: s.photoUrl,
       })),
-      priceFrom: t.services.length ? t.services[0].price : null,
+      priceFrom: t.services.length
+        ? Math.min(...t.services.map((s) => getEffectivePrice(s.price.toString(), s.promoPrice?.toString() ?? null)))
+        : null,
     })),
   });
 }
