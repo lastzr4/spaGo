@@ -3,7 +3,8 @@
 import { useEffect, useRef } from "react";
 import { ChevronLeftIcon, ClockIcon, StarIcon, QrIcon, CashIcon } from "@/components/icons";
 import QuickInfoRow from "@/components/QuickInfoRow";
-import { BADGE_LABELS, BADGE_STYLE, ServiceBadge, hasPromo } from "@/lib/pricing";
+import ServiceBadgeRibbon from "@/components/ServiceBadgeRibbon";
+import { SERVICE_BADGES, ServiceBadge, hasPromo } from "@/lib/pricing";
 
 type Service = {
   id: string;
@@ -85,7 +86,7 @@ export default function ServiceDetailSheet({
         className="animate-modal-in flex max-h-[88vh] w-full flex-col overflow-hidden rounded-t-3xl bg-[color:var(--surface)] sm:max-w-md sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="relative shrink-0" style={{ aspectRatio: "16 / 10" }}>
+        <div className="relative shrink-0 overflow-hidden" style={{ aspectRatio: "16 / 10" }}>
           {service.photoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={service.photoUrl} alt={service.name} className="h-full w-full object-cover" />
@@ -111,12 +112,8 @@ export default function ServiceDetailSheet({
               Pratonton pelanggan
             </span>
           )}
-          {service.badge && Object.prototype.hasOwnProperty.call(BADGE_LABELS, service.badge) && (
-            <span
-              className={`absolute left-3 bottom-3 rounded-full px-3 py-1 text-[11px] font-bold backdrop-blur-md ${BADGE_STYLE[service.badge as ServiceBadge]}`}
-            >
-              {BADGE_LABELS[service.badge as ServiceBadge]}
-            </span>
+          {service.badge && SERVICE_BADGES.includes(service.badge as ServiceBadge) && (
+            <ServiceBadgeRibbon badge={service.badge as ServiceBadge} size="lg" corner="bottom-left" />
           )}
         </div>
 

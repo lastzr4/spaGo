@@ -4,7 +4,8 @@ import { useRef, useState } from "react";
 import { fileToCompressedDataUrl, fileToDataUrl } from "@/lib/image";
 import { CameraIcon, PlusIcon, TrashIcon, SparkleIcon, FileUpIcon, EyeIcon } from "@/components/icons";
 import ServiceDetailSheet from "@/components/ServiceDetailSheet";
-import { SERVICE_BADGES, BADGE_LABELS, BADGE_STYLE, ServiceBadge, hasPromo } from "@/lib/pricing";
+import ServiceBadgeRibbon from "@/components/ServiceBadgeRibbon";
+import { SERVICE_BADGES, BADGE_LABELS, ServiceBadge, hasPromo } from "@/lib/pricing";
 
 const fieldLabelClass = "mb-1 block text-[10px] font-semibold uppercase tracking-wide text-[color:var(--text-muted)]";
 const fieldInputClass =
@@ -291,14 +292,19 @@ export default function ServiceManager({
             <div className="flex items-center justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
                 <label className="card-tap relative shrink-0 cursor-pointer">
-                  {s.photoUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={s.photoUrl} alt={s.name} className="h-14 w-14 rounded-2xl object-cover" />
-                  ) : (
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[color:var(--surface-2)] text-brand-300">
-                      <CameraIcon className="h-5 w-5" />
-                    </div>
-                  )}
+                  <div className="relative h-14 w-14 overflow-hidden rounded-2xl">
+                    {s.photoUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={s.photoUrl} alt={s.name} className="h-14 w-14 object-cover" />
+                    ) : (
+                      <div className="flex h-14 w-14 items-center justify-center bg-[color:var(--surface-2)] text-brand-300">
+                        <CameraIcon className="h-5 w-5" />
+                      </div>
+                    )}
+                    {s.badge && SERVICE_BADGES.includes(s.badge as ServiceBadge) && (
+                      <ServiceBadgeRibbon badge={s.badge as ServiceBadge} size="sm" />
+                    )}
+                  </div>
                   {uploadingFor === s.id && (
                     <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/40">
                       <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -402,14 +408,7 @@ export default function ServiceManager({
                   </div>
                 ) : (
                   <button type="button" onClick={() => startEdit(s)} className="min-w-0 flex-1 text-left">
-                    <span className="flex flex-wrap items-center gap-1.5">
-                      <p className="truncate font-semibold text-[color:var(--text-primary)]">{s.name}</p>
-                      {s.badge && SERVICE_BADGES.includes(s.badge as ServiceBadge) && (
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${BADGE_STYLE[s.badge as ServiceBadge]}`}>
-                          {BADGE_LABELS[s.badge as ServiceBadge]}
-                        </span>
-                      )}
-                    </span>
+                    <p className="truncate font-semibold text-[color:var(--text-primary)]">{s.name}</p>
                     <p className="text-xs text-[color:var(--text-secondary)]">
                       {s.durationMinutes} minit &middot;{" "}
                       {hasPromo(s.price, s.promoPrice) ? (

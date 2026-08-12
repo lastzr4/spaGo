@@ -20,6 +20,26 @@ export const BADGE_STYLE: Record<ServiceBadge, string> = {
   LIMITED: "bg-red-500/15 text-red-400",
 };
 
+// Solid gradient background for the diagonal corner-ribbon treatment (see
+// components/ServiceBadgeRibbon.tsx) — needs to be opaque/bold, unlike the
+// soft tinted BADGE_STYLE chip used in dense list rows.
+export const BADGE_RIBBON_BG: Record<ServiceBadge, string> = {
+  RECOMMENDED: "bg-gradient-to-r from-brand-600 to-brand-400",
+  MOST_POPULAR: "bg-gradient-to-r from-amber-600 to-amber-400",
+  NEW: "bg-gradient-to-r from-emerald-600 to-emerald-400",
+  LIMITED: "bg-gradient-to-r from-red-600 to-red-400",
+};
+
+// Glow color fed into the --ribbon-glow-color CSS variable (see the
+// animate-ribbon-glow keyframes in globals.css) so the pulsing shadow
+// matches each badge's color instead of one fixed hue.
+export const BADGE_GLOW_COLOR: Record<ServiceBadge, string> = {
+  RECOMMENDED: "rgba(122, 81, 201, 0.65)",
+  MOST_POPULAR: "rgba(245, 158, 11, 0.65)",
+  NEW: "rgba(16, 185, 129, 0.65)",
+  LIMITED: "rgba(239, 68, 68, 0.65)",
+};
+
 export function isValidBadge(value: unknown): value is ServiceBadge {
   return typeof value === "string" && (SERVICE_BADGES as readonly string[]).includes(value);
 }

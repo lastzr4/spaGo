@@ -8,8 +8,9 @@ import { buildHealthDeclarationStatements } from "@/lib/consent";
 import { CheckCircleIcon, SendIcon, CalendarIcon, AlertTriangleIcon, QrIcon, CashIcon, ChevronRightIcon, ClipboardListIcon } from "@/components/icons";
 import Confetti from "@/components/Confetti";
 import ServiceDetailSheet from "@/components/ServiceDetailSheet";
+import ServiceBadgeRibbon from "@/components/ServiceBadgeRibbon";
 import { isPastSlot } from "@/lib/slotTimes";
-import { BADGE_LABELS, BADGE_STYLE, ServiceBadge, hasPromo } from "@/lib/pricing";
+import { SERVICE_BADGES, ServiceBadge, hasPromo } from "@/lib/pricing";
 
 type Service = {
   id: string;
@@ -301,24 +302,22 @@ export default function BookingFlow({
                   active ? "border-brand-500 bg-[color:var(--surface-2)]/70 shadow-card" : "border-[color:var(--border)] bg-[color:var(--surface-2)]"
                 }`}
               >
-                {s.photoUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={s.photoUrl} alt={s.name} className="h-12 w-12 shrink-0 rounded-xl object-cover" />
-                ) : (
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-100 text-[11px] font-medium text-brand-400">
-                    Foto
-                  </div>
-                )}
+                <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl">
+                  {s.photoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={s.photoUrl} alt={s.name} className="h-12 w-12 object-cover" />
+                  ) : (
+                    <span className="flex h-12 w-12 items-center justify-center bg-brand-100 text-[11px] font-medium text-brand-400">
+                      Foto
+                    </span>
+                  )}
+                  {s.badge && SERVICE_BADGES.includes(s.badge as ServiceBadge) && (
+                    <ServiceBadgeRibbon badge={s.badge as ServiceBadge} size="sm" />
+                  )}
+                </span>
                 <span className="flex flex-1 items-center justify-between gap-2">
                   <span className="min-w-0">
-                    <span className="flex flex-wrap items-center gap-1.5">
-                      <span className="block truncate font-semibold text-[color:var(--text-primary)]">{s.name}</span>
-                      {s.badge && Object.prototype.hasOwnProperty.call(BADGE_LABELS, s.badge) && (
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${BADGE_STYLE[s.badge as ServiceBadge]}`}>
-                          {BADGE_LABELS[s.badge as ServiceBadge]}
-                        </span>
-                      )}
-                    </span>
+                    <span className="block truncate font-semibold text-[color:var(--text-primary)]">{s.name}</span>
                     <span className="block text-xs text-[color:var(--text-secondary)]">{s.durationMinutes} minit</span>
                   </span>
                   <span className="flex shrink-0 items-center gap-1.5 font-semibold text-brand-700">

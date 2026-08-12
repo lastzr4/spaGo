@@ -193,6 +193,14 @@ body {
   animation: badge-blink 1.1s ease-in-out infinite;
 }
 
+@keyframes ribbon-glow {
+  0%, 100% { box-shadow: 0 1px 8px var(--ribbon-glow-color, rgba(122, 81, 201, 0.55)); }
+  50% { box-shadow: 0 1px 16px var(--ribbon-glow-color, rgba(122, 81, 201, 0.85)); }
+}
+.animate-ribbon-glow {
+  animation: ribbon-glow 2s ease-in-out infinite;
+}
+
 @keyframes gallery-slide-in {
   0% { opacity: 0; transform: translateX(var(--gdir, 16px)) scale(0.97); }
   100% { opacity: 1; transform: translateX(0) scale(1); }
