@@ -429,12 +429,14 @@ export default function BookingFlow({
                     disabled={disabled}
                     title={notEnoughRoom ? `Tidak cukup slot berturut-turut untuk servis ${slotsNeeded} jam ini` : undefined}
                     onClick={() => setSlotId(s.id)}
-                    className={`rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors active:scale-[0.96] ${
+                    className={`rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors ${
                       disabled
-                        ? "cursor-not-allowed border-[color:var(--border)] bg-[color:var(--surface-2)] text-[color:var(--text-muted)]"
-                        : slotId === s.id
-                          ? "border-brand-600 bg-brand-600 text-white shadow-card"
-                          : "border-[color:var(--border)] bg-[color:var(--surface-2)] text-[color:var(--text-secondary)]"
+                        ? "cursor-not-allowed border-transparent bg-[color:var(--surface)] text-[color:var(--text-muted)] opacity-40 line-through"
+                        : `active:scale-[0.96] ${
+                            slotId === s.id
+                              ? "border-brand-600 bg-brand-600 text-white shadow-card"
+                              : "border-[color:var(--border)] bg-[color:var(--surface-2)] text-[color:var(--text-secondary)]"
+                          }`
                     }`}
                   >
                     {s.startTime}

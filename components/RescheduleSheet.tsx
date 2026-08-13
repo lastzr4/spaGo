@@ -119,7 +119,11 @@ export default function RescheduleSheet({
                         onClick={() => pickSlot(s)}
                         disabled={saving !== null || notEnoughRoom}
                         title={notEnoughRoom ? `Tidak cukup slot berturut-turut untuk servis ${slotsNeeded} jam ini` : undefined}
-                        className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3.5 py-2 text-sm font-medium text-[color:var(--text-secondary)] active:scale-[0.96] disabled:opacity-50"
+                        className={`rounded-xl border px-3.5 py-2 text-sm font-medium ${
+                          notEnoughRoom
+                            ? "cursor-not-allowed border-transparent bg-[color:var(--surface)] text-[color:var(--text-muted)] opacity-40 line-through"
+                            : "border-[color:var(--border)] bg-[color:var(--surface-2)] text-[color:var(--text-secondary)] active:scale-[0.96] disabled:opacity-50"
+                        }`}
                       >
                         {saving === s.id ? "..." : s.startTime}
                       </button>
