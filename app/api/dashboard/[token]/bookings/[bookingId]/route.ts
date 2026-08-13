@@ -48,11 +48,17 @@ export async function PATCH(
     },
   });
 
-  // Cancelling a booking frees its slot back up for other customers.
+  // Cancelling a booking frees its slot(s) back up for other customers —
+  // both the primary slot and any extra consecutive slots it blocked for a
+  // service that ran longer than one generic hourly slot.
   if (status === "CANCELLED") {
     await prisma.slot.updateMany({
       where: { id: booking.slotId, status: "BOOKED" },
       data: { status: "AVAILABLE" },
+    });
+    await prisma.slot.updateMany({
+      where: { overflowForBookingId: booking.id, status: "BOOKED" },
+      data: { status: "AVAILABLE", overflowForBookingId: null },
     });
   }
 

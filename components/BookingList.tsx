@@ -15,6 +15,7 @@ type Booking = {
   customerAddress: string;
   status: "PENDING" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
   serviceName: string;
+  serviceDurationMinutes: number;
   date: string;
   startTime: string;
   endTime: string;
@@ -331,6 +332,7 @@ export default function BookingList({
         <RescheduleSheet
           token={token}
           bookingId={rescheduleTarget.id}
+          durationMinutes={rescheduleTarget.serviceDurationMinutes}
           onClose={() => setRescheduleTarget(null)}
           onRescheduled={(slot) => {
             setBookings((list) =>

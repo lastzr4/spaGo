@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ChevronLeftIcon, CalendarIcon } from "@/components/icons";
+import { slotsNeededFor, findConsecutiveAvailableSlots } from "@/lib/slotOverlap";
 
 type SlotOption = { id: string; date: string; startTime: string; endTime: string; status: string };
 
@@ -12,14 +13,17 @@ type SlotOption = { id: string; date: string; startTime: string; endTime: string
 export default function RescheduleSheet({
   token,
   bookingId,
+  durationMinutes,
   onClose,
   onRescheduled,
 }: {
   token: string;
   bookingId: string;
+  durationMinutes: number;
   onClose: () => void;
   onRescheduled: (slot: { date: string; startTime: string; endTime: string }) => void;
 }) {
+  const slotsNeeded = slotsNeededFor(durationMinutes);
   const [slots, setSlots] = useState<SlotOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
@@ -51,7 +55,13 @@ export default function RescheduleSheet({
     });
     const data = await res.json().catch(() => null);
     if (!res.ok) {
-      setError(data?.error === "SLOT_UNAVAILABLE" ? "Slot ini baru sahaja diambil. Sila pilih slot lain." : "Gagal jadual semula. Sila cuba lagi.");
+      setError(
+        data?.error === "SLOT_UNAVAILABLE"
+          ? "Slot ini baru sahaja diambil. Sila pilih slot lain."
+          : data?.error === "NOT_ENOUGH_CONSECUTIVE_SLOTS"
+            ? "Tidak cukup slot berturut-turut untuk servis ini. Sila pilih slot lain."
+            : "Gagal jadual semula. Sila cuba lagi."
+      );
       setSaving(null);
       return;
     }
@@ -83,6 +93,11 @@ export default function RescheduleSheet({
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
+          {slotsNeeded > 1 && !loading && (
+            <p className="mb-3 text-xs text-[color:var(--text-secondary)]">
+              Servis ini ({durationMinutes} minit) perlukan {slotsNeeded} slot berturut-turut.
+            </p>
+          )}
           {loading ? (
             <p className="text-sm text-[color:var(--text-secondary)]">Memuatkan slot...</p>
           ) : Object.keys(byDate).length === 0 ? (
@@ -95,17 +110,21 @@ export default function RescheduleSheet({
               <div key={date} className="mb-4">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-[color:var(--text-muted)]">{date}</p>
                 <div className="flex flex-wrap gap-2">
-                  {list.map((s) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => pickSlot(s)}
-                      disabled={saving !== null}
-                      className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3.5 py-2 text-sm font-medium text-[color:var(--text-secondary)] active:scale-[0.96] disabled:opacity-50"
-                    >
-                      {saving === s.id ? "..." : s.startTime}
-                    </button>
-                  ))}
+                  {list.map((s) => {
+                    const notEnoughRoom = slotsNeeded > 1 && !findConsecutiveAvailableSlots(slots, s, slotsNeeded);
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => pickSlot(s)}
+                        disabled={saving !== null || notEnoughRoom}
+                        title={notEnoughRoom ? `Tidak cukup slot berturut-turut untuk servis ${slotsNeeded} jam ini` : undefined}
+                        className="rounded-xl border border-[color:var(--border)] bg-[color:var(--surface-2)] px-3.5 py-2 text-sm font-medium text-[color:var(--text-secondary)] active:scale-[0.96] disabled:opacity-50"
+                      >
+                        {saving === s.id ? "..." : s.startTime}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             ))

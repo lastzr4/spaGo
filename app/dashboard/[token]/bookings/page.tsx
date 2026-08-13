@@ -33,6 +33,7 @@ export default async function BookingsPage({ params }: { params: { token: string
               customerAddress: b.customerAddress,
               status: b.status,
               serviceName: b.service.name,
+              serviceDurationMinutes: b.service.durationMinutes,
               date: b.slot.date.toISOString().slice(0, 10),
               startTime: b.slot.startTime,
               endTime: b.slot.endTime,

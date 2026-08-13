@@ -5,11 +5,12 @@ import Link from "next/link";
 import { buildWhatsAppBookingMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import { haversineKm, buildGoogleMapsDirectionsUrl, computeTravelFee } from "@/lib/geo";
 import { buildHealthDeclarationStatements } from "@/lib/consent";
-import { CheckCircleIcon, SendIcon, CalendarIcon, AlertTriangleIcon, QrIcon, CashIcon, ChevronRightIcon, ClipboardListIcon } from "@/components/icons";
+import { CheckCircleIcon, SendIcon, CalendarIcon, AlertTriangleIcon, QrIcon, CashIcon, ChevronRightIcon, ClipboardListIcon, EyeIcon } from "@/components/icons";
 import Confetti from "@/components/Confetti";
 import ServiceDetailSheet from "@/components/ServiceDetailSheet";
 import ServiceBadgeRibbon from "@/components/ServiceBadgeRibbon";
 import { isPastSlot } from "@/lib/slotTimes";
+import { slotsNeededFor, findConsecutiveAvailableSlots } from "@/lib/slotOverlap";
 import { SERVICE_BADGES, ServiceBadge, hasPromo } from "@/lib/pricing";
 
 type Service = {
@@ -123,6 +124,16 @@ export default function BookingFlow({
 
   const selectedService = services.find((s) => s.id === serviceId);
   const selectedSlot = slots.find((s) => s.id === slotId);
+  // Slots are generic fixed 1-hour blocks — a service longer than that needs
+  // several consecutive ones blocked off, not just its own start time.
+  const slotsNeeded = selectedService ? slotsNeededFor(selectedService.durationMinutes) : 1;
+
+  // A previously-picked slot can stop being valid if the customer switches
+  // to a longer service afterwards — clear it so they don't submit a start
+  // time that no longer has enough room behind it.
+  useEffect(() => {
+    setSlotId("");
+  }, [serviceId]);
 
   // Computed reactively (not just at submit time) so it can be shown in the
   // booking summary before the customer commits — the whole point is
@@ -191,7 +202,9 @@ export default function BookingFlow({
         setError(
           data.error === "SLOT_UNAVAILABLE"
             ? "Slot ini baru sahaja ditempah orang lain. Sila pilih slot lain."
-            : "Tempahan gagal. Sila cuba lagi."
+            : data.error === "NOT_ENOUGH_CONSECUTIVE_SLOTS"
+              ? "Slot berturut-turut yang diperlukan untuk servis ini baru sahaja ditempah orang lain. Sila pilih slot lain."
+              : "Tempahan gagal. Sila cuba lagi."
         );
         setSubmitting(false);
         return;
@@ -296,11 +309,18 @@ export default function BookingFlow({
           {services.map((s) => {
             const active = serviceId === s.id;
             return (
-              <button
-                type="button"
+              <div
                 key={s.id}
-                onClick={() => setDetailService(s)}
-                className={`card-tap flex items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors ${
+                role="button"
+                tabIndex={0}
+                onClick={() => setServiceId(s.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setServiceId(s.id);
+                  }
+                }}
+                className={`card-tap flex cursor-pointer items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors ${
                   active ? "border-brand-500 bg-[color:var(--surface-2)]/70 shadow-card" : "border-[color:var(--border)] bg-[color:var(--surface-2)]"
                 }`}
               >
@@ -331,6 +351,17 @@ export default function BookingFlow({
                         Termasuk: {s.packageItems.map((p) => p.name).join(", ")}
                       </span>
                     )}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDetailService(s);
+                      }}
+                      className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-brand-600 active:opacity-60"
+                    >
+                      <EyeIcon className="h-3 w-3" />
+                      Butiran
+                    </button>
                   </span>
                   <span className="flex shrink-0 items-center gap-1.5 font-semibold text-brand-700">
                     {hasPromo(s.price, s.promoPrice) ? (
@@ -344,17 +375,22 @@ export default function BookingFlow({
                     {active && <CheckCircleIcon filled className="h-4 w-4 text-brand-600" />}
                   </span>
                 </span>
-              </button>
+              </div>
             );
           })}
         </div>
       </div>
 
       <div ref={slotSectionRef} className="scroll-mt-5">
-        <h2 className="mb-3 flex items-center gap-1.5 text-[15px] font-bold text-[color:var(--text-primary)]">
+        <h2 className="mb-1 flex items-center gap-1.5 text-[15px] font-bold text-[color:var(--text-primary)]">
           <CalendarIcon className="h-4 w-4 text-brand-500" />
           Pilih slot masa
         </h2>
+        {slotsNeeded > 1 && (
+          <p className="mb-3 text-xs text-[color:var(--text-secondary)]">
+            Servis ini ({selectedService?.durationMinutes} minit) perlukan {slotsNeeded} slot berturut-turut — slot yang tidak cukup ruang selepasnya dikelabukan.
+          </p>
+        )}
         {dates.length === 0 ? (
           <div className="card flex flex-col items-center gap-1 py-8 text-center">
             <p className="text-sm font-medium text-[color:var(--text-secondary)]">Tiada slot kosong buat masa ini.</p>
@@ -384,14 +420,17 @@ export default function BookingFlow({
             <div className="flex flex-wrap gap-2">
               {(slotsByDate[activeDate] ?? []).map((s) => {
                 const past = isPastSlot(s.date, s.startTime);
+                const notEnoughRoom = !past && slotsNeeded > 1 && !findConsecutiveAvailableSlots(slots, s, slotsNeeded);
+                const disabled = past || notEnoughRoom;
                 return (
                   <button
                     type="button"
                     key={s.id}
-                    disabled={past}
+                    disabled={disabled}
+                    title={notEnoughRoom ? `Tidak cukup slot berturut-turut untuk servis ${slotsNeeded} jam ini` : undefined}
                     onClick={() => setSlotId(s.id)}
                     className={`rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors active:scale-[0.96] ${
-                      past
+                      disabled
                         ? "cursor-not-allowed border-[color:var(--border)] bg-[color:var(--surface-2)] text-[color:var(--text-muted)]"
                         : slotId === s.id
                           ? "border-brand-600 bg-brand-600 text-white shadow-card"

@@ -144,6 +144,15 @@ model Slot {
 
   booking     Booking?
 
+  // A service longer than one generic hourly slot claims extra consecutive
+  // slots to block them for other customers. The FIRST slot stays the
+  // booking's real 1:1 `booking` relation above (via Booking.slotId); any
+  // EXTRA slots point back here instead — kept as a separate field (not the
+  // same relation) because Booking.slotId is @unique and can only ever
+  // reference one Slot row.
+  overflowForBookingId String?
+  overflowForBooking   Booking?   @relation("SlotOverflow", fields: [overflowForBookingId], references: [id], onDelete: SetNull)
+
   @@index([therapistId, date])
   @@unique([therapistId, date, startTime])
 }
@@ -179,6 +188,10 @@ model Booking {
   depositReceiptAiNotes    String?
   createdAt         DateTime      @default(now())
   review            Review?
+
+  // Extra hourly slots blocked because the service's duration didn't fit in
+  // one generic slot — see Slot.overflowForBookingId above.
+  overflowSlots     Slot[]        @relation("SlotOverflow")
 
   @@index([therapistId])
   @@index([therapistId, customerPhone])

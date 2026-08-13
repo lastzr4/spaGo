@@ -4,6 +4,7 @@ import { isMatch } from "@/lib/gender";
 import { sendPushToTherapist } from "@/lib/push";
 import { buildHealthDeclarationText } from "@/lib/consent";
 import { haversineKm, computeTravelFee } from "@/lib/geo";
+import { slotsNeededFor, findConsecutiveAvailableSlots } from "@/lib/slotOverlap";
 
 // POST /api/bookings
 // { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender, healthConsentAccepted }
@@ -42,6 +43,26 @@ export async function POST(req: NextRequest) {
       const service = await tx.service.findUnique({ where: { id: serviceId } });
       if (!service || service.therapistId !== therapistId || !service.active) {
         throw new Error("SERVICE_NOT_FOUND");
+      }
+
+      // Every slot is a generic fixed 1-hour block — a service longer than
+      // that needs several consecutive slots blocked off, not just its own
+      // start time. Never trust the client to have picked a valid start —
+      // recompute and re-verify against every same-day slot server-side.
+      const slotsNeeded = slotsNeededFor(service.durationMinutes);
+      let overflowSlotIds: string[] = [];
+      if (slotsNeeded > 1) {
+        const daySlots = await tx.slot.findMany({
+          where: { therapistId, date: slot.date },
+          select: { id: true, date: true, startTime: true, status: true },
+        });
+        const consecutiveIds = findConsecutiveAvailableSlots(
+          daySlots.map((s) => ({ ...s, date: s.date.toISOString() })),
+          { id: slot.id, date: slot.date.toISOString(), startTime: slot.startTime },
+          slotsNeeded
+        );
+        if (!consecutiveIds) throw new Error("NOT_ENOUGH_CONSECUTIVE_SLOTS");
+        overflowSlotIds = consecutiveIds.filter((id) => id !== slotId);
       }
 
       // Dynamic travel fee — never trust a client-supplied amount. Recompute
@@ -93,6 +114,13 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      if (overflowSlotIds.length) {
+        await tx.slot.updateMany({
+          where: { id: { in: overflowSlotIds } },
+          data: { status: "BOOKED", overflowForBookingId: booking.id },
+        });
+      }
+
       return { booking, therapist, service, slot };
     });
 
@@ -113,6 +141,7 @@ export async function POST(req: NextRequest) {
       SERVICE_NOT_FOUND: 404,
       GENDER_MISMATCH: 403,
       TRAVEL_FEE_CONFIRMATION_REQUIRED: 400,
+      NOT_ENOUGH_CONSECUTIVE_SLOTS: 409,
     };
     return NextResponse.json({ error: message }, { status: statusMap[message] ?? 500 });
   }
