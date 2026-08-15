@@ -362,7 +362,14 @@ export default function BookingFlow({
                   active ? "border-brand-500 bg-[color:var(--surface-2)]/70 shadow-card" : "border-[color:var(--border)] bg-[color:var(--surface-2)]"
                 }`}
               >
-                <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl">
+                <span
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDetailService(s);
+                  }}
+                  className="relative h-12 w-12 shrink-0 cursor-pointer overflow-hidden rounded-xl"
+                >
                   {s.photoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={s.photoUrl} alt={s.name} className="h-12 w-12 object-cover" />
@@ -377,7 +384,14 @@ export default function BookingFlow({
                 </span>
                 <span className="flex flex-1 items-center justify-between gap-2">
                   <span className="min-w-0">
-                    <span className="flex flex-wrap items-center gap-1.5">
+                    <span
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDetailService(s);
+                      }}
+                      className="flex cursor-pointer flex-wrap items-center gap-1.5"
+                    >
                       <span className="block truncate font-semibold text-[color:var(--text-primary)]">{s.name}</span>
                       {s.isPackage && (
                         <span className="rounded-full bg-[color:var(--surface)] px-1.5 py-0.5 text-[9px] font-bold text-brand-500">Pakej</span>
