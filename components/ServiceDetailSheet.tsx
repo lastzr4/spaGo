@@ -38,7 +38,7 @@ export default function ServiceDetailSheet({
   therapistReviewCount?: number;
   depositRequired?: boolean;
   depositAmount?: string | null;
-  paymentMethod?: "QR" | "CASH" | null;
+  paymentMethod?: "QR" | "CASH" | "TOYYIBPAY" | null;
   // Therapist-side "how does this look to customers?" preview — same sheet,
   // minus the booking CTA (there's nothing to book from the dashboard).
   previewOnly?: boolean;

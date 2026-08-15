@@ -34,6 +34,7 @@ enum BookingStatus {
 enum PaymentMethod {
   QR
   CASH
+  TOYYIBPAY
 }
 
 model Therapist {
@@ -186,6 +187,14 @@ model Booking {
   depositReceiptUploadedAt DateTime?
   depositReceiptAiVerdict  String?
   depositReceiptAiNotes    String?
+  // ToyyibPay online deposit (alternative to the manual QR+receipt flow
+  // above) — set when the therapist's paymentMethod is TOYYIBPAY. Status is
+  // a plain string ("PENDING" | "PAID" | "FAILED") rather than an enum
+  // since it mirrors toyyibPay's own callback status codes 1:1, no need for
+  // a stricter type here.
+  toyyibpayBillCode        String?
+  toyyibpayPaymentStatus   String?
+  toyyibpayPaidAt          DateTime?
   createdAt         DateTime      @default(now())
   review            Review?
 
@@ -245,5 +254,10 @@ model SiteSettings {
   heroSubtitle        String   @default("Cari terapis mobile berhampiran anda dan tempah terus ke WhatsApp — tanpa PM, tanpa tunggu.")
   heroBackgroundImage String?
   adminEmail          String?
+  // Cached once via toyyibPay's createCategory API on first use (all bills
+  // across every therapist share this one category — it's just a grouping
+  // label in toyyibPay's dashboard, not a per-therapist concept, since
+  // there is a single toyyibPay account for the whole platform).
+  toyyibpayCategoryCode String?
   updatedAt           DateTime @updatedAt
 }

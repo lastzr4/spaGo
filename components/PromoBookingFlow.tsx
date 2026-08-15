@@ -51,7 +51,7 @@ export default function PromoBookingFlow({
   defaultGender: "MALE" | "FEMALE";
   depositRequired?: boolean;
   depositAmount?: string | null;
-  paymentMethod?: "QR" | "CASH" | null;
+  paymentMethod?: "QR" | "CASH" | "TOYYIBPAY" | null;
   qrCodeUrl?: string | null;
   extraChargesNote?: string | null;
   cancellationWindowHours?: number;

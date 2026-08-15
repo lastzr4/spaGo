@@ -73,7 +73,7 @@ export default function BookingFlow({
   customerGender: "MALE" | "FEMALE";
   depositRequired?: boolean;
   depositAmount?: string | null;
-  paymentMethod?: "QR" | "CASH" | null;
+  paymentMethod?: "QR" | "CASH" | "TOYYIBPAY" | null;
   qrCodeUrl?: string | null;
   extraChargesNote?: string | null;
   cancellationWindowHours?: number;
@@ -99,6 +99,7 @@ export default function BookingFlow({
   const [justBooked, setJustBooked] = useState(false);
   const [bookedId, setBookedId] = useState<string | null>(null);
   const [bookedWhatsappLink, setBookedWhatsappLink] = useState<string | null>(null);
+  const [depositPaymentUrl, setDepositPaymentUrl] = useState<string | null>(null);
   const [detailsRevealed, setDetailsRevealed] = useState(false);
   const [detailService, setDetailService] = useState<Service | null>(null);
   const [customerLat, setCustomerLat] = useState<number | null>(null);
@@ -239,9 +240,10 @@ export default function BookingFlow({
       setJustBooked(true);
       setBookedId(data.booking?.id ?? null);
       setBookedWhatsappLink(link);
-      // If a deposit (and thus a receipt to upload) is involved, keep the
-      // customer on this screen so they can act — auto-redirecting away
-      // would mean they never see the upload option.
+      setDepositPaymentUrl(data.depositPaymentUrl ?? null);
+      // If a deposit (and thus a receipt to upload, or a toyyibPay payment
+      // to make) is involved, keep the customer on this screen so they can
+      // act — auto-redirecting away would mean they never see that option.
       if (!depositRequired) {
         setTimeout(() => {
           window.location.href = link;
@@ -269,7 +271,27 @@ export default function BookingFlow({
           <CheckCircleIcon filled className="h-8 w-8" />
         </div>
         <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Tempahan dihantar!</p>
-        {depositRequired ? (
+        {depositRequired && paymentMethod === "TOYYIBPAY" ? (
+          <>
+            <p className="max-w-[260px] text-sm text-[color:var(--text-secondary)]">
+              {depositPaymentUrl
+                ? "Selesaikan bayaran deposit di halaman toyyibPay — tempahan disahkan automatik selepas bayaran berjaya."
+                : "Deposit tidak dapat dijana buat masa ini. Sila hubungi terapis melalui WhatsApp untuk susun bayaran."}
+            </p>
+            <div className="mt-2 flex w-full max-w-[280px] flex-col gap-2.5">
+              {depositPaymentUrl && (
+                <a href={depositPaymentUrl} className="btn-primary w-full">
+                  Bayar Deposit Sekarang
+                </a>
+              )}
+              {bookedWhatsappLink && (
+                <a href={bookedWhatsappLink} className="btn-secondary w-full">
+                  Buka WhatsApp
+                </a>
+              )}
+            </div>
+          </>
+        ) : depositRequired ? (
           <>
             <p className="max-w-[260px] text-sm text-[color:var(--text-secondary)]">
               Selesaikan bayaran deposit, kemudian upload resit di sini supaya terapis dapat sahkan tempahan anda.

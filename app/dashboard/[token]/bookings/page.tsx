@@ -47,6 +47,7 @@ export default async function BookingsPage({ params }: { params: { token: string
               depositReceiptUploadedAt: b.depositReceiptUploadedAt ? b.depositReceiptUploadedAt.toISOString() : null,
               depositReceiptAiVerdict: b.depositReceiptAiVerdict,
               depositReceiptAiNotes: b.depositReceiptAiNotes,
+              toyyibpayPaymentStatus: b.toyyibpayPaymentStatus,
             }))}
             cancellationWindowHours={therapist.cancellationWindowHours}
           />

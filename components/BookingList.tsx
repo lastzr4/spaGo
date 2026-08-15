@@ -29,6 +29,13 @@ type Booking = {
   depositReceiptUploadedAt: string | null;
   depositReceiptAiVerdict: string | null;
   depositReceiptAiNotes: string | null;
+  toyyibpayPaymentStatus: string | null;
+};
+
+const TOYYIBPAY_STATUS_STYLE: Record<string, { label: string; className: string }> = {
+  PAID: { label: "toyyibPay: Deposit Dibayar", className: "bg-emerald-500/15 text-emerald-400" },
+  PENDING: { label: "toyyibPay: Menunggu Bayaran", className: "bg-amber-500/15 text-amber-400" },
+  FAILED: { label: "toyyibPay: Bayaran Gagal", className: "bg-red-500/15 text-red-400" },
 };
 
 const RECEIPT_VERDICT_STYLE: Record<string, { label: string; className: string }> = {
@@ -203,6 +210,16 @@ export default function BookingList({
               <AlertTriangleIcon className="h-3 w-3" />
               Deposit RM{Number(b.depositAmountSnapshot).toFixed(0)} dirampas — pembatalan lewat
             </p>
+          )}
+
+          {b.toyyibpayPaymentStatus && (
+            <span
+              className={`mt-2 inline-flex w-fit rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                TOYYIBPAY_STATUS_STYLE[b.toyyibpayPaymentStatus]?.className ?? "bg-[color:var(--surface-2)] text-[color:var(--text-muted)]"
+              }`}
+            >
+              {TOYYIBPAY_STATUS_STYLE[b.toyyibpayPaymentStatus]?.label ?? b.toyyibpayPaymentStatus}
+            </span>
           )}
 
           {b.depositReceiptUrl && (

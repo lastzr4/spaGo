@@ -5,6 +5,7 @@ import { sendPushToTherapist } from "@/lib/push";
 import { buildHealthDeclarationText } from "@/lib/consent";
 import { haversineKm, computeTravelFee } from "@/lib/geo";
 import { slotsNeededFor, findConsecutiveAvailableSlots } from "@/lib/slotOverlap";
+import { createDepositBill } from "@/lib/toyyibpay";
 
 // POST /api/bookings
 // { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender, healthConsentAccepted }
@@ -132,7 +133,30 @@ export async function POST(req: NextRequest) {
       url: `/dashboard/${result.therapist.dashboardToken}/bookings?status=PENDING`,
     }).catch(() => {});
 
-    return NextResponse.json({ booking: result.booking }, { status: 201 });
+    // Online deposit via toyyibPay — only when the therapist has opted into
+    // this payment method. Fails open: if bill creation fails (missing key,
+    // toyyibPay hiccup), the booking still stands and the customer falls
+    // back to contacting the therapist directly via WhatsApp.
+    let depositPaymentUrl: string | null = null;
+    if (result.therapist.paymentMethod === "TOYYIBPAY" && result.booking.depositAmountSnapshot) {
+      const bill = await createDepositBill({
+        bookingId: result.booking.id,
+        therapistName: result.therapist.name,
+        serviceName: result.service.name,
+        customerName: result.booking.customerName,
+        customerPhone: result.booking.customerPhone,
+        amountRM: Number(result.booking.depositAmountSnapshot),
+      });
+      if (bill) {
+        await prisma.booking.update({
+          where: { id: result.booking.id },
+          data: { toyyibpayBillCode: bill.billCode, toyyibpayPaymentStatus: "PENDING" },
+        });
+        depositPaymentUrl = bill.paymentUrl;
+      }
+    }
+
+    return NextResponse.json({ booking: result.booking, depositPaymentUrl }, { status: 201 });
   } catch (err: any) {
     const message = err?.message ?? "UNKNOWN_ERROR";
     const statusMap: Record<string, number> = {

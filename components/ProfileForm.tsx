@@ -21,7 +21,7 @@ type Props = {
     username: string | null;
     depositRequired: boolean;
     depositAmount: string | null;
-    paymentMethod: "QR" | "CASH" | null;
+    paymentMethod: "QR" | "CASH" | "TOYYIBPAY" | null;
     qrCodeUrl: string | null;
     extraChargesNote: string | null;
     socialInstagram: string | null;
@@ -759,13 +759,20 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
 
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[color:var(--text-primary)]">Kaedah bayaran</label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setForm({ ...form, paymentMethod: "TOYYIBPAY" })}
+                    className={`chip justify-center py-2.5 text-center ${form.paymentMethod === "TOYYIBPAY" ? "chip-active" : ""}`}
+                  >
+                    Online (toyyibPay)
+                  </button>
                   <button
                     type="button"
                     onClick={() => setForm({ ...form, paymentMethod: "QR" })}
                     className={`chip justify-center py-2.5 ${form.paymentMethod === "QR" ? "chip-active" : ""}`}
                   >
-                    QR (disyorkan)
+                    QR manual
                   </button>
                   <button
                     type="button"
@@ -776,6 +783,12 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
                   </button>
                 </div>
               </div>
+
+              {form.paymentMethod === "TOYYIBPAY" && (
+                <p className="rounded-xl bg-[color:var(--surface-2)]/60 px-3.5 py-2.5 text-xs leading-relaxed text-[color:var(--text-secondary)]">
+                  Pelanggan akan dibawa terus ke halaman pembayaran toyyibPay (FPX/kad) selepas membuat tempahan — deposit disahkan automatik, tiada perlu upload resit.
+                </p>
+              )}
 
               {form.paymentMethod === "QR" && (
                 <div className="animate-fade-in">

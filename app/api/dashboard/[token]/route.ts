@@ -40,7 +40,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
     return NextResponse.json({ error: "BASE_LNG_INVALID" }, { status: 400 });
   }
 
-  if (paymentMethod !== undefined && paymentMethod !== null && paymentMethod !== "QR" && paymentMethod !== "CASH") {
+  if (paymentMethod !== undefined && paymentMethod !== null && paymentMethod !== "QR" && paymentMethod !== "CASH" && paymentMethod !== "TOYYIBPAY") {
     return NextResponse.json({ error: "PAYMENT_METHOD_INVALID" }, { status: 400 });
   }
   if (depositAmount !== undefined && depositAmount !== null && (isNaN(Number(depositAmount)) || Number(depositAmount) < 0)) {
