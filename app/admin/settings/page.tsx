@@ -3,6 +3,7 @@ import { getSiteSettings } from "@/lib/siteSettings";
 import AdminLoginForm from "@/components/AdminLoginForm";
 import AdminNav from "@/components/AdminNav";
 import AdminSettingsForm from "@/components/AdminSettingsForm";
+import AdminServiceImageBackfill from "@/components/AdminServiceImageBackfill";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,9 @@ export default async function AdminSettingsPage() {
         initialHeroBackgroundImage={settings.heroBackgroundImage}
         initialAdminEmail={settings.adminEmail}
       />
+      <div className="px-5 pb-8">
+        <AdminServiceImageBackfill />
+      </div>
     </main>
   );
 }

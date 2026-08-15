@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fileToCompressedDataUrl, fileToDataUrl } from "@/lib/image";
 import { CameraIcon, PlusIcon, TrashIcon, SparkleIcon, FileUpIcon, EyeIcon } from "@/components/icons";
 import ServiceDetailSheet from "@/components/ServiceDetailSheet";
@@ -127,6 +127,13 @@ export default function ServiceManager({
   const [previewService, setPreviewService] = useState<Service | null>(null);
   const newPhotoInputRef = useRef<HTMLInputElement>(null);
   const extractInputRef = useRef<HTMLInputElement>(null);
+  // Ids already sent for auto-generation this session — prevents re-firing
+  // for the same service every time `services` changes identity (e.g.
+  // after the generation itself lands, or an unrelated edit elsewhere),
+  // and means a failed generation doesn't get silently retried forever
+  // (the therapist can still tap-upload their own photo any time either
+  // way, which always wins over the AI one).
+  const autoGenAttempted = useRef<Set<string>>(new Set());
 
   function startEdit(service: Service) {
     setEditingId(service.id);
@@ -197,8 +204,10 @@ export default function ServiceManager({
     });
     const data = await res.json().catch(() => null);
     if (res.ok) {
+      // No manual photo → the auto-generation effect below picks this up
+      // as soon as it lands in `services` (no photoUrl means it's in scope
+      // for auto-generation), so there's no separate call needed here.
       setServices((s) => [...s, data.service]);
-      const noManualPhoto = !photoUrl;
       setName("");
       setDuration("60");
       setPrice("");
@@ -209,12 +218,6 @@ export default function ServiceManager({
       setDescription("");
       setPhotoUrl(null);
       if (newPhotoInputRef.current) newPhotoInputRef.current.value = "";
-      // No manual photo attached — generate one in the background from the
-      // service's name/description so the card isn't left blank. Fire-and-
-      // forget: fails open (lib/gemini.ts) so this never blocks the form.
-      if (noManualPhoto) {
-        generatePhotoFor(data.service);
-      }
     } else {
       setAddError(
         data?.error === "PROMO_PRICE_INVALID"
@@ -272,11 +275,12 @@ export default function ServiceManager({
     }
   }
 
-  // Fires the AI photo generator for a service that has no photo yet — used
-  // both automatically right after adding a service (if the therapist
-  // didn't upload their own) and from the manual "Jana Gambar AI" button on
-  // any existing photo-less service. Fails open: a generation failure just
-  // leaves the service without a photo, same as if it were never attempted.
+  // Fires the AI photo generator for a service that has no photo yet.
+  // Called automatically by the effect below for every photo-less
+  // service/package (no tap needed — AI is the default), and reusable as a
+  // manual retry button for the rare case that attempt failed. Fails open:
+  // a generation failure just leaves the service without a photo, same as
+  // if it were never attempted.
   async function generatePhotoFor(service: Pick<Service, "id" | "name" | "description" | "isPackage">) {
     setGeneratingPhotoFor(service.id);
     try {
@@ -298,6 +302,32 @@ export default function ServiceManager({
       setGeneratingPhotoFor(null);
     }
   }
+
+  // Default is always an AI photo, no tap required — as soon as a
+  // photo-less service/package shows up in this list (freshly added, or
+  // already existed with no photo), generate one automatically. Runs one
+  // at a time with a short stagger so a therapist with many photo-less
+  // services doesn't fire a burst of Gemini calls at once. Manually
+  // uploading a photo (tap the thumbnail) always overrides whatever the AI
+  // produced — that's the one and only way to override, no button needed
+  // to accept the AI default.
+  useEffect(() => {
+    const missing = services.filter((s) => !s.photoUrl && !autoGenAttempted.current.has(s.id));
+    if (missing.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      for (const s of missing) {
+        if (cancelled) return;
+        autoGenAttempted.current.add(s.id);
+        await generatePhotoFor(s);
+        await new Promise((resolve) => setTimeout(resolve, 800));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [services]);
 
   async function handleExtractUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -561,7 +591,7 @@ export default function ServiceManager({
                     className="flex items-center gap-1 text-xs font-semibold text-brand-600 active:opacity-60 disabled:opacity-50"
                   >
                     <SparkleIcon className="h-3.5 w-3.5" />
-                    {generatingPhotoFor === s.id ? "Menjana..." : "Jana Gambar AI"}
+                    {generatingPhotoFor === s.id ? "Menjana..." : "Cuba Jana Semula"}
                   </button>
                 )}
                 <button onClick={() => setPreviewService(s)} className="flex items-center gap-1 text-xs font-semibold text-brand-600 active:opacity-60">
