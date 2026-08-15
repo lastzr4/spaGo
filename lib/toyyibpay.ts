@@ -81,6 +81,17 @@ async function getOrCreateCategoryCode(): Promise<string | null> {
   return categoryCode;
 }
 
+// DuitNow QR is a separate payment channel from FPX/card and isn't active
+// on every toyyibPay account by default (needs to be enabled on the
+// account itself). Checked fresh on each bill rather than cached, since
+// it's a one-off account setting that could change — but fails open to
+// "not active" on any hiccup, so a check failure just means the bill still
+// gets created without it, never blocks the booking.
+async function isDuitNowQRActive(secretKey: string): Promise<boolean> {
+  const result = await postForm("checkDuitNowQRStatus", { userSecretKey: secretKey });
+  return result?.status === "success" && result?.duitnowqr_activated === true;
+}
+
 export async function createDepositBill(params: {
   bookingId: string;
   therapistName: string;
@@ -97,6 +108,7 @@ export async function createDepositBill(params: {
     if (!categoryCode) return null;
 
     const base = siteBaseUrl();
+    const duitNowQRActive = await isDuitNowQRActive(secretKey);
     const result = await postForm("createBill", {
       userSecretKey: secretKey,
       categoryCode,
@@ -116,6 +128,11 @@ export async function createDepositBill(params: {
       billEmail: "customer@spago.app",
       billPhone: params.customerPhone,
       billPaymentChannel: 2, // FPX + credit card
+      // e-wallets (Touch 'n Go, GrabPay, Boost, ShopeePay...) pay via the
+      // shared DuitNow QR rail, not a per-wallet integration — only added
+      // when the account actually has it activated, otherwise omitted so
+      // the bill still creates normally with just FPX/card.
+      ...(duitNowQRActive ? { enableDuitNowQR: 1, chargeDuitNowQR: 0 } : {}),
     });
 
     const billCode: string | undefined = Array.isArray(result) ? result[0]?.BillCode : undefined;
