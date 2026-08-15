@@ -10,7 +10,7 @@ import TherapistBadges from "@/components/TherapistBadges";
 import ShareButton from "@/components/ShareButton";
 import FavoriteButton from "@/components/FavoriteButton";
 import QuickInfoRow from "@/components/QuickInfoRow";
-import { StarIcon, MapPinIcon, QrIcon, CashIcon, SparkleIcon, AwardIcon, ClockIcon } from "@/components/icons";
+import { StarIcon, MapPinIcon, QrIcon, CashIcon, WalletIcon, SparkleIcon, AwardIcon, ClockIcon } from "@/components/icons";
 import { getEffectivePrice } from "@/lib/pricing";
 
 export const dynamic = "force-dynamic";
@@ -127,7 +127,14 @@ export default async function TherapistDetailPage({
                   value: therapist.yearsExperience != null ? `${therapist.yearsExperience} thn` : "-",
                 },
                 {
-                  icon: therapist.paymentMethod === "CASH" ? <CashIcon className="h-4 w-4" /> : <QrIcon className="h-4 w-4" />,
+                  icon:
+                    therapist.paymentMethod === "CASH" ? (
+                      <CashIcon className="h-4 w-4" />
+                    ) : therapist.paymentMethod === "TOYYIBPAY" ? (
+                      <WalletIcon className="h-4 w-4" />
+                    ) : (
+                      <QrIcon className="h-4 w-4" />
+                    ),
                   label: "Deposit",
                   value:
                     therapist.depositRequired && therapist.depositAmount

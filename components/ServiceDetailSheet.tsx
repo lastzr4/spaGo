@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { ChevronLeftIcon, ClockIcon, StarIcon, QrIcon, CashIcon } from "@/components/icons";
+import { ChevronLeftIcon, ClockIcon, StarIcon, QrIcon, CashIcon, WalletIcon } from "@/components/icons";
 import QuickInfoRow from "@/components/QuickInfoRow";
 import ServiceBadgeRibbon from "@/components/ServiceBadgeRibbon";
 import { SERVICE_BADGES, ServiceBadge, hasPromo } from "@/lib/pricing";
@@ -73,7 +73,14 @@ export default function ServiceDetailSheet({
       ? [{ icon: <StarIcon filled className="h-4 w-4 text-yellow-400" />, label: "Rating terapis", value: `${therapistRating.toFixed(1)} (${therapistReviewCount})` }]
       : []),
     {
-      icon: paymentMethod === "CASH" ? <CashIcon className="h-4 w-4" /> : <QrIcon className="h-4 w-4" />,
+      icon:
+        paymentMethod === "CASH" ? (
+          <CashIcon className="h-4 w-4" />
+        ) : paymentMethod === "TOYYIBPAY" ? (
+          <WalletIcon className="h-4 w-4" />
+        ) : (
+          <QrIcon className="h-4 w-4" />
+        ),
       label: "Deposit",
       value: depositRequired && depositAmount ? `RM${Number(depositAmount).toFixed(0)}` : "Tiada",
     },

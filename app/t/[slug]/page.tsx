@@ -11,7 +11,7 @@ import ShareButton from "@/components/ShareButton";
 import FavoriteButton from "@/components/FavoriteButton";
 import ChatWidget from "@/components/ChatWidget";
 import QuickInfoRow from "@/components/QuickInfoRow";
-import { StarIcon, MapPinIcon, QrIcon, CashIcon, SparkleIcon, AwardIcon, ClockIcon } from "@/components/icons";
+import { StarIcon, MapPinIcon, QrIcon, CashIcon, WalletIcon, SparkleIcon, AwardIcon, ClockIcon } from "@/components/icons";
 import { getEffectivePrice } from "@/lib/pricing";
 
 const CHAT_TRIAL_DAYS = 30;
@@ -129,7 +129,14 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
                   value: therapist.yearsExperience != null ? `${therapist.yearsExperience} thn` : "-",
                 },
                 {
-                  icon: therapist.paymentMethod === "CASH" ? <CashIcon className="h-4 w-4" /> : <QrIcon className="h-4 w-4" />,
+                  icon:
+                    therapist.paymentMethod === "CASH" ? (
+                      <CashIcon className="h-4 w-4" />
+                    ) : therapist.paymentMethod === "TOYYIBPAY" ? (
+                      <WalletIcon className="h-4 w-4" />
+                    ) : (
+                      <QrIcon className="h-4 w-4" />
+                    ),
                   label: "Deposit",
                   value:
                     therapist.depositRequired && therapist.depositAmount

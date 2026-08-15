@@ -5,7 +5,7 @@ import Link from "next/link";
 import { buildWhatsAppBookingMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import { haversineKm, buildGoogleMapsDirectionsUrl, computeTravelFee } from "@/lib/geo";
 import { buildHealthDeclarationStatements } from "@/lib/consent";
-import { CheckCircleIcon, SendIcon, CalendarIcon, AlertTriangleIcon, QrIcon, CashIcon, ChevronRightIcon, ClipboardListIcon, EyeIcon } from "@/components/icons";
+import { CheckCircleIcon, SendIcon, CalendarIcon, AlertTriangleIcon, QrIcon, CashIcon, WalletIcon, ChevronRightIcon, ClipboardListIcon, EyeIcon } from "@/components/icons";
 import Confetti from "@/components/Confetti";
 import ServiceDetailSheet from "@/components/ServiceDetailSheet";
 import ServiceBadgeRibbon from "@/components/ServiceBadgeRibbon";
@@ -537,14 +537,22 @@ export default function BookingFlow({
         <div className="rounded-2xl border border-brand-100 bg-[color:var(--surface-2)]/60 p-4">
           <div className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[color:var(--surface-2)] text-brand-600">
-              {paymentMethod === "CASH" ? <CashIcon className="h-4 w-4" /> : <QrIcon className="h-4 w-4" />}
+              {paymentMethod === "CASH" ? (
+                <CashIcon className="h-4 w-4" />
+              ) : paymentMethod === "TOYYIBPAY" ? (
+                <WalletIcon className="h-4 w-4" />
+              ) : (
+                <QrIcon className="h-4 w-4" />
+              )}
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Deposit RM{Number(depositAmount).toFixed(0)} diperlukan</p>
               <p className="text-xs text-[color:var(--text-secondary)]">
                 {paymentMethod === "CASH"
                   ? "Dibayar tunai semasa terapis tiba."
-                  : "Butiran pembayaran akan diberikan terapis melalui WhatsApp selepas tempahan."}
+                  : paymentMethod === "TOYYIBPAY"
+                    ? "Bayar terus dalam talian (FPX/kad) selepas tempahan — disahkan automatik."
+                    : "Butiran pembayaran akan diberikan terapis melalui WhatsApp selepas tempahan."}
               </p>
             </div>
           </div>

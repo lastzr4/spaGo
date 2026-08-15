@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { StarIcon, MapPinIcon, QrIcon, CashIcon } from "@/components/icons";
+import { StarIcon, MapPinIcon, QrIcon, CashIcon, WalletIcon } from "@/components/icons";
 import FavoriteButton from "@/components/FavoriteButton";
 
 type Service = { id: string; name: string; durationMinutes: number; price: string };
@@ -75,8 +75,15 @@ export default function TherapistCard({ therapist, area, gender }: { therapist: 
         <div className="mt-1.5">
           {therapist.depositRequired && therapist.depositAmount ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[11px] font-medium text-brand-600">
-              {therapist.paymentMethod === "CASH" ? <CashIcon className="h-3 w-3" /> : <QrIcon className="h-3 w-3" />}
-              Deposit RM{Number(therapist.depositAmount).toFixed(0)} &middot; {therapist.paymentMethod === "CASH" ? "Tunai" : "QR"}
+              {therapist.paymentMethod === "CASH" ? (
+                <CashIcon className="h-3 w-3" />
+              ) : therapist.paymentMethod === "TOYYIBPAY" ? (
+                <WalletIcon className="h-3 w-3" />
+              ) : (
+                <QrIcon className="h-3 w-3" />
+              )}
+              Deposit RM{Number(therapist.depositAmount).toFixed(0)} &middot;{" "}
+              {therapist.paymentMethod === "CASH" ? "Tunai" : therapist.paymentMethod === "TOYYIBPAY" ? "Online" : "QR"}
             </span>
           ) : (
             <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[11px] font-medium text-[color:var(--text-muted)]">

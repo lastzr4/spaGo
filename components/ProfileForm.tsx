@@ -894,7 +894,9 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
             </p>
             <p className="text-xs text-[color:var(--text-secondary)]">
               {form.depositRequired && form.depositAmount
-                ? `Deposit RM${form.depositAmount} · ${form.paymentMethod === "CASH" ? "Tunai" : "QR"}`
+                ? `Deposit RM${form.depositAmount} · ${
+                    form.paymentMethod === "CASH" ? "Tunai" : form.paymentMethod === "TOYYIBPAY" ? "Online (toyyibPay)" : "QR"
+                  }`
                 : "Tiada deposit diperlukan"}
             </p>
             {form.extraChargesNote && (
