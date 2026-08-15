@@ -109,6 +109,7 @@ export default function ServiceManager({
   const [adding, setAdding] = useState(false);
   const [addError, setAddError] = useState<string | null>(null);
   const [uploadingFor, setUploadingFor] = useState<string | null>(null);
+  const [generatingPhotoFor, setGeneratingPhotoFor] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editDuration, setEditDuration] = useState("");
@@ -197,6 +198,7 @@ export default function ServiceManager({
     const data = await res.json().catch(() => null);
     if (res.ok) {
       setServices((s) => [...s, data.service]);
+      const noManualPhoto = !photoUrl;
       setName("");
       setDuration("60");
       setPrice("");
@@ -207,6 +209,12 @@ export default function ServiceManager({
       setDescription("");
       setPhotoUrl(null);
       if (newPhotoInputRef.current) newPhotoInputRef.current.value = "";
+      // No manual photo attached — generate one in the background from the
+      // service's name/description so the card isn't left blank. Fire-and-
+      // forget: fails open (lib/gemini.ts) so this never blocks the form.
+      if (noManualPhoto) {
+        generatePhotoFor(data.service);
+      }
     } else {
       setAddError(
         data?.error === "PROMO_PRICE_INVALID"
@@ -261,6 +269,33 @@ export default function ServiceManager({
     } finally {
       setUploadingFor(null);
       e.target.value = "";
+    }
+  }
+
+  // Fires the AI photo generator for a service that has no photo yet — used
+  // both automatically right after adding a service (if the therapist
+  // didn't upload their own) and from the manual "Jana Gambar AI" button on
+  // any existing photo-less service. Fails open: a generation failure just
+  // leaves the service without a photo, same as if it were never attempted.
+  async function generatePhotoFor(service: Pick<Service, "id" | "name" | "description" | "isPackage">) {
+    setGeneratingPhotoFor(service.id);
+    try {
+      const res = await fetch(`/api/dashboard/${token}/ai/generate-service-image`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          serviceId: service.id,
+          name: service.name,
+          description: service.description ?? null,
+          isPackage: Boolean(service.isPackage),
+        }),
+      });
+      const data = await res.json().catch(() => null);
+      if (res.ok && data?.photoUrl) {
+        setServices((list) => list.map((s) => (s.id === service.id ? { ...s, photoUrl: data.photoUrl } : s)));
+      }
+    } finally {
+      setGeneratingPhotoFor(null);
     }
   }
 
@@ -367,7 +402,7 @@ export default function ServiceManager({
                       <ServiceBadgeRibbon badge={s.badge as ServiceBadge} size="sm" />
                     )}
                   </div>
-                  {uploadingFor === s.id && (
+                  {(uploadingFor === s.id || generatingPhotoFor === s.id) && (
                     <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/40">
                       <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                     </div>
@@ -518,6 +553,17 @@ export default function ServiceManager({
                 )}
               </div>
               <div className="flex shrink-0 flex-col items-end gap-2">
+                {!s.photoUrl && (
+                  <button
+                    type="button"
+                    onClick={() => generatePhotoFor(s)}
+                    disabled={generatingPhotoFor === s.id}
+                    className="flex items-center gap-1 text-xs font-semibold text-brand-600 active:opacity-60 disabled:opacity-50"
+                  >
+                    <SparkleIcon className="h-3.5 w-3.5" />
+                    {generatingPhotoFor === s.id ? "Menjana..." : "Jana Gambar AI"}
+                  </button>
+                )}
                 <button onClick={() => setPreviewService(s)} className="flex items-center gap-1 text-xs font-semibold text-brand-600 active:opacity-60">
                   <EyeIcon className="h-3.5 w-3.5" />
                   Pratonton
