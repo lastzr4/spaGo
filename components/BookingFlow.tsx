@@ -243,13 +243,17 @@ export default function BookingFlow({
       setDepositPaymentUrl(data.depositPaymentUrl ?? null);
       // toyyibPay: go straight to the payment page — no extra tap needed,
       // that's the whole point of "online" deposit over the manual QR flow.
-      // Manual QR/CASH deposits still need the customer to stay and act
-      // (upload a receipt, or note the cash arrangement), and a no-deposit
-      // booking auto-redirects to WhatsApp same as before.
+      // Redirects IMMEDIATELY (no setTimeout) — a delayed redirect runs as
+      // a fresh macrotask no longer tied to the tap that started this
+      // submit, and mobile browsers/in-app webviews (WhatsApp, Instagram,
+      // some Android Chrome builds) commonly block that as an unwanted
+      // redirect. Calling it synchronously right after the fetch resolves
+      // stays inside the same "user-initiated" chain, so it isn't blocked.
+      // The primary button below is still there as a manual fallback for
+      // browsers that block even this.
       if (paymentMethod === "TOYYIBPAY" && data.depositPaymentUrl) {
-        setTimeout(() => {
-          window.location.href = data.depositPaymentUrl;
-        }, 900);
+        window.location.href = data.depositPaymentUrl;
+        return;
       } else if (!depositRequired) {
         setTimeout(() => {
           window.location.href = link;
