@@ -3,7 +3,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import TopBar from "@/components/TopBar";
 import { CheckCircleIcon, AlertTriangleIcon, ClockIcon } from "@/components/icons";
-import { buildWhatsAppLink } from "@/lib/whatsapp";
+import { buildWhatsAppBookingMessage, buildWhatsAppLink } from "@/lib/whatsapp";
+import { haversineKm, buildGoogleMapsDirectionsUrl } from "@/lib/geo";
 
 export const dynamic = "force-dynamic";
 
@@ -23,7 +24,11 @@ export default async function DepositStatusPage({
 }) {
   const booking = await prisma.booking.findUnique({
     where: { id: params.bookingId },
-    include: { therapist: { select: { name: true, phone: true } }, service: { select: { name: true } } },
+    include: {
+      therapist: { select: { name: true, phone: true, baseLat: true, baseLng: true, extraChargesNote: true } },
+      service: { select: { name: true, durationMinutes: true } },
+      slot: { select: { date: true, startTime: true } },
+    },
   });
   if (!booking) notFound();
 
@@ -41,7 +46,38 @@ export default async function DepositStatusPage({
             ? "FAILED"
             : "PENDING";
 
-  const message = `Salam ${booking.therapist.name}! Saya (${booking.customerName}) baru bayar deposit untuk tempahan ${booking.service.name} melalui toyyibPay.`;
+  // Same message shape as the original booking WhatsApp handoff (service,
+  // date/time, address, distance, travel fee, deposit line) — just with the
+  // deposit line updated to reflect that it's already paid. The therapist
+  // is already separately notified it went through toyyibPay (push +
+  // dashboard badge), no need to say so again in the message itself.
+  const hasTherapistBase = booking.therapist.baseLat != null && booking.therapist.baseLng != null;
+  const hasCustomerGps = booking.customerLat != null && booking.customerLng != null;
+  const distanceKm = hasTherapistBase && hasCustomerGps
+    ? haversineKm(booking.therapist.baseLat!, booking.therapist.baseLng!, booking.customerLat!, booking.customerLng!)
+    : undefined;
+  const mapsUrl = hasTherapistBase
+    ? buildGoogleMapsDirectionsUrl(
+        { lat: booking.therapist.baseLat!, lng: booking.therapist.baseLng! },
+        hasCustomerGps ? { lat: booking.customerLat!, lng: booking.customerLng! } : booking.customerAddress
+      )
+    : undefined;
+
+  const message = buildWhatsAppBookingMessage({
+    therapistName: booking.therapist.name,
+    customerName: booking.customerName,
+    serviceName: booking.service.name,
+    durationMinutes: booking.service.durationMinutes,
+    date: booking.slot.date.toISOString().slice(0, 10),
+    startTime: booking.slot.startTime,
+    address: booking.customerAddress,
+    distanceKm,
+    mapsUrl,
+    travelFee: Number(booking.outcallFee) > 0 ? Number(booking.outcallFee) : undefined,
+    depositInfo: booking.depositAmountSnapshot ? `RM${Number(booking.depositAmountSnapshot).toFixed(0)} (Deposit telah dibayar)` : undefined,
+    extraChargesNote: booking.therapist.extraChargesNote || undefined,
+    referralCode: booking.referralCodeUsed || undefined,
+  });
   const whatsappLink = buildWhatsAppLink(booking.therapist.phone, message);
 
   return (
