@@ -241,10 +241,16 @@ export default function BookingFlow({
       setBookedId(data.booking?.id ?? null);
       setBookedWhatsappLink(link);
       setDepositPaymentUrl(data.depositPaymentUrl ?? null);
-      // If a deposit (and thus a receipt to upload, or a toyyibPay payment
-      // to make) is involved, keep the customer on this screen so they can
-      // act — auto-redirecting away would mean they never see that option.
-      if (!depositRequired) {
+      // toyyibPay: go straight to the payment page — no extra tap needed,
+      // that's the whole point of "online" deposit over the manual QR flow.
+      // Manual QR/CASH deposits still need the customer to stay and act
+      // (upload a receipt, or note the cash arrangement), and a no-deposit
+      // booking auto-redirects to WhatsApp same as before.
+      if (paymentMethod === "TOYYIBPAY" && data.depositPaymentUrl) {
+        setTimeout(() => {
+          window.location.href = data.depositPaymentUrl;
+        }, 900);
+      } else if (!depositRequired) {
         setTimeout(() => {
           window.location.href = link;
         }, 1100);
@@ -275,7 +281,7 @@ export default function BookingFlow({
           <>
             <p className="max-w-[260px] text-sm text-[color:var(--text-secondary)]">
               {depositPaymentUrl
-                ? "Selesaikan bayaran deposit di halaman toyyibPay — tempahan disahkan automatik selepas bayaran berjaya."
+                ? "Mengalihkan ke halaman pembayaran deposit..."
                 : "Deposit tidak dapat dijana buat masa ini. Sila hubungi terapis melalui WhatsApp untuk susun bayaran."}
             </p>
             <div className="mt-2 flex w-full max-w-[280px] flex-col gap-2.5">
