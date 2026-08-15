@@ -13,6 +13,7 @@ import ChatWidget from "@/components/ChatWidget";
 import QuickInfoRow from "@/components/QuickInfoRow";
 import { StarIcon, MapPinIcon, QrIcon, CashIcon, WalletIcon, SparkleIcon, AwardIcon, ClockIcon } from "@/components/icons";
 import { getEffectivePrice } from "@/lib/pricing";
+import { releaseExpiredToyyibpayHolds } from "@/lib/bookingHold";
 
 const CHAT_TRIAL_DAYS = 30;
 
@@ -31,6 +32,10 @@ export default async function TherapistPromoPage({ params }: { params: { slug: s
   });
 
   if (!therapist || !therapist.active) notFound();
+
+  // Release any toyyibPay holds this therapist's customers abandoned
+  // without completing payment, before showing what's actually available.
+  await releaseExpiredToyyibpayHolds(therapist.id);
 
   const today = new Date();
   const twoWeeksOut = new Date();

@@ -12,6 +12,7 @@ import FavoriteButton from "@/components/FavoriteButton";
 import QuickInfoRow from "@/components/QuickInfoRow";
 import { StarIcon, MapPinIcon, QrIcon, CashIcon, WalletIcon, SparkleIcon, AwardIcon, ClockIcon } from "@/components/icons";
 import { getEffectivePrice } from "@/lib/pricing";
+import { releaseExpiredToyyibpayHolds } from "@/lib/bookingHold";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +35,10 @@ export default async function TherapistDetailPage({
   });
 
   if (!therapist || !therapist.active) notFound();
+
+  // Release any toyyibPay holds this therapist's customers abandoned
+  // without completing payment, before showing what's actually available.
+  await releaseExpiredToyyibpayHolds(therapist.id);
 
   const today = new Date();
   const twoWeeksOut = new Date();

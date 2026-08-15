@@ -6,6 +6,7 @@ import { buildHealthDeclarationText } from "@/lib/consent";
 import { haversineKm, computeTravelFee } from "@/lib/geo";
 import { slotsNeededFor, findConsecutiveAvailableSlots } from "@/lib/slotOverlap";
 import { createDepositBill } from "@/lib/toyyibpay";
+import { releaseExpiredToyyibpayHolds } from "@/lib/bookingHold";
 
 // POST /api/bookings
 // { therapistId, serviceId, slotId, customerName, customerPhone, customerAddress, customerGender, healthConsentAccepted }
@@ -28,6 +29,12 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // Release any toyyibPay holds this therapist's customers abandoned
+    // without completing payment — otherwise a slot could look
+    // permanently taken to everyone else just because one customer opened
+    // the payment page and never came back.
+    await releaseExpiredToyyibpayHolds(therapistId);
+
     const result = await prisma.$transaction(async (tx) => {
       const slot = await tx.slot.findUnique({ where: { id: slotId } });
       if (!slot || slot.therapistId !== therapistId || slot.status !== "AVAILABLE") {
@@ -125,18 +132,12 @@ export async function POST(req: NextRequest) {
       return { booking, therapist, service, slot };
     });
 
-    // Fire-and-forget — a push failure must never fail the booking itself,
-    // same fail-open contract as the registration email notification.
-    sendPushToTherapist(result.therapist.id, {
-      title: "Tempahan baru!",
-      body: `${result.booking.customerName} tempah ${result.service.name} — ${result.slot.startTime}`,
-      url: `/dashboard/${result.therapist.dashboardToken}/bookings?status=PENDING`,
-    }).catch(() => {});
-
     // Online deposit via toyyibPay — only when the therapist has opted into
     // this payment method. Fails open: if bill creation fails (missing key,
     // toyyibPay hiccup), the booking still stands and the customer falls
-    // back to contacting the therapist directly via WhatsApp.
+    // back to contacting the therapist directly via WhatsApp. Attempted
+    // BEFORE the "Tempahan baru!" push below, since whether that push
+    // fires at all depends on whether a bill actually got created.
     let depositPaymentUrl: string | null = null;
     if (result.therapist.paymentMethod === "TOYYIBPAY" && result.booking.depositAmountSnapshot) {
       const bill = await createDepositBill({
@@ -154,6 +155,21 @@ export async function POST(req: NextRequest) {
         });
         depositPaymentUrl = bill.paymentUrl;
       }
+    }
+
+    // Slot is locked either way (claimed above), but the therapist only
+    // gets notified now if there's nothing left to pay for online — a
+    // toyyibPay deposit that's still unpaid gets its own "Deposit dibayar"
+    // push once the callback confirms payment instead, so the therapist
+    // never sees a "new booking" alert for something that might still fall
+    // through. Fire-and-forget — a push failure must never fail the
+    // booking itself, same fail-open contract as the registration email.
+    if (!depositPaymentUrl) {
+      sendPushToTherapist(result.therapist.id, {
+        title: "Tempahan baru!",
+        body: `${result.booking.customerName} tempah ${result.service.name} — ${result.slot.startTime}`,
+        url: `/dashboard/${result.therapist.dashboardToken}/bookings?status=PENDING`,
+      }).catch(() => {});
     }
 
     return NextResponse.json({ booking: result.booking, depositPaymentUrl }, { status: 201 });

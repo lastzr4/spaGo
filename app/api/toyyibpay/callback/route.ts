@@ -45,8 +45,20 @@ export async function POST(req: NextRequest) {
     data: {
       toyyibpayPaymentStatus: paymentStatus,
       toyyibpayPaidAt: paymentStatus === "PAID" ? new Date() : null,
+      // Payment failed outright (not just pending) — cancel the hold
+      // immediately rather than waiting for the abandonment sweep, and
+      // free the slot(s) right back up for other customers.
+      ...(paymentStatus === "FAILED" ? { status: "CANCELLED", cancelledAt: new Date() } : {}),
     },
   });
+
+  if (paymentStatus === "FAILED") {
+    await prisma.slot.updateMany({ where: { id: booking.slotId, status: "BOOKED" }, data: { status: "AVAILABLE" } });
+    await prisma.slot.updateMany({
+      where: { overflowForBookingId: booking.id, status: "BOOKED" },
+      data: { status: "AVAILABLE", overflowForBookingId: null },
+    });
+  }
 
   if (paymentStatus === "PAID") {
     // Fire-and-forget — same fail-open contract as every other push trigger
