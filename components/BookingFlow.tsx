@@ -285,15 +285,21 @@ export default function BookingFlow({
                 : "Deposit tidak dapat dijana buat masa ini. Sila hubungi terapis melalui WhatsApp untuk susun bayaran."}
             </p>
             <div className="mt-2 flex w-full max-w-[280px] flex-col gap-2.5">
-              {depositPaymentUrl && (
+              {depositPaymentUrl ? (
+                // No WhatsApp shortcut here on purpose — deposit gets paid
+                // first, auto-redirect handles that in a moment. WhatsApp
+                // only becomes available after payment (on the status page
+                // toyyibPay redirects back to), so there's no way to skip
+                // straight to messaging the therapist before paying.
                 <a href={depositPaymentUrl} className="btn-primary w-full">
                   Bayar Deposit Sekarang
                 </a>
-              )}
-              {bookedWhatsappLink && (
-                <a href={bookedWhatsappLink} className="btn-secondary w-full">
-                  Buka WhatsApp
-                </a>
+              ) : (
+                bookedWhatsappLink && (
+                  <a href={bookedWhatsappLink} className="btn-secondary w-full">
+                    Buka WhatsApp
+                  </a>
+                )
               )}
             </div>
           </>
