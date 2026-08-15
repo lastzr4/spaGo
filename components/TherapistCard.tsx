@@ -16,7 +16,7 @@ type Therapist = {
   reviewCount?: number;
   depositRequired?: boolean;
   depositAmount?: string | null;
-  paymentMethod?: "QR" | "CASH" | null;
+  paymentMethod?: "QR" | "CASH" | "TOYYIBPAY" | null;
   slug?: string | null;
 };
 

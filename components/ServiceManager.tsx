@@ -94,7 +94,7 @@ export default function ServiceManager({
   initialServices: Service[];
   depositRequired?: boolean;
   depositAmount?: string | null;
-  paymentMethod?: "QR" | "CASH" | null;
+  paymentMethod?: "QR" | "CASH" | "TOYYIBPAY" | null;
 }) {
   const [services, setServices] = useState(initialServices);
   const [name, setName] = useState("");
