@@ -358,7 +358,7 @@ export default function BookingFlow({
                     setServiceId(s.id);
                   }
                 }}
-                className={`card-tap flex cursor-pointer items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors ${
+                className={`card-tap flex cursor-pointer items-center gap-3 overflow-hidden rounded-2xl border px-4 py-3 text-left transition-colors ${
                   active ? "border-brand-500 bg-[color:var(--surface-2)]/70 shadow-card" : "border-[color:var(--border)] bg-[color:var(--surface-2)]"
                 }`}
               >
@@ -391,11 +391,13 @@ export default function BookingFlow({
                     )}
                     <button
                       type="button"
+                      onPointerDown={(e) => e.stopPropagation()}
                       onClick={(e) => {
+                        e.preventDefault();
                         e.stopPropagation();
                         setDetailService(s);
                       }}
-                      className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-brand-600 active:opacity-60"
+                      className="relative z-10 -m-1 mt-0.5 flex items-center gap-1 p-1 text-[11px] font-semibold text-brand-600 active:opacity-60"
                     >
                       <EyeIcon className="h-3 w-3" />
                       Butiran
