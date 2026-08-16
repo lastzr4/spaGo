@@ -19,7 +19,17 @@ export default async function SlotsPage({ params }: { params: { token: string } 
   const [slots, pendingCount] = await Promise.all([
     prisma.slot.findMany({
       where: { therapistId: therapist.id, date: { gte: new Date(new Date().toISOString().slice(0, 10)) } },
-      include: { booking: { include: { service: { select: { name: true } } } } },
+      // A slot can have multiple Booking rows over its lifetime (e.g. one
+      // cancelled, then rebooked) — only the current non-cancelled one, if
+      // any, represents what's actually occupying the slot right now.
+      include: {
+        bookings: {
+          where: { status: { not: "CANCELLED" } },
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          include: { service: { select: { name: true } } },
+        },
+      },
       orderBy: [{ date: "asc" }, { startTime: "asc" }],
     }),
     getPendingBookingCount(therapist.id),

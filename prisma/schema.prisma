@@ -143,14 +143,19 @@ model Slot {
   status      SlotStatus @default(AVAILABLE)
   createdAt   DateTime   @default(now())
 
-  booking     Booking?
+  // Not 1:1 — a slot can accumulate multiple Booking rows over its
+  // lifetime (e.g. one cancelled, then rebooked later), so Booking.slotId
+  // is intentionally NOT @unique. Slot.status is the sole source of truth
+  // for "is this slot bookable right now"; callers that want the booking
+  // currently occupying the slot should filter out CANCELLED rows and take
+  // the most recent one (see app/dashboard/[token]/slots/page.tsx).
+  bookings    Booking[]
 
   // A service longer than one generic hourly slot claims extra consecutive
   // slots to block them for other customers. The FIRST slot stays the
-  // booking's real 1:1 `booking` relation above (via Booking.slotId); any
-  // EXTRA slots point back here instead — kept as a separate field (not the
-  // same relation) because Booking.slotId is @unique and can only ever
-  // reference one Slot row.
+  // booking's real relation above (via Booking.slotId); any EXTRA slots
+  // point back here instead — kept as a separate field since a slot's main
+  // `bookings` relation is keyed off its own id, not the overflow booking's.
   overflowForBookingId String?
   overflowForBooking   Booking?   @relation("SlotOverflow", fields: [overflowForBookingId], references: [id], onDelete: SetNull)
 
@@ -164,7 +169,7 @@ model Booking {
   therapist         Therapist     @relation(fields: [therapistId], references: [id], onDelete: Cascade)
   serviceId         String
   service           Service       @relation(fields: [serviceId], references: [id])
-  slotId            String        @unique
+  slotId            String
   slot              Slot          @relation(fields: [slotId], references: [id])
   customerName      String
   customerPhone     String
@@ -204,6 +209,7 @@ model Booking {
 
   @@index([therapistId])
   @@index([therapistId, customerPhone])
+  @@index([slotId])
 }
 
 model CustomerNote {
