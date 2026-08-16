@@ -237,24 +237,32 @@ export default function BookingFlow({
         referralCode: referralCode || undefined,
       });
       const link = buildWhatsAppLink(therapistPhone, message);
+
+      // toyyibPay: go straight to the payment page — no extra tap needed,
+      // that's the whole point of "online" deposit over the manual QR flow.
+      // Checked and redirected FIRST, before any setState call below —
+      // setJustBooked(true) schedules a React re-render into the "Tempahan
+      // dihantar!" success screen, and if that render gets a chance to
+      // paint before the browser actually unloads the page, the customer
+      // sees a flash of the submit screen before landing on toyyibPay.
+      // Navigating immediately, before touching state, skips that render
+      // entirely. Redirects IMMEDIATELY (no setTimeout) — a delayed
+      // redirect runs as a fresh macrotask no longer tied to the tap that
+      // started this submit, and mobile browsers/in-app webviews
+      // (WhatsApp, Instagram, some Android Chrome builds) commonly block
+      // that as an unwanted redirect. Calling it synchronously right after
+      // the fetch resolves stays inside the same "user-initiated" chain,
+      // so it isn't blocked.
+      if (paymentMethod === "TOYYIBPAY" && data.depositPaymentUrl) {
+        window.location.href = data.depositPaymentUrl;
+        return;
+      }
+
       setJustBooked(true);
       setBookedId(data.booking?.id ?? null);
       setBookedWhatsappLink(link);
       setDepositPaymentUrl(data.depositPaymentUrl ?? null);
-      // toyyibPay: go straight to the payment page — no extra tap needed,
-      // that's the whole point of "online" deposit over the manual QR flow.
-      // Redirects IMMEDIATELY (no setTimeout) — a delayed redirect runs as
-      // a fresh macrotask no longer tied to the tap that started this
-      // submit, and mobile browsers/in-app webviews (WhatsApp, Instagram,
-      // some Android Chrome builds) commonly block that as an unwanted
-      // redirect. Calling it synchronously right after the fetch resolves
-      // stays inside the same "user-initiated" chain, so it isn't blocked.
-      // The primary button below is still there as a manual fallback for
-      // browsers that block even this.
-      if (paymentMethod === "TOYYIBPAY" && data.depositPaymentUrl) {
-        window.location.href = data.depositPaymentUrl;
-        return;
-      } else if (!depositRequired) {
+      if (!depositRequired) {
         setTimeout(() => {
           window.location.href = link;
         }, 1100);
