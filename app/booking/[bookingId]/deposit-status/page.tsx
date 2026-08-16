@@ -118,6 +118,11 @@ export default async function DepositStatusPage({
           </>
         )}
         <div className="mt-3 flex w-full max-w-[280px] flex-col gap-2.5">
+          {status !== "FAILED" && (
+            <p className="text-xs text-[color:var(--text-secondary)]">
+              Sila tekan di bawah untuk hantar butiran tempahan kepada terapis untuk pengesahan.
+            </p>
+          )}
           <a href={whatsappLink} className="btn-primary w-full">
             Buka WhatsApp
           </a>
