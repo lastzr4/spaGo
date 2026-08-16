@@ -48,13 +48,13 @@ export default async function SlotsPage({ params }: { params: { token: string } 
             startTime: s.startTime,
             endTime: s.endTime,
             status: s.status,
-            booking: s.booking
+            booking: s.bookings[0]
               ? {
-                  customerName: s.booking.customerName,
-                  customerPhone: s.booking.customerPhone,
-                  customerAddress: s.booking.customerAddress,
-                  serviceName: s.booking.service.name,
-                  status: s.booking.status,
+                  customerName: s.bookings[0].customerName,
+                  customerPhone: s.bookings[0].customerPhone,
+                  customerAddress: s.bookings[0].customerAddress,
+                  serviceName: s.bookings[0].service.name,
+                  status: s.bookings[0].status,
                 }
               : null,
           }))}
