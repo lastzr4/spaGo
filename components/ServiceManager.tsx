@@ -73,7 +73,7 @@ function PackageItemPicker({
           <button
             type="button"
             onClick={() => onUseSuggestion(sumDuration, sumPrice)}
-            className="shrink-0 text-[11px] font-semibold text-brand-600 active:opacity-60"
+            className="shrink-0 text-[11px] font-semibold text-brand-300 active:opacity-60"
           >
             Guna cadangan ini
           </button>
@@ -546,7 +546,7 @@ export default function ServiceManager({
                         type="button"
                         onClick={() => saveEdit(s)}
                         disabled={savingEdit}
-                        className="text-xs font-semibold text-brand-600 active:opacity-60 disabled:opacity-50"
+                        className="text-xs font-semibold text-brand-300 active:opacity-60 disabled:opacity-50"
                       >
                         {savingEdit ? "Menyimpan..." : "Simpan"}
                       </button>
@@ -588,17 +588,17 @@ export default function ServiceManager({
                     type="button"
                     onClick={() => generatePhotoFor(s)}
                     disabled={generatingPhotoFor === s.id}
-                    className="flex items-center gap-1 text-xs font-semibold text-brand-600 active:opacity-60 disabled:opacity-50"
+                    className="flex items-center gap-1 text-xs font-semibold text-brand-300 active:opacity-60 disabled:opacity-50"
                   >
                     <SparkleIcon className="h-3.5 w-3.5" />
                     {generatingPhotoFor === s.id ? "Menjana..." : "Cuba Jana Semula"}
                   </button>
                 )}
-                <button onClick={() => setPreviewService(s)} className="flex items-center gap-1 text-xs font-semibold text-brand-600 active:opacity-60">
+                <button onClick={() => setPreviewService(s)} className="flex items-center gap-1 text-xs font-semibold text-brand-300 active:opacity-60">
                   <EyeIcon className="h-3.5 w-3.5" />
                   Pratonton
                 </button>
-                <button onClick={() => toggleActive(s)} className="text-xs font-semibold text-brand-600 active:opacity-60">
+                <button onClick={() => toggleActive(s)} className="text-xs font-semibold text-brand-300 active:opacity-60">
                   {s.active ? "Nyahaktif" : "Aktifkan"}
                 </button>
                 <button onClick={() => removeService(s.id)} className="flex items-center gap-1 text-xs font-semibold text-red-500 active:opacity-60">
@@ -684,7 +684,7 @@ export default function ServiceManager({
             // eslint-disable-next-line @next/next/no-img-element
             <img src={photoUrl} alt="Preview" className="h-12 w-12 rounded-xl object-cover" />
           )}
-          <label className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-brand-600">
+          <label className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-brand-300">
             <CameraIcon className="h-4 w-4" />
             {photoUrl ? "Tukar foto" : "Foto servis (optional)"}
             <input ref={newPhotoInputRef} type="file" accept="image/*" className="hidden" onChange={handleNewPhoto} />

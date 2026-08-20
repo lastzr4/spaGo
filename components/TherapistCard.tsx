@@ -58,7 +58,7 @@ export default function TherapistCard({ therapist, area, gender }: { therapist: 
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2 pr-8">
           <h3 className="truncate font-semibold text-[color:var(--text-primary)]">{therapist.name}</h3>
-          <span className="shrink-0 rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[11px] font-semibold text-brand-600">
+          <span className="shrink-0 rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[11px] font-semibold text-brand-300">
             {therapist.gender === "FEMALE" ? "Wanita" : "Lelaki"}
           </span>
         </div>
@@ -69,12 +69,12 @@ export default function TherapistCard({ therapist, area, gender }: { therapist: 
         </p>
         <div className="mt-2 flex items-center gap-2.5">
           {therapist.priceFrom && (
-            <span className="text-[13px] font-semibold text-brand-700">Dari RM{Number(therapist.priceFrom).toFixed(0)}</span>
+            <span className="text-[13px] font-semibold text-brand-300">Dari RM{Number(therapist.priceFrom).toFixed(0)}</span>
           )}
         </div>
         <div className="mt-1.5">
           {therapist.depositRequired && therapist.depositAmount ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[11px] font-medium text-brand-600">
+            <span className="inline-flex items-center gap-1 rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[11px] font-medium text-brand-300">
               {therapist.paymentMethod === "CASH" ? (
                 <CashIcon className="h-3 w-3" />
               ) : therapist.paymentMethod === "TOYYIBPAY" ? (

@@ -37,7 +37,7 @@ export default function FavoriteButton({ therapist }: { therapist: FavoriteThera
     >
       <HeartIcon
         filled={favorited}
-        className={`h-4 w-4 ${favorited ? "text-red-500" : "text-brand-600"} ${pop ? "animate-heart-pop" : ""}`}
+        className={`h-4 w-4 ${favorited ? "text-red-500" : "text-brand-300"} ${pop ? "animate-heart-pop" : ""}`}
       />
     </button>
   );

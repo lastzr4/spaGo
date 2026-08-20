@@ -107,7 +107,7 @@ export default function ChatWidget({ slug, therapistName, therapistPhone }: { sl
             </div>
 
             <div className="border-t border-[color:var(--border)] p-2.5">
-              <a href={whatsappLink} target="_blank" rel="noreferrer" className="mb-2 block text-center text-[11px] font-semibold text-brand-600 active:opacity-60">
+              <a href={whatsappLink} target="_blank" rel="noreferrer" className="mb-2 block text-center text-[11px] font-semibold text-brand-300 active:opacity-60">
                 Nak tempah terus? Hubungi WhatsApp →
               </a>
               <div className="flex items-center gap-2">

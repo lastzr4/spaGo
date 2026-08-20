@@ -66,7 +66,7 @@ export default function PinPadInput({
           >
             <div className="mb-5 flex items-center justify-between">
               <p className="text-sm font-semibold text-[color:var(--text-primary)]">{label}</p>
-              <button type="button" onClick={() => onOpenChange(false)} className="text-xs font-semibold text-brand-600 active:opacity-60">
+              <button type="button" onClick={() => onOpenChange(false)} className="text-xs font-semibold text-brand-300 active:opacity-60">
                 Selesai
               </button>
             </div>

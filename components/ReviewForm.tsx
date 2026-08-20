@@ -40,7 +40,7 @@ export default function ReviewForm({ therapistId, onSubmitted }: { therapistId: 
     return (
       <div className="relative animate-fade-in">
         <Confetti count={26} />
-        <p className="text-sm font-medium text-brand-700">Terima kasih atas ulasan anda!</p>
+        <p className="text-sm font-medium text-brand-300">Terima kasih atas ulasan anda!</p>
       </div>
     );
   }

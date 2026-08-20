@@ -154,7 +154,7 @@ export default function TherapistRegisterPage() {
 
           <p className="text-center text-sm text-[color:var(--text-secondary)]">
             Dah ada akaun?{" "}
-            <Link href="/dashboard/login" className="font-semibold text-brand-600">
+            <Link href="/dashboard/login" className="font-semibold text-brand-300">
               Log masuk
             </Link>
           </p>

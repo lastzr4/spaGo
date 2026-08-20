@@ -45,7 +45,7 @@ export default function TherapistLoginPage() {
       <main className="flex flex-1 flex-col items-center justify-center px-6 py-10">
         <div className="card w-full max-w-sm animate-pop-in">
           <div className="mb-5 flex flex-col items-center gap-2 text-center">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-2)] text-brand-600">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-2)] text-brand-300">
               <LockIcon className="h-5 w-5" />
             </div>
             <h1 className="text-lg font-bold text-[color:var(--text-primary)]">Log Masuk</h1>
@@ -77,7 +77,7 @@ export default function TherapistLoginPage() {
           <button
             type="button"
             onClick={() => setShowRecoveryHelp((v) => !v)}
-            className="mt-4 block w-full text-center text-sm font-semibold text-brand-600"
+            className="mt-4 block w-full text-center text-sm font-semibold text-brand-300"
           >
             Lupa Username / PIN?
           </button>
@@ -89,7 +89,7 @@ export default function TherapistLoginPage() {
 
           <p className="mt-4 text-center text-sm text-[color:var(--text-secondary)]">
             Belum daftar?{" "}
-            <Link href="/dashboard/register" className="font-semibold text-brand-600">
+            <Link href="/dashboard/register" className="font-semibold text-brand-300">
               Daftar sebagai terapis
             </Link>
           </p>

@@ -91,7 +91,7 @@ export default function RescheduleSheet({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[color:var(--surface-2)] text-brand-600"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[color:var(--surface-2)] text-brand-300"
             aria-label="Tutup"
           >
             <ChevronLeftIcon className="h-4 w-4" />
@@ -128,7 +128,7 @@ export default function RescheduleSheet({
                         title={notEnoughRoom ? `Tidak cukup slot berturut-turut untuk servis ${slotsNeeded} jam ini` : undefined}
                         className={`rounded-xl border px-3.5 py-2 text-sm font-medium ${
                           notEnoughRoom
-                            ? "cursor-not-allowed border-transparent bg-[color:var(--surface)] text-[color:var(--text-muted)] opacity-40 line-through"
+                            ? "cursor-not-allowed border-[color:var(--border)] bg-[color:var(--surface)] text-[color:var(--text-muted)] opacity-70 line-through"
                             : "border-[color:var(--border)] bg-[color:var(--surface-2)] text-[color:var(--text-secondary)] active:scale-[0.96] disabled:opacity-50"
                         }`}
                       >

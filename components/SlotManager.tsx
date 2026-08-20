@@ -33,7 +33,7 @@ const BOOKING_STATUS_LABEL: Record<string, string> = {
 
 const BOOKING_STATUS_STYLE: Record<string, string> = {
   PENDING: "bg-amber-500/15 text-amber-400",
-  CONFIRMED: "bg-[color:var(--surface-2)] text-brand-600",
+  CONFIRMED: "bg-[color:var(--surface-2)] text-brand-300",
   CANCELLED: "bg-red-500/15 text-red-500",
   COMPLETED: "bg-emerald-500/15 text-emerald-400",
 };
@@ -42,7 +42,7 @@ const BOOKING_STATUS_STYLE: Record<string, string> = {
 // e.g. a completed appointment shows green ("berjaya"), a still-pending one shows amber.
 const BOOKING_CHIP_STYLE: Record<string, string> = {
   PENDING: "border-amber-500/30 bg-amber-500/15 text-amber-400",
-  CONFIRMED: "border-brand-300 bg-[color:var(--surface-2)] text-brand-700",
+  CONFIRMED: "border-brand-300 bg-[color:var(--surface-2)] text-brand-300",
   COMPLETED: "border-emerald-500/30 bg-emerald-500/15 text-emerald-400",
   CANCELLED: "border-red-500/30 bg-red-500/15 text-red-400",
 };
@@ -163,7 +163,7 @@ export default function SlotManager({
   }
 
   const STATUS_STYLE = {
-    BOOKED: "border-brand-300 bg-[color:var(--surface-2)] text-brand-700",
+    BOOKED: "border-brand-300 bg-[color:var(--surface-2)] text-brand-300",
     BLOCKED: "border-[color:var(--border)] bg-[color:var(--surface-2)] text-[color:var(--text-muted)]",
     AVAILABLE: "border-[color:var(--border)] bg-[color:var(--surface-2)] text-[color:var(--text-secondary)]",
   } as const;
@@ -266,7 +266,7 @@ export default function SlotManager({
             <button
               type="button"
               onClick={() => setShowAllBookings(true)}
-              className="text-xs font-semibold text-brand-600 active:opacity-60"
+              className="text-xs font-semibold text-brand-300 active:opacity-60"
             >
               Papar semua ({upcomingBookings.length})
             </button>
@@ -363,7 +363,7 @@ export default function SlotManager({
             <div className="flex flex-col gap-2.5">
               <a
                 href={`tel:${detailSlot.booking.customerPhone}`}
-                className="flex items-center gap-2.5 rounded-xl bg-[color:var(--surface-2)] px-3.5 py-3 text-sm font-medium text-brand-700 active:scale-[0.98]"
+                className="flex items-center gap-2.5 rounded-xl bg-[color:var(--surface-2)] px-3.5 py-3 text-sm font-medium text-brand-300 active:scale-[0.98]"
               >
                 <PhoneIcon className="h-4 w-4 shrink-0" />
                 {detailSlot.booking.customerPhone}

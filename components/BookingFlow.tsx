@@ -419,13 +419,13 @@ export default function BookingFlow({
                         e.stopPropagation();
                         setDetailService(s);
                       }}
-                      className="relative z-10 -m-1 mt-0.5 flex items-center gap-1 p-1 text-[11px] font-semibold text-brand-600 active:opacity-60"
+                      className="relative z-10 -m-1 mt-0.5 flex items-center gap-1 p-1 text-[11px] font-semibold text-brand-300 active:opacity-60"
                     >
                       <EyeIcon className="h-3 w-3" />
                       Butiran
                     </button>
                   </span>
-                  <span className="flex shrink-0 items-center gap-1.5 font-semibold text-brand-700">
+                  <span className="flex shrink-0 items-center gap-1.5 font-semibold text-brand-300">
                     {hasPromo(s.price, s.promoPrice) ? (
                       <span className="flex items-baseline gap-1">
                         <span className="text-[11px] font-medium text-[color:var(--text-muted)] line-through">RM{Number(s.price).toFixed(0)}</span>
@@ -434,7 +434,7 @@ export default function BookingFlow({
                     ) : (
                       <>RM{Number(s.price).toFixed(0)}</>
                     )}
-                    {active && <CheckCircleIcon filled className="h-4 w-4 text-brand-600" />}
+                    {active && <CheckCircleIcon filled className="h-4 w-4 text-brand-300" />}
                   </span>
                 </span>
               </div>
@@ -469,7 +469,7 @@ export default function BookingFlow({
                     key={d}
                     onClick={() => setActiveDate(d)}
                     className={`flex shrink-0 flex-col items-center gap-0.5 rounded-2xl px-3.5 py-2.5 transition-all active:scale-[0.96] ${
-                      active ? "bg-brand-600 text-white shadow-card" : "bg-[color:var(--surface-2)] text-brand-700"
+                      active ? "bg-brand-600 text-white shadow-card" : "bg-[color:var(--surface-2)] text-brand-300"
                     }`}
                   >
                     <span className={`text-[10px] font-medium uppercase ${active ? "text-white/80" : "text-brand-400"}`}>{weekday}</span>
@@ -576,7 +576,7 @@ export default function BookingFlow({
       {detailsRevealed && depositRequired && depositAmount && (
         <div className="rounded-2xl border border-brand-100 bg-[color:var(--surface-2)]/60 p-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[color:var(--surface-2)] text-brand-600">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[color:var(--surface-2)] text-brand-300">
               {paymentMethod === "CASH" ? (
                 <CashIcon className="h-4 w-4" />
               ) : paymentMethod === "TOYYIBPAY" ? (
@@ -637,7 +637,7 @@ export default function BookingFlow({
       {detailsRevealed && (
         <div className="rounded-2xl border border-brand-100 bg-[color:var(--surface-2)]/60 p-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[color:var(--surface-2)] text-brand-600">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[color:var(--surface-2)] text-brand-300">
               <ClipboardListIcon className="h-4 w-4" />
             </div>
             <div className="min-w-0 flex-1">

@@ -53,7 +53,7 @@ export default function SegmentedToggle<T extends string>({
             onClick={() => onChange(o.value)}
             className={`relative z-10 flex-1 rounded-xl px-3 font-semibold transition-colors duration-200 active:scale-[0.97] ${
               size === "sm" ? "py-2" : "py-3"
-            } ${active ? "text-white" : "text-brand-600"}`}
+            } ${active ? "text-white" : "text-brand-300"}`}
           >
             {o.label}
           </button>

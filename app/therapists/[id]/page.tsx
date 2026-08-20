@@ -103,7 +103,7 @@ export default async function TherapistDetailPage({
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
             {average !== null && (
               <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-black/50 px-2.5 py-1 text-[12px] font-semibold text-white backdrop-blur-md">
-                <StarIcon filled className="h-3 w-3 text-yellow-400" />
+                <StarIcon filled className="h-3.5 w-3.5 text-yellow-400" />
                 {average.toFixed(1)}
                 <span className="font-normal text-white/70">({reviews.length})</span>
               </span>

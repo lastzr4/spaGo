@@ -43,7 +43,7 @@ export default function ConfirmDialog({
         className="animate-modal-in w-full max-w-sm rounded-3xl bg-[color:var(--surface-2)] p-5 shadow-card-hover outline-none"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className={`mb-3 flex h-11 w-11 items-center justify-center rounded-2xl ${danger ? "bg-red-500/15 text-red-500" : "bg-[color:var(--surface-2)] text-brand-600"}`}>
+        <div className={`mb-3 flex h-11 w-11 items-center justify-center rounded-2xl ${danger ? "bg-red-500/15 text-red-500" : "bg-[color:var(--surface-2)] text-brand-300"}`}>
           <AlertTriangleIcon className="h-5 w-5" />
         </div>
         <h3 className="text-[15px] font-bold text-[color:var(--text-primary)]">{title}</h3>
@@ -57,7 +57,7 @@ export default function ConfirmDialog({
             onClick={onConfirm}
             disabled={busy}
             className={`flex-1 rounded-2xl px-5 py-3.5 text-[15px] font-semibold text-white shadow-card transition-all duration-150 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50 ${
-              danger ? "bg-red-500/150" : "bg-brand-600"
+              danger ? "bg-red-600" : "bg-brand-600"
             }`}
           >
             {busy ? "Sila tunggu..." : confirmLabel}

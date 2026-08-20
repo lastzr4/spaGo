@@ -64,7 +64,7 @@ export default function AreaSelect({
           >
             <div className="mb-3 flex items-center justify-between">
               <p className="text-sm font-semibold text-[color:var(--text-primary)]">Pilih kawasan</p>
-              <button type="button" onClick={() => setOpen(false)} className="text-xs font-semibold text-brand-600 active:opacity-60">
+              <button type="button" onClick={() => setOpen(false)} className="text-xs font-semibold text-brand-300 active:opacity-60">
                 Tutup
               </button>
             </div>

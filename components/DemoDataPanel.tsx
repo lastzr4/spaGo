@@ -28,7 +28,7 @@ export default function DemoDataPanel() {
   return (
     <div className="card flex flex-col gap-4">
       <div className="flex items-center gap-2">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[color:var(--surface-2)] text-brand-600">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[color:var(--surface-2)] text-brand-300">
           <UserIcon className="h-5 w-5" />
         </div>
         <div>
@@ -53,7 +53,7 @@ export default function DemoDataPanel() {
       </div>
 
       {message && (
-        <p className="flex items-center gap-1.5 rounded-xl bg-[color:var(--surface-2)]/60 px-3.5 py-2.5 text-sm font-medium text-brand-700">
+        <p className="flex items-center gap-1.5 rounded-xl bg-[color:var(--surface-2)]/60 px-3.5 py-2.5 text-sm font-medium text-brand-300">
           <CheckCircleIcon filled className="h-4 w-4" />
           {message}
         </p>

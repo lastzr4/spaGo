@@ -58,7 +58,7 @@ export default function ReviewModeration({ token, initialReviews }: { token: str
           )}
           {r.comment && <p className="mt-1.5 text-sm leading-relaxed text-[color:var(--text-secondary)]">{r.comment}</p>}
           <div className="mt-3 flex gap-4">
-            <button onClick={() => toggleHidden(r)} className="flex items-center gap-1 text-xs font-semibold text-brand-600 active:opacity-60">
+            <button onClick={() => toggleHidden(r)} className="flex items-center gap-1 text-xs font-semibold text-brand-300 active:opacity-60">
               {r.hidden ? <UndoIcon className="h-3.5 w-3.5" /> : null}
               {r.hidden ? "Tunjukkan semula" : "Sembunyikan"}
             </button>

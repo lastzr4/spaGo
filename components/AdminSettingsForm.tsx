@@ -1,8 +1,38 @@
 "use client";
 
-import { useState } from "react";
-import { PaletteIcon, CheckCircleIcon, CameraIcon, XIcon, MailIcon } from "@/components/icons";
+import { useMemo, useState } from "react";
+import { PaletteIcon, CheckCircleIcon, CameraIcon, XIcon, MailIcon, AlertTriangleIcon } from "@/components/icons";
 import { fileToCompressedDataUrl } from "@/lib/image";
+
+// Body text color (--text-primary) is a fixed near-white and never adapts
+// to the admin-chosen background — so a light "Warna latar belakang" pick
+// can make all body text on the site nearly invisible. This computes the
+// real WCAG contrast between the chosen background and that fixed text
+// color so we can warn (or block) before that ships.
+const TEXT_PRIMARY_HEX = "#f5f2fb";
+
+function hexToRgb(hex: string): [number, number, number] | null {
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex.trim());
+  if (!m) return null;
+  return [parseInt(m[1], 16), parseInt(m[2], 16), parseInt(m[3], 16)];
+}
+
+function relativeLuminance([r, g, b]: [number, number, number]) {
+  const lin = (c: number) => {
+    const v = c / 255;
+    return v <= 0.04045 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  };
+  const [R, G, B] = [lin(r), lin(g), lin(b)];
+  return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+}
+
+function contrastRatio(hexA: string, hexB: string): number | null {
+  const a = hexToRgb(hexA);
+  const b = hexToRgb(hexB);
+  if (!a || !b) return null;
+  const [l1, l2] = [relativeLuminance(a), relativeLuminance(b)].sort((x, y) => y - x);
+  return (l1 + 0.05) / (l2 + 0.05);
+}
 
 export default function AdminSettingsForm({
   initialThemeColor,
@@ -28,6 +58,10 @@ export default function AdminSettingsForm({
   const [uploadingHero, setUploadingHero] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  const bgContrast = useMemo(() => contrastRatio(backgroundColor, TEXT_PRIMARY_HEX), [backgroundColor]);
+  const bgContrastBroken = bgContrast !== null && bgContrast < 2;
+  const bgContrastLow = bgContrast !== null && bgContrast >= 2 && bgContrast < 4.5;
 
   async function handleHeroImage(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -61,7 +95,7 @@ export default function AdminSettingsForm({
   return (
     <div className="flex flex-col gap-6 px-5 py-5">
       <div className="flex items-center gap-2">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[color:var(--surface-2)] text-brand-600">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[color:var(--surface-2)] text-brand-300">
           <PaletteIcon className="h-5 w-5" />
         </div>
         <h1 className="text-lg font-bold text-[color:var(--text-primary)]">Tetapan Laman</h1>
@@ -94,7 +128,7 @@ export default function AdminSettingsForm({
                 <span className="text-xs font-medium text-white/80">Tiada gambar — guna warna tema</span>
               </div>
             )}
-            <label className="mt-2 inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-brand-600">
+            <label className="mt-2 inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-brand-300">
               <CameraIcon className="h-4 w-4" />
               {uploadingHero ? "Memuat naik..." : heroBackgroundImage ? "Tukar gambar" : "Muat naik gambar"}
               <input type="file" accept="image/*" className="hidden" onChange={handleHeroImage} disabled={uploadingHero} />
@@ -150,6 +184,21 @@ export default function AdminSettingsForm({
                 placeholder="#faf9fc"
               />
             </div>
+            {(bgContrastBroken || bgContrastLow) && (
+              <p
+                className={`mt-2 flex items-start gap-2 rounded-xl px-3.5 py-2.5 text-xs font-medium ${
+                  bgContrastBroken ? "bg-red-500/15 text-red-400" : "bg-amber-500/15 text-amber-400"
+                }`}
+              >
+                <AlertTriangleIcon className="mt-0.5 h-4 w-4 shrink-0" />
+                {bgContrastBroken
+                  ? "Warna ini terlalu terang — teks laman akan hampir tidak kelihatan di atas latar belakang ini. Sila pilih warna yang lebih gelap."
+                  : "Warna ini agak terang. Teks pada laman mungkin sukar dibaca oleh sesetengah pengguna."}
+              </p>
+            )}
+            <p className="mt-1.5 text-xs text-[color:var(--text-muted)]">
+              Teks laman (putih/lavender terang) tidak berubah mengikut warna ini — elakkan warna terang supaya teks kekal jelas dibaca.
+            </p>
           </div>
         </div>
 
@@ -173,9 +222,14 @@ export default function AdminSettingsForm({
           </div>
         </div>
 
-        <button type="submit" className="btn-primary flex items-center justify-center gap-1.5" disabled={saving}>
+        <button
+          type="submit"
+          className="btn-primary flex items-center justify-center gap-1.5"
+          disabled={saving || bgContrastBroken}
+          title={bgContrastBroken ? "Betulkan warna latar belakang dahulu — teks tidak akan kelihatan" : undefined}
+        >
           {saved && <CheckCircleIcon filled className="h-4 w-4" />}
-          {saving ? "Menyimpan..." : saved ? "Disimpan" : "Simpan Tetapan"}
+          {saving ? "Menyimpan..." : saved ? "Disimpan" : bgContrastBroken ? "Betulkan warna dahulu" : "Simpan Tetapan"}
         </button>
       </form>
     </div>

@@ -47,7 +47,7 @@ export default function FavoritesList() {
             <div className="min-w-0">
               <p className="truncate font-semibold text-[color:var(--text-primary)]">{t.name}</p>
               <p className="truncate text-xs text-[color:var(--text-secondary)]">{t.coverageAreas.join(", ")}</p>
-              {t.priceFrom && <p className="text-[13px] font-semibold text-brand-700">Dari RM{Number(t.priceFrom).toFixed(0)}</p>}
+              {t.priceFrom && <p className="text-[13px] font-semibold text-brand-300">Dari RM{Number(t.priceFrom).toFixed(0)}</p>}
             </div>
           </Link>
           <button

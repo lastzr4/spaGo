@@ -14,9 +14,9 @@
   --surface-2: #241a3d;
   --text-primary: #f5f2fb;
   --text-secondary: #b6ace0;
-  --text-muted: #8577a3;
-  --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.14);
+  --text-muted: #9086b0;
+  --border: rgba(255, 255, 255, 0.20);
+  --border-strong: rgba(255, 255, 255, 0.35);
 }
 
 html, body {
@@ -42,6 +42,25 @@ body {
   display: none;
 }
 
+/* Almost nothing in this app previously had a visible keyboard-focus
+   state (only .input did). This single rule gives every button, link,
+   and custom [role="button"]/tabbable element a consistent, on-brand
+   focus ring so keyboard/switch-device users can always see where
+   focus is (WCAG 2.4.7). It only shows for keyboard focus
+   (:focus-visible), never on mouse/touch clicks, so it doesn't add
+   visual noise to normal tapping/clicking. */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--brand, #7a51c9) 70%, white);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
 .safe-top {
   padding-top: var(--safe-top);
 }
@@ -56,12 +75,22 @@ body {
 .btn-primary:active {
   filter: brightness(0.9);
 }
+.btn-primary:hover {
+  filter: brightness(1.08);
+}
 
 .btn-secondary {
   @apply inline-flex items-center justify-center gap-2 rounded-full border px-5 py-3.5 text-[15px] font-semibold shadow-card transition-all duration-150 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-40;
   background-color: var(--surface-2);
   border-color: color-mix(in srgb, var(--brand, #7a51c9) 35%, transparent);
-  color: var(--brand, #7a51c9);
+  /* Text sat directly on --brand only reaches ~3.3:1 on the dark surfaces
+     used here, below the 4.5:1 AA floor for normal-size text. Lightening
+     toward white keeps the button tied to whatever brand color is
+     configured while restoring legible contrast. */
+  color: color-mix(in srgb, var(--brand, #7a51c9) 65%, white);
+}
+.btn-secondary:hover {
+  background-color: color-mix(in srgb, var(--brand, #7a51c9) 10%, var(--surface-2));
 }
 .btn-secondary:active {
   background-color: color-mix(in srgb, var(--brand, #7a51c9) 16%, var(--surface-2));
@@ -69,7 +98,10 @@ body {
 
 .btn-ghost {
   @apply inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition-all duration-150 active:scale-95;
-  color: var(--brand, #7a51c9);
+  color: color-mix(in srgb, var(--brand, #7a51c9) 65%, white);
+}
+.btn-ghost:hover {
+  background-color: color-mix(in srgb, var(--brand, #7a51c9) 8%, transparent);
 }
 
 .card {

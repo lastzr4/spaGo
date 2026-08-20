@@ -47,7 +47,7 @@ export default function ReviewSummaryPanel({
           type="button"
           onClick={regenerate}
           disabled={loading}
-          className="text-xs font-semibold text-brand-600 active:opacity-60 disabled:opacity-40"
+          className="text-xs font-semibold text-brand-300 active:opacity-60 disabled:opacity-40"
         >
           {loading ? "Menjana..." : summary ? "Kemaskini" : "Jana"}
         </button>

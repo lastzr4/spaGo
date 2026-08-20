@@ -54,7 +54,7 @@ const STATUS_LABEL: Record<string, string> = {
 
 const STATUS_STYLE: Record<string, string> = {
   PENDING: "bg-amber-500/15 text-amber-400",
-  CONFIRMED: "bg-[color:var(--surface-2)] text-brand-600",
+  CONFIRMED: "bg-[color:var(--surface-2)] text-brand-300",
   CANCELLED: "bg-red-500/15 text-red-500",
   COMPLETED: "bg-emerald-500/15 text-emerald-400",
 };
@@ -257,7 +257,7 @@ export default function BookingList({
                   type="button"
                   onClick={() => updateStatus(b.id, "CONFIRMED")}
                   disabled={updating === b.id}
-                  className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface-2)] px-3 py-2 text-xs font-semibold text-brand-600 active:scale-[0.97] disabled:opacity-40"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface-2)] px-3 py-2 text-xs font-semibold text-brand-300 active:scale-[0.97] disabled:opacity-40"
                 >
                   <CheckCircleIcon className="h-3.5 w-3.5" />
                   Sahkan

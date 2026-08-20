@@ -348,12 +348,12 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
                 href={`https://wa.me/?text=${encodeURIComponent(`Tempah urut dengan saya di sini: ${promoUrl}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-300"
               >
                 <SendIcon className="h-3 w-3" />
                 Kongsi ke WhatsApp
               </a>
-              <Link href={`/t/${slug}`} className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-600">
+              <Link href={`/t/${slug}`} className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand-300">
                 <EyeIcon className="h-3 w-3" />
                 Lihat Pratonton
               </Link>
@@ -387,7 +387,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
                   {form.name.charAt(0).toUpperCase() || "?"}
                 </div>
               )}
-              <label className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-brand-600">
+              <label className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-brand-300">
                 <CameraIcon className="h-4 w-4" />
                 {uploadingPhoto ? "Memuat naik..." : "Tukar foto profil"}
                 <input type="file" accept="image/*" className="hidden" onChange={handlePhoto} disabled={uploadingPhoto} />
@@ -416,7 +416,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
                 type="button"
                 onClick={polishBio}
                 disabled={polishingBio || !form.bio.trim()}
-                className="flex items-center gap-1.5 text-xs font-semibold text-brand-600 active:opacity-60 disabled:opacity-40"
+                className="flex items-center gap-1.5 text-xs font-semibold text-brand-300 active:opacity-60 disabled:opacity-40"
               >
                 <SparkleIcon className="h-3.5 w-3.5" />
                 {polishingBio ? "Menjana..." : "Perbaiki dengan AI"}
@@ -479,7 +479,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
             {form.coverageAreas.length > 0 ? (
               <div className="flex flex-wrap gap-1.5">
                 {form.coverageAreas.map((a) => (
-                  <span key={a} className="rounded-full bg-[color:var(--surface-2)] px-2.5 py-1 text-[11px] font-medium text-brand-600">
+                  <span key={a} className="rounded-full bg-[color:var(--surface-2)] px-2.5 py-1 text-[11px] font-medium text-brand-300">
                     {a}
                   </span>
                 ))}
@@ -596,7 +596,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
             {form.specialties.length > 0 ? (
               <div className="mb-1.5 flex flex-wrap gap-1.5">
                 {form.specialties.map((tag) => (
-                  <span key={tag} className="rounded-full bg-[color:var(--surface-2)] px-2.5 py-1 text-[11px] font-medium text-brand-600">
+                  <span key={tag} className="rounded-full bg-[color:var(--surface-2)] px-2.5 py-1 text-[11px] font-medium text-brand-300">
                     {tag}
                   </span>
                 ))}
@@ -802,7 +802,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
                         <ImageOffIcon className="h-6 w-6" />
                       </div>
                     )}
-                    <label className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-brand-600">
+                    <label className="inline-flex cursor-pointer items-center gap-1.5 text-sm font-semibold text-brand-300">
                       <CameraIcon className="h-4 w-4" />
                       {uploadingQr ? "Memuat naik..." : form.qrCodeUrl ? "Tukar kod QR" : "Muat naik kod QR"}
                       <input type="file" accept="image/*" className="hidden" onChange={handleQrPhoto} disabled={uploadingQr} />

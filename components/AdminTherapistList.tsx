@@ -144,7 +144,7 @@ export default function AdminTherapistList({ initialTherapists }: { initialThera
             <button
               type="button"
               onClick={() => copyLink(t)}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface-2)] px-3 py-2 text-xs font-semibold text-brand-600 active:scale-[0.97]"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-[color:var(--surface-2)] px-3 py-2 text-xs font-semibold text-brand-300 active:scale-[0.97]"
             >
               <LinkIcon className="h-3.5 w-3.5" />
               {copiedId === t.id ? "Disalin!" : "Salin Pautan"}

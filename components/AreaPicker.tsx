@@ -70,7 +70,7 @@ export default function AreaPicker({
                   <StateFlag state={state} />
                   {state}
                   {selectedCount > 0 && (
-                    <span className="rounded-full bg-[color:var(--surface-2)] px-1.5 py-0.5 text-[10px] font-bold text-brand-600">
+                    <span className="rounded-full bg-[color:var(--surface-2)] px-1.5 py-0.5 text-[10px] font-bold text-brand-300">
                       {selectedCount}
                     </span>
                   )}
