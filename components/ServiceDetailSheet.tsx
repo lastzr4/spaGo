@@ -5,6 +5,7 @@ import { ChevronLeftIcon, ClockIcon, StarIcon, QrIcon, CashIcon, WalletIcon } fr
 import QuickInfoRow from "@/components/QuickInfoRow";
 import ServiceBadgeRibbon from "@/components/ServiceBadgeRibbon";
 import { SERVICE_BADGES, ServiceBadge, hasPromo } from "@/lib/pricing";
+import { useDialogA11y } from "@/lib/useDialogA11y";
 
 type Service = {
   id: string;
@@ -52,6 +53,7 @@ export default function ServiceDetailSheet({
   // so the history stack stays clean and a later back-tap behaves normally.
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
+  const panelRef = useDialogA11y(true, onClose);
 
   useEffect(() => {
     let closedByPopState = false;
@@ -92,7 +94,12 @@ export default function ServiceDetailSheet({
       onClick={onClose}
     >
       <div
-        className="animate-modal-in flex max-h-[88vh] w-full flex-col overflow-hidden rounded-t-3xl bg-[color:var(--surface)] sm:max-w-md sm:rounded-3xl"
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={service.name}
+        tabIndex={-1}
+        className="animate-modal-in flex max-h-[88vh] w-full flex-col overflow-hidden rounded-t-3xl bg-[color:var(--surface)] outline-none sm:max-w-md sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative shrink-0 overflow-hidden" style={{ aspectRatio: "16 / 10" }}>

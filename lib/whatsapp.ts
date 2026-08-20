@@ -50,6 +50,23 @@ export function buildWhatsAppLink(phone: string, message: string) {
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
 
+export function buildWhatsAppConfirmationMessage(params: {
+  customerName: string;
+  therapistName: string;
+  serviceName: string;
+  date: string;
+  startTime: string;
+  address: string;
+}) {
+  const { customerName, therapistName, serviceName, date, startTime, address } = params;
+  return [
+    `Hai ${customerName}! Ini ${therapistName} dari SpaGo.`,
+    `Tempahan anda untuk ${serviceName} pada ${date}, ${startTime} telah DISAHKAN ✅`,
+    `Alamat: ${address}.`,
+    `Jumpa sebentar lagi ya!`,
+  ].join("\n");
+}
+
 export function buildWhatsAppReminderMessage(params: {
   customerName: string;
   serviceName: string;

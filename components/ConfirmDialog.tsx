@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertTriangleIcon } from "@/components/icons";
+import { useDialogA11y } from "@/lib/useDialogA11y";
 
 /**
  * Styled replacement for the native window.confirm() dialog, used for
@@ -27,12 +28,19 @@ export default function ConfirmDialog({
   onConfirm: () => void;
   onCancel: () => void;
 }) {
+  const panelRef = useDialogA11y(open, onCancel);
+
   if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-4 backdrop-blur-sm sm:items-center" onClick={onCancel}>
       <div
-        className="animate-modal-in w-full max-w-sm rounded-3xl bg-[color:var(--surface-2)] p-5 shadow-card-hover"
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        tabIndex={-1}
+        className="animate-modal-in w-full max-w-sm rounded-3xl bg-[color:var(--surface-2)] p-5 shadow-card-hover outline-none"
         onClick={(e) => e.stopPropagation()}
       >
         <div className={`mb-3 flex h-11 w-11 items-center justify-center rounded-2xl ${danger ? "bg-red-500/15 text-red-500" : "bg-[color:var(--surface-2)] text-brand-600"}`}>

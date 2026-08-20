@@ -26,6 +26,7 @@ export default async function BookingsPage({ params }: { params: { token: string
         <Suspense fallback={null}>
           <BookingList
             token={params.token}
+            therapistName={therapist.name}
             initialBookings={bookings.map((b) => ({
               id: b.id,
               customerName: b.customerName,

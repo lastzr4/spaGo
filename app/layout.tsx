@@ -33,7 +33,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  // No maximumScale — locking this to 1 blocks pinch-to-zoom, which low-
+  // vision users rely on to read content (WCAG 1.4.4). Letting the browser
+  // zoom normally doesn't change any layout behavior for everyone else.
   viewportFit: "cover",
   themeColor: "#7a51c9",
 };

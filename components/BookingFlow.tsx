@@ -716,7 +716,12 @@ export default function BookingFlow({
               (travelFeeEnabled && travelFee != null && travelFee > 0 && !travelFeeConfirmed)
             }
           >
-            {submitting ? "Menghantar..." : (
+            {submitting ? "Menghantar..." : paymentMethod === "TOYYIBPAY" && depositRequired ? (
+              <>
+                Tempah & Bayar Deposit
+                <SendIcon className="h-4 w-4" />
+              </>
+            ) : (
               <>
                 Tempah & Hantar ke WhatsApp
                 <SendIcon className="h-4 w-4" />

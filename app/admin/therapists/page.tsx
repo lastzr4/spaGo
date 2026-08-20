@@ -27,6 +27,7 @@ export default async function AdminTherapistsPage() {
             id: t.id,
             name: t.name,
             phone: t.phone,
+            username: t.username,
             gender: t.gender,
             coverageAreas: t.coverageAreas,
             active: t.active,

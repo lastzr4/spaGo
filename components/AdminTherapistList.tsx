@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { TrashIcon, CheckCircleIcon, XIcon, LinkIcon } from "@/components/icons";
+import { TrashIcon, CheckCircleIcon, XIcon, LinkIcon, LockIcon } from "@/components/icons";
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { isValidPin } from "@/lib/pin";
 
 type Therapist = {
   id: string;
   name: string;
   phone: string;
+  username: string | null;
   gender: "MALE" | "FEMALE";
   coverageAreas: string[];
   active: boolean;
@@ -22,6 +24,14 @@ export default function AdminTherapistList({ initialTherapists }: { initialThera
   const [busy, setBusy] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [pendingDelete, setPendingDelete] = useState<Therapist | null>(null);
+  // Admin-assisted recovery: a therapist who's lost their PIN (and their
+  // dashboard link bookmark) has no self-service way back in — this is the
+  // only path. Kept intentionally lightweight (inline PIN entry, no modal)
+  // since it's an occasional support action, not a primary admin workflow.
+  const [resettingId, setResettingId] = useState<string | null>(null);
+  const [newPin, setNewPin] = useState("");
+  const [resetError, setResetError] = useState<string | null>(null);
+  const [resetDone, setResetDone] = useState<string | null>(null);
 
   async function toggleActive(t: Therapist) {
     setBusy(t.id);
@@ -54,6 +64,35 @@ export default function AdminTherapistList({ initialTherapists }: { initialThera
       setTimeout(() => setCopiedId(null), 2000);
     } catch {
       // ignore
+    }
+  }
+
+  function startReset(t: Therapist) {
+    setResettingId(t.id);
+    setNewPin("");
+    setResetError(null);
+  }
+
+  async function submitReset(t: Therapist) {
+    if (!isValidPin(newPin)) {
+      setResetError("PIN mesti 4-6 digit nombor sahaja.");
+      return;
+    }
+    setBusy(t.id);
+    setResetError(null);
+    const res = await fetch(`/api/admin/therapists/${t.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pin: newPin }),
+    });
+    setBusy(null);
+    if (res.ok) {
+      setResettingId(null);
+      setNewPin("");
+      setResetDone(t.id);
+      setTimeout(() => setResetDone(null), 3000);
+    } else {
+      setResetError("Gagal set semula PIN. Sila cuba lagi.");
     }
   }
 
@@ -92,6 +131,9 @@ export default function AdminTherapistList({ initialTherapists }: { initialThera
               </p>
               <p className="mt-0.5 text-xs text-[color:var(--text-secondary)]">{t.gender === "FEMALE" ? "Wanita" : "Lelaki"} &middot; {t.coverageAreas.join(", ")}</p>
               <p className="mt-0.5 text-xs text-[color:var(--text-muted)]">{t.phone} &middot; {t.bookingCount} tempahan &middot; {t.reviewCount} ulasan</p>
+              <p className="mt-0.5 text-xs text-[color:var(--text-muted)]">
+                Username: <span className="font-medium text-[color:var(--text-secondary)]">{t.username ?? "belum ditetapkan"}</span>
+              </p>
             </div>
             <span className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${t.active ? "bg-emerald-500/15 text-emerald-400" : "bg-[color:var(--surface-2)] text-[color:var(--text-muted)]"}`}>
               {t.active ? "Aktif" : "Tidak aktif"}
@@ -126,6 +168,48 @@ export default function AdminTherapistList({ initialTherapists }: { initialThera
               Padam
             </button>
           </div>
+
+          {resettingId === t.id ? (
+            <div className="mt-2 flex flex-col gap-2 rounded-xl bg-[color:var(--surface-2)] p-3">
+              <input
+                className="input"
+                type="password"
+                inputMode="numeric"
+                placeholder="PIN baru (4-6 digit)"
+                value={newPin}
+                onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                autoFocus
+              />
+              {resetError && <p className="text-xs font-medium text-red-400">{resetError}</p>}
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => submitReset(t)}
+                  disabled={busy === t.id}
+                  className="flex flex-1 items-center justify-center rounded-xl bg-brand-600 px-3 py-2 text-xs font-semibold text-white active:scale-[0.97] disabled:opacity-40"
+                >
+                  {busy === t.id ? "Menyimpan..." : "Simpan PIN Baru"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setResettingId(null)}
+                  disabled={busy === t.id}
+                  className="rounded-xl bg-[color:var(--surface)] px-3 py-2 text-xs font-semibold text-[color:var(--text-secondary)] active:scale-[0.97]"
+                >
+                  Batal
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => startReset(t)}
+              className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl border border-[color:var(--border)] px-3 py-2 text-xs font-semibold text-[color:var(--text-secondary)] active:scale-[0.97]"
+            >
+              <LockIcon className="h-3.5 w-3.5" />
+              {resetDone === t.id ? "PIN dikemaskini!" : "Set Semula PIN (bantuan akses)"}
+            </button>
+          )}
         </div>
       ))}
     </div>

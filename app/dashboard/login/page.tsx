@@ -14,6 +14,7 @@ export default function TherapistLoginPage() {
   const [pinPadOpen, setPinPadOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showRecoveryHelp, setShowRecoveryHelp] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -72,6 +73,20 @@ export default function TherapistLoginPage() {
               {submitting ? "Log masuk..." : "Log Masuk"}
             </button>
           </form>
+
+          <button
+            type="button"
+            onClick={() => setShowRecoveryHelp((v) => !v)}
+            className="mt-4 block w-full text-center text-sm font-semibold text-brand-600"
+          >
+            Lupa Username / PIN?
+          </button>
+          {showRecoveryHelp && (
+            <p className="mt-2 animate-fade-in rounded-xl bg-[color:var(--surface-2)]/60 px-3.5 py-2.5 text-xs leading-relaxed text-[color:var(--text-secondary)]">
+              SpaGo tidak simpan e-mel anda, jadi reset kata laluan automatik tidak tersedia. Hubungi pentadbir SpaGo dan berikan nombor telefon yang anda daftarkan — pentadbir boleh sahkan identiti anda dan tetapkan semula PIN atau kongsi semula pautan dashboard anda.
+            </p>
+          )}
+
           <p className="mt-4 text-center text-sm text-[color:var(--text-secondary)]">
             Belum daftar?{" "}
             <Link href="/dashboard/register" className="font-semibold text-brand-600">

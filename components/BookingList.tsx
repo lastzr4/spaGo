@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CalendarIcon, CheckCircleIcon, XIcon, ClipboardListIcon, AlertTriangleIcon, WalletIcon } from "@/components/icons";
 import { buildGoogleCalendarLink } from "@/lib/googleCalendar";
+import { buildWhatsAppConfirmationMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import { isLateCancellation } from "@/lib/cancellation";
 import ConfirmDialog from "@/components/ConfirmDialog";
 import RescheduleSheet from "@/components/RescheduleSheet";
@@ -79,10 +80,12 @@ const FILTERS: { value: StatusFilter; label: string }[] = [
 
 export default function BookingList({
   token,
+  therapistName,
   initialBookings,
   cancellationWindowHours = 2,
 }: {
   token: string;
+  therapistName: string;
   initialBookings: Booking[];
   cancellationWindowHours?: number;
 }) {
@@ -281,6 +284,28 @@ export default function BookingList({
                 Batal
               </button>
             </div>
+          )}
+
+          {b.status === "CONFIRMED" && (
+            <a
+              href={buildWhatsAppLink(
+                b.customerPhone,
+                buildWhatsAppConfirmationMessage({
+                  customerName: b.customerName,
+                  therapistName,
+                  serviceName: b.serviceName,
+                  date: b.date,
+                  startTime: b.startTime,
+                  address: b.customerAddress,
+                })
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-xl bg-emerald-500/15 px-3 py-2 text-xs font-semibold text-emerald-400 active:scale-[0.97]"
+            >
+              <CheckCircleIcon className="h-3.5 w-3.5" />
+              Hantar Pengesahan (WhatsApp)
+            </a>
           )}
 
           {b.status === "CONFIRMED" && (

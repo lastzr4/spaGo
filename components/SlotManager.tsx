@@ -5,6 +5,7 @@ import { PlusIcon, TrashIcon, UndoIcon, XIcon, PhoneIcon, MapPinIcon, BriefcaseI
 import { TIME_GROUPS, timeOfDay, todayStr, isPastTime, isPastSlot } from "@/lib/slotTimes";
 import SlotTemplateEditor from "@/components/SlotTemplateEditor";
 import DateStrip, { type DayPill } from "@/components/DateStrip";
+import { useDialogA11y } from "@/lib/useDialogA11y";
 
 type BookingInfo = {
   customerName: string;
@@ -95,6 +96,7 @@ export default function SlotManager({
   const [saving, setSaving] = useState(false);
   const [detailSlot, setDetailSlot] = useState<Slot | null>(null);
   const [showAllBookings, setShowAllBookings] = useState(false);
+  const detailPanelRef = useDialogA11y(detailSlot?.booking != null, () => setDetailSlot(null));
 
   function selectDay(d: string) {
     setSelectedDate(d);
@@ -338,7 +340,12 @@ export default function SlotManager({
           onClick={() => setDetailSlot(null)}
         >
           <div
-            className="animate-modal-in w-full max-w-sm rounded-3xl bg-[color:var(--surface-2)] p-5 shadow-card-hover"
+            ref={detailPanelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Butiran tempahan ${detailSlot.booking.customerName}`}
+            tabIndex={-1}
+            className="animate-modal-in w-full max-w-sm rounded-3xl bg-[color:var(--surface-2)] p-5 shadow-card-hover outline-none"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="mb-3 flex items-start justify-between gap-2">

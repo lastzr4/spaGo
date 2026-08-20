@@ -82,7 +82,7 @@ export default async function TherapistDetailPage({
                 slug: therapist.slug,
               }}
             />
-            <ShareButton title={therapist.name} url={typeof window !== "undefined" ? window.location.href : ""} />
+            <ShareButton title={therapist.name} />
           </>
         }
       />

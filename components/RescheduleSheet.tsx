@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { ChevronLeftIcon, CalendarIcon } from "@/components/icons";
 import { slotsNeededFor, findConsecutiveAvailableSlots } from "@/lib/slotOverlap";
+import { useDialogA11y } from "@/lib/useDialogA11y";
 
 type SlotOption = { id: string; date: string; startTime: string; endTime: string; status: string };
 
@@ -28,6 +29,7 @@ export default function RescheduleSheet({
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const panelRef = useDialogA11y(true, onClose);
 
   useEffect(() => {
     let cancelled = false;
@@ -77,7 +79,12 @@ export default function RescheduleSheet({
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-sm sm:items-center sm:p-4" onClick={onClose}>
       <div
-        className="animate-modal-in flex max-h-[80vh] w-full flex-col overflow-hidden rounded-t-3xl bg-[color:var(--surface)] sm:max-w-md sm:rounded-3xl"
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Jadual Semula"
+        tabIndex={-1}
+        className="animate-modal-in flex max-h-[80vh] w-full flex-col overflow-hidden rounded-t-3xl bg-[color:var(--surface)] outline-none sm:max-w-md sm:rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center gap-2 border-b border-[color:var(--border)] px-5 py-4">
