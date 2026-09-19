@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, Fraunces } from "next/font/google";
 import "./globals.css";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { getSiteSettings } from "@/lib/siteSettings";
@@ -7,6 +7,17 @@ import { getSiteSettings } from "@/lib/siteSettings";
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-jakarta",
+  display: "swap",
+});
+
+// Display serif — reserved for names, prices and hero headlines only (see
+// tailwind.config.ts `fontFamily.display`). Everything transactional
+// (buttons, forms, nav, body copy) stays on Plus Jakarta Sans above.
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  style: ["normal", "italic"],
+  weight: ["500", "600"],
   display: "swap",
 });
 
@@ -44,7 +55,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const settings = await getSiteSettings().catch(() => ({ themeColor: "#7a51c9", backgroundColor: "#faf9fc" }));
 
   return (
-    <html lang="ms" className={jakarta.variable}>
+    <html lang="ms" className={`${jakarta.variable} ${fraunces.variable}`}>
       <body
         className="min-h-screen font-sans"
         style={{

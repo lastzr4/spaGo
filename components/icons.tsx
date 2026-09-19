@@ -335,6 +335,20 @@ export function SparkleIcon(props: IconProps) {
   );
 }
 
+// Signature mark (bunga kemboja / frangipani) — reserved for one spot only:
+// the "Top Rated" badge (TherapistBadges). Not a general-purpose icon.
+export function FrangipaniIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 12c0-3-2-5-2-8a2 2 0 1 1 4 0c0 3-2 5-2 8z" />
+      <path d="M12 12c3 0 5-2 8-2a2 2 0 1 1 0 4c-3 0-5-2-8-2z" />
+      <path d="M12 12c0 3 2 5 2 8a2 2 0 1 1-4 0c0-3 2-5 2-8z" />
+      <path d="M12 12c-3 0-5 2-8 2a2 2 0 1 1 0-4c3 0 5 2 8 2z" />
+      <circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export function HeartIcon({ filled, ...props }: IconProps & { filled?: boolean }) {
   return (
     <svg {...base} fill={filled ? "currentColor" : "none"} {...props}>

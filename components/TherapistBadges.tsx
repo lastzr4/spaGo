@@ -1,4 +1,4 @@
-import { AwardIcon, SparkleIcon } from "@/components/icons";
+import { FrangipaniIcon, SparkleIcon } from "@/components/icons";
 
 export default function TherapistBadges({
   averageRating,
@@ -17,8 +17,8 @@ export default function TherapistBadges({
   return (
     <div className="flex items-center gap-1.5">
       {isTopRated && (
-        <span className="inline-flex items-center gap-1 rounded-full bg-yellow-50 px-2 py-0.5 text-[11px] font-semibold text-yellow-600">
-          <AwardIcon className="h-3 w-3" />
+        <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[11px] font-semibold text-amber-400">
+          <FrangipaniIcon className="h-3 w-3" />
           Top Rated
         </span>
       )}

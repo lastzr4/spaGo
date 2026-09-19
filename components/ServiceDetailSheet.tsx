@@ -135,14 +135,14 @@ export default function ServiceDetailSheet({
 
         <div className="flex-1 overflow-y-auto px-5 py-4">
           <div className="flex items-start justify-between gap-3">
-            <h2 className="text-lg font-bold text-[color:var(--text-primary)]">{service.name}</h2>
+            <h2 className="font-display text-lg font-semibold text-[color:var(--text-primary)]">{service.name}</h2>
             {hasPromo(service.price, service.promoPrice) ? (
               <span className="flex shrink-0 items-baseline gap-1.5">
                 <span className="text-xs font-medium text-[color:var(--text-muted)] line-through">RM{Number(service.price).toFixed(0)}</span>
-                <span className="text-lg font-bold text-brand-500">RM{Number(service.promoPrice).toFixed(0)}</span>
+                <span className="font-display text-lg font-semibold text-brand-300">RM{Number(service.promoPrice).toFixed(0)}</span>
               </span>
             ) : (
-              <span className="shrink-0 text-lg font-bold text-brand-500">RM{Number(service.price).toFixed(0)}</span>
+              <span className="shrink-0 font-display text-lg font-semibold text-brand-300">RM{Number(service.price).toFixed(0)}</span>
             )}
           </div>
 

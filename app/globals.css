@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Type scale — use these Tailwind classes instead of ad hoc text-[Npx]
+   arbitrary values in any component you touch. Roles, not just sizes:
+     text-[11px]  micro   — chips, meta labels, tiny badges
+     text-xs      12px    — secondary/meta text, small buttons
+     text-sm      14px    — body copy, form labels
+     text-base    16px    — primary body, .input/.btn text
+     text-lg      18px    — card titles (pair with font-display)
+     text-xl      20px    — section headers
+     text-[26px]  display — hero headlines (font-display only)
+   (11px and 26px stay arbitrary — Tailwind has no default step there —
+   but treat them as fixed scale steps, not one-off numbers.) */
 :root {
   --brand: #7a51c9;
   --safe-top: env(safe-area-inset-top, 0px);

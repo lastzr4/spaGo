@@ -9,6 +9,9 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-jakarta)", "system-ui", "sans-serif"],
+        // Reserved for names, prices, and hero headlines only — see
+        // app/layout.tsx. Everything transactional stays on `sans`.
+        display: ["var(--font-fraunces)", "serif"],
       },
       colors: {
         brand: {

@@ -402,7 +402,7 @@ export default function BookingFlow({
                     >
                       <span className="block truncate font-semibold text-[color:var(--text-primary)]">{s.name}</span>
                       {s.isPackage && (
-                        <span className="rounded-full bg-[color:var(--surface)] px-1.5 py-0.5 text-[9px] font-bold text-brand-500">Pakej</span>
+                        <span className="rounded-full bg-[color:var(--surface)] px-1.5 py-0.5 text-[9px] font-bold text-brand-300">Pakej</span>
                       )}
                     </span>
                     <span className="block text-xs text-[color:var(--text-secondary)]">{s.durationMinutes} minit</span>
@@ -445,7 +445,7 @@ export default function BookingFlow({
 
       <div ref={slotSectionRef} className="scroll-mt-5">
         <h2 className="mb-1 flex items-center gap-1.5 text-[15px] font-bold text-[color:var(--text-primary)]">
-          <CalendarIcon className="h-4 w-4 text-brand-500" />
+          <CalendarIcon className="h-4 w-4 text-brand-300" />
           Pilih slot masa
         </h2>
         {slotsNeeded > 1 && (
@@ -535,10 +535,10 @@ export default function BookingFlow({
             {hasPromo(selectedService.price, selectedService.promoPrice) ? (
               <span className="flex items-baseline gap-1.5">
                 <span className="text-xs font-medium text-[color:var(--text-muted)] line-through">RM{Number(selectedService.price).toFixed(0)}</span>
-                <span className="font-bold text-brand-500">RM{Number(selectedService.promoPrice).toFixed(0)}</span>
+                <span className="font-display text-base font-semibold text-brand-300">RM{Number(selectedService.promoPrice).toFixed(0)}</span>
               </span>
             ) : (
-              <span className="font-bold text-brand-500">RM{Number(selectedService.price).toFixed(0)}</span>
+              <span className="font-display text-base font-semibold text-brand-300">RM{Number(selectedService.price).toFixed(0)}</span>
             )}
           </div>
           {travelFeeEnabled && detailsRevealed && (
@@ -649,7 +649,7 @@ export default function BookingFlow({
           <ul className="mt-3 flex flex-col gap-1.5 text-xs text-[color:var(--text-secondary)]">
             {buildHealthDeclarationStatements(customerGender).map((statement, i) => (
               <li key={i} className="flex gap-2">
-                <span className="text-brand-500">•</span>
+                <span className="text-brand-300">•</span>
                 <span>{statement}</span>
               </li>
             ))}

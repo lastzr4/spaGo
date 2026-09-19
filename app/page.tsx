@@ -44,7 +44,7 @@ export default async function HomePage() {
             <img src="/icons/icon-192.png" alt="" className="h-4 w-4 shrink-0 rounded-[5px]" />
             SpaGo
           </span>
-          <h1 className="mt-3 whitespace-pre-line text-[28px] font-bold leading-tight">{settings.heroTitle}</h1>
+          <h1 className="mt-3 whitespace-pre-line font-display text-[28px] font-semibold italic leading-tight">{settings.heroTitle}</h1>
           <p className="mt-2 max-w-[280px] text-sm text-white/85">{settings.heroSubtitle}</p>
         </Liquid>
       </div>
