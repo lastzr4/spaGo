@@ -62,7 +62,7 @@ export default function ReceiptUploadForm({
       {depositAmount != null && (
         <div className="rounded-2xl bg-[color:var(--surface-2)]/60 p-4 text-center">
           <p className="text-xs text-[color:var(--text-secondary)]">Jumlah deposit dijangka</p>
-          <p className="text-2xl font-bold text-brand-500">RM{depositAmount.toFixed(0)}</p>
+          <p className="font-display text-2xl font-semibold text-brand-300">RM{depositAmount.toFixed(0)}</p>
         </div>
       )}
 

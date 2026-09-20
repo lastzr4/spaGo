@@ -40,7 +40,7 @@ export default function ReviewSummaryPanel({
     <div className="card mb-4 flex flex-col gap-2 animate-fade-in">
       <div className="flex items-center justify-between gap-2">
         <p className="flex items-center gap-1.5 text-sm font-semibold text-[color:var(--text-primary)]">
-          <SparkleIcon className="h-4 w-4 text-brand-500" />
+          <SparkleIcon className="h-4 w-4 text-brand-300" />
           Ringkasan AI
         </p>
         <button

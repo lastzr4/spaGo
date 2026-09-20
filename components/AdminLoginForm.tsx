@@ -35,7 +35,7 @@ export default function AdminLoginForm() {
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[color:var(--surface-2)] text-brand-300">
             <LockIcon className="h-5 w-5" />
           </div>
-          <h1 className="text-lg font-bold text-[color:var(--text-primary)]">SpaGo Admin</h1>
+          <h1 className="font-display text-xl font-semibold text-[color:var(--text-primary)]">SpaGo Admin</h1>
           <p className="text-sm text-[color:var(--text-secondary)]">Log masuk untuk urus tetapan laman.</p>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">

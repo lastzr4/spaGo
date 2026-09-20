@@ -127,7 +127,7 @@ function CustomerCard({
             {customer.name.slice(0, 1).toUpperCase()}
           </span>
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-[color:var(--text-primary)]">{customer.name}</p>
+            <p className="truncate font-display text-[15px] font-semibold text-[color:var(--text-primary)]">{customer.name}</p>
             <p className="truncate text-xs text-[color:var(--text-secondary)]">
               {customer.totalBookings} tempahan &middot; kali terakhir {formatDate(customer.lastBookingDate)}
             </p>
@@ -146,7 +146,7 @@ function CustomerCard({
       {open && (
         <div className="mt-3 flex flex-col gap-3 border-t border-[color:var(--border)] pt-3">
           <a href={`tel:${customer.phone}`} className="flex items-center gap-2 text-sm text-[color:var(--text-secondary)] active:opacity-60">
-            <PhoneIcon className="h-4 w-4 text-brand-500" />
+            <PhoneIcon className="h-4 w-4 text-brand-300" />
             {customer.phone}
           </a>
 

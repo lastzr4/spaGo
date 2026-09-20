@@ -42,7 +42,7 @@ export default function SalesHeroCard({
         <WalletIcon className="h-3.5 w-3.5" />
         Jumlah Terkumpul
       </div>
-      <p className="relative mt-1.5 text-[32px] font-bold leading-none">
+      <p className="relative mt-1.5 font-display text-[32px] font-semibold leading-none">
         <CountUp value={totalCollected} prefix="RM" />
       </p>
       <p className="relative mt-1.5 text-xs text-white/70">{customersServed} pelanggan dilayan setakat ini</p>

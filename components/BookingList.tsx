@@ -161,7 +161,7 @@ export default function BookingList({
               className={`chip shrink-0 ${filter === f.value ? "chip-active" : ""}`}
             >
               {f.label}
-              <span className={`ml-0.5 text-[11px] ${filter === f.value ? "text-brand-500" : "text-[color:var(--text-muted)]"}`}>{count}</span>
+              <span className={`ml-0.5 text-[11px] ${filter === f.value ? "text-brand-300" : "text-[color:var(--text-muted)]"}`}>{count}</span>
             </button>
           );
         })}
@@ -179,7 +179,7 @@ export default function BookingList({
         return (
         <div key={b.id} className={`card animate-fade-in ${overdue ? "ring-1 ring-amber-300" : ""}`} style={{ animationDelay: `${i * 40}ms` }}>
           <div className="flex items-center justify-between gap-2">
-            <p className="min-w-0 truncate font-semibold text-[color:var(--text-primary)]">{b.customerName}</p>
+            <p className="min-w-0 truncate font-display text-[17px] font-semibold text-[color:var(--text-primary)]">{b.customerName}</p>
             <span className="flex shrink-0 items-center gap-1.5">
               {overdue && (
                 <span className="rounded-full bg-amber-500/20 px-2 py-1 text-[10px] font-semibold text-amber-400">
@@ -194,7 +194,7 @@ export default function BookingList({
           <p className="mt-1.5 text-sm text-[color:var(--text-secondary)]">{b.serviceName} &middot; {b.date} {b.startTime}</p>
           <p className="mt-1 text-xs text-[color:var(--text-muted)]">{b.customerPhone} &middot; {b.customerAddress}</p>
           {Number(b.outcallFee) > 0 && (
-            <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-brand-500">
+            <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium text-brand-300">
               <WalletIcon className="h-3 w-3" />
               Caj perjalanan: RM{Number(b.outcallFee).toFixed(0)}
               {b.travelDistanceKm != null && ` (~${b.travelDistanceKm.toFixed(1)} km)`}

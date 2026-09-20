@@ -18,7 +18,7 @@ export default function TransactionList({ token, transactions }: { token: string
     <div className="mb-6 animate-fade-in">
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-[13px] font-bold uppercase tracking-wide text-[color:var(--text-muted)]">Transaksi Terkini</h2>
-        <Link href={`/dashboard/${token}/bookings?status=COMPLETED`} className="text-xs font-semibold text-brand-500 active:opacity-60">
+        <Link href={`/dashboard/${token}/bookings?status=COMPLETED`} className="text-xs font-semibold text-brand-300 active:opacity-60">
           Lihat semua
         </Link>
       </div>
@@ -29,12 +29,12 @@ export default function TransactionList({ token, transactions }: { token: string
               <WalletIcon className="h-4 w-4" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-[color:var(--text-primary)]">{t.customerName}</p>
+              <p className="truncate font-display text-[15px] font-semibold text-[color:var(--text-primary)]">{t.customerName}</p>
               <p className="truncate text-xs text-[color:var(--text-secondary)]">
                 {t.serviceName} &middot; {formatDate(t.date)}
               </p>
             </div>
-            <span className="shrink-0 text-sm font-bold text-emerald-400">+RM{t.amount.toFixed(0)}</span>
+            <span className="shrink-0 font-display text-[15px] font-semibold text-emerald-400">+RM{t.amount.toFixed(0)}</span>
           </div>
         ))}
       </div>

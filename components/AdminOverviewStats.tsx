@@ -55,7 +55,7 @@ export default function AdminOverviewStats({
             <div className={`mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br text-white shadow-[0_4px_12px_-4px_rgba(0,0,0,0.35)] ${s.accent}`}>
               <s.Icon className="h-4 w-4" />
             </div>
-            <p className="text-lg font-bold text-[color:var(--text-primary)]">{s.value}</p>
+            <p className="font-display text-lg font-semibold text-[color:var(--text-primary)]">{s.value}</p>
             <p className="mt-0.5 text-[11px] font-medium text-[color:var(--text-secondary)]">{s.label}</p>
           </Link>
         ))}

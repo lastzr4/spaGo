@@ -68,7 +68,7 @@ export default function ChatWidget({ slug, therapistName, therapistPhone }: { sl
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-bold text-[color:var(--text-primary)]">Tanya AI &middot; {therapistName}</p>
-                <p className="text-[10px] font-medium text-brand-500">Percuma buat masa ini</p>
+                <p className="text-[10px] font-medium text-brand-300">Percuma buat masa ini</p>
               </div>
               <button type="button" onClick={() => setOpen(false)} className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[color:var(--text-muted)] active:scale-90">
                 <XIcon className="h-4 w-4" />

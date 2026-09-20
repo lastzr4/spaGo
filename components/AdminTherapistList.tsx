@@ -125,7 +125,7 @@ export default function AdminTherapistList({ initialTherapists }: { initialThera
         <div key={t.id} className={`card animate-fade-in ${!t.active ? "opacity-60" : ""}`} style={{ animationDelay: `${i * 30}ms` }}>
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="flex items-center gap-1.5 truncate font-semibold text-[color:var(--text-primary)]">
+              <p className="flex items-center gap-1.5 truncate font-display text-[15px] font-semibold text-[color:var(--text-primary)]">
                 {t.name}
                 {t.isDemo && <span className="shrink-0 rounded-full bg-[color:var(--surface-2)] px-1.5 py-0.5 text-[10px] font-medium text-[color:var(--text-muted)]">DEMO</span>}
               </p>

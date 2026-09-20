@@ -530,17 +530,6 @@ export default function BookingFlow({
             <span className="text-[color:var(--text-secondary)]">Tempoh</span>
             <span className="font-semibold text-[color:var(--text-primary)]">{selectedService.durationMinutes} minit</span>
           </div>
-          <div className="detail-row">
-            <span className="text-[color:var(--text-secondary)]">Harga</span>
-            {hasPromo(selectedService.price, selectedService.promoPrice) ? (
-              <span className="flex items-baseline gap-1.5">
-                <span className="text-xs font-medium text-[color:var(--text-muted)] line-through">RM{Number(selectedService.price).toFixed(0)}</span>
-                <span className="font-display text-base font-semibold text-brand-300">RM{Number(selectedService.promoPrice).toFixed(0)}</span>
-              </span>
-            ) : (
-              <span className="font-display text-base font-semibold text-brand-300">RM{Number(selectedService.price).toFixed(0)}</span>
-            )}
-          </div>
           {travelFeeEnabled && detailsRevealed && (
             <div className="detail-row">
               <span className="text-[color:var(--text-secondary)]">Caj Perjalanan{distanceKm != null ? ` (~${distanceKm.toFixed(1)} km)` : ""}</span>
@@ -555,6 +544,30 @@ export default function BookingFlow({
               </span>
             </div>
           )}
+
+          {/* Ticket-stub total — a punched (notched) divider separates the
+              line items above from the price, echoing the receipt this
+              summary actually is. Same motif as the therapist search card. */}
+          <div className="relative my-1 h-0 border-t border-dashed" style={{ borderColor: "var(--border-strong)" }} aria-hidden="true">
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <span
+                key={i}
+                className="absolute top-0 h-2.5 w-2.5 -translate-y-1/2 rounded-full"
+                style={{ left: `${4 + i * 19}%`, backgroundColor: "var(--app-bg, #120a1e)" }}
+              />
+            ))}
+          </div>
+          <div className="flex items-center justify-between gap-3 pt-2">
+            <span className="text-[color:var(--text-secondary)]">Harga</span>
+            {hasPromo(selectedService.price, selectedService.promoPrice) ? (
+              <span className="flex items-baseline gap-1.5">
+                <span className="text-xs font-medium text-[color:var(--text-muted)] line-through">RM{Number(selectedService.price).toFixed(0)}</span>
+                <span className="font-display text-xl font-semibold text-brand-300">RM{Number(selectedService.promoPrice).toFixed(0)}</span>
+              </span>
+            ) : (
+              <span className="font-display text-xl font-semibold text-brand-300">RM{Number(selectedService.price).toFixed(0)}</span>
+            )}
+          </div>
         </div>
       )}
 

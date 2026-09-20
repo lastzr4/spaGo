@@ -247,7 +247,7 @@ export default function SlotManager({
                 className="card-tap flex items-center justify-between gap-2 rounded-xl border border-[color:var(--border)] px-3 py-2.5 text-left"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-[color:var(--text-primary)]">{s.booking!.customerName}</p>
+                  <p className="truncate font-display text-[15px] font-semibold text-[color:var(--text-primary)]">{s.booking!.customerName}</p>
                   <p className="text-xs text-[color:var(--text-muted)]">
                     {formatDateLabel(s.date.slice(0, 10))} &middot; {s.startTime}
                   </p>
@@ -353,7 +353,7 @@ export default function SlotManager({
                 <p className="text-[11px] font-semibold uppercase tracking-wide text-[color:var(--text-muted)]">
                   {formatDateLabel(detailSlot.date.slice(0, 10))} &middot; {detailSlot.startTime}
                 </p>
-                <h3 className="mt-0.5 text-[17px] font-bold text-[color:var(--text-primary)]">{detailSlot.booking.customerName}</h3>
+                <h3 className="mt-0.5 font-display text-lg font-semibold text-[color:var(--text-primary)]">{detailSlot.booking.customerName}</h3>
               </div>
               <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${BOOKING_STATUS_STYLE[detailSlot.booking.status] ?? "bg-[color:var(--surface-2)] text-[color:var(--text-secondary)]"}`}>
                 {BOOKING_STATUS_LABEL[detailSlot.booking.status] ?? detailSlot.booking.status}

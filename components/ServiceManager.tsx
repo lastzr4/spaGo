@@ -437,7 +437,7 @@ export default function ServiceManager({
                       <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                     </div>
                   )}
-                  <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--surface-2)] text-brand-500 shadow-sm ring-1 ring-[color:var(--border-strong)]">
+                  <span className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[color:var(--surface-2)] text-brand-300 shadow-sm ring-1 ring-[color:var(--border-strong)]">
                     <CameraIcon className="h-3 w-3" />
                   </span>
                   <input
@@ -508,7 +508,7 @@ export default function ServiceManager({
                       <p className="text-[11px] text-[color:var(--text-secondary)]">
                         Pelanggan nampak:{" "}
                         <span className="text-[color:var(--text-muted)] line-through">RM{Number(editPrice).toFixed(0)}</span>{" "}
-                        <span className="font-semibold text-brand-500">RM{Number(editPromoPrice).toFixed(0)}</span>
+                        <span className="font-semibold text-brand-300">RM{Number(editPromoPrice).toFixed(0)}</span>
                       </p>
                     )}
                     <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-[color:var(--text-primary)]">
@@ -558,9 +558,9 @@ export default function ServiceManager({
                 ) : (
                   <button type="button" onClick={() => startEdit(s)} className="min-w-0 flex-1 text-left">
                     <span className="flex flex-wrap items-center gap-1.5">
-                      <p className="truncate font-semibold text-[color:var(--text-primary)]">{s.name}</p>
+                      <p className="truncate font-display text-[15px] font-semibold text-[color:var(--text-primary)]">{s.name}</p>
                       {s.isPackage && (
-                        <span className="rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[10px] font-bold text-brand-500">Pakej</span>
+                        <span className="rounded-full bg-[color:var(--surface-2)] px-2 py-0.5 text-[10px] font-bold text-brand-300">Pakej</span>
                       )}
                     </span>
                     <p className="text-xs text-[color:var(--text-secondary)]">
@@ -568,7 +568,7 @@ export default function ServiceManager({
                       {hasPromo(s.price, s.promoPrice) ? (
                         <>
                           <span className="text-[color:var(--text-muted)] line-through">RM{Number(s.price).toFixed(0)}</span>{" "}
-                          <span className="font-semibold text-brand-500">RM{Number(s.promoPrice).toFixed(0)}</span>
+                          <span className="font-semibold text-brand-300">RM{Number(s.promoPrice).toFixed(0)}</span>
                         </>
                       ) : (
                         <>RM{Number(s.price).toFixed(0)}</>
@@ -654,7 +654,7 @@ export default function ServiceManager({
         {hasPromo(price || "0", promoPrice || null) && (
           <p className="text-[11px] text-[color:var(--text-secondary)]">
             Pelanggan nampak: <span className="text-[color:var(--text-muted)] line-through">RM{Number(price).toFixed(0)}</span>{" "}
-            <span className="font-semibold text-brand-500">RM{Number(promoPrice).toFixed(0)}</span>
+            <span className="font-semibold text-brand-300">RM{Number(promoPrice).toFixed(0)}</span>
           </p>
         )}
         <label className="flex cursor-pointer items-center gap-2 text-xs font-semibold text-[color:var(--text-primary)]">

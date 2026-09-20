@@ -27,7 +27,7 @@ export default function TopBar({
           <img src="/icons/icon-192.png" alt="SpaGo" className="h-9 w-9 rounded-[10px]" />
         </span>
       )}
-      <h1 className="flex-1 truncate text-center text-[15px] font-semibold text-[color:var(--text-primary)]">{title}</h1>
+      <h1 className="flex-1 truncate text-center font-display text-base font-semibold text-[color:var(--text-primary)]">{title}</h1>
       <div className="flex min-w-9 shrink-0 items-center justify-end gap-1.5">{right}</div>
     </header>
   );

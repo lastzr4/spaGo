@@ -47,7 +47,7 @@ export default function SlotTemplateEditor({ token, initialTemplate }: { token: 
     <div className="card flex flex-col gap-3 animate-fade-in">
       <button type="button" onClick={() => setOpen((o) => !o)} className="flex items-center justify-between gap-2 text-left">
         <div className="flex items-center gap-2.5">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[color:var(--surface-2)] text-brand-500">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[color:var(--surface-2)] text-brand-300">
             <CalendarIcon className="h-4 w-4" />
           </span>
           <div>

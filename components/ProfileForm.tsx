@@ -965,7 +965,7 @@ export default function ProfileForm({ token, slug, therapist }: Props) {
           <div className="min-w-0">
             <p className="mb-1.5 text-sm font-semibold text-[color:var(--text-primary)]">Media Sosial</p>
             {hasSocial ? (
-              <div className="flex items-center gap-2 text-brand-500">
+              <div className="flex items-center gap-2 text-brand-300">
                 {form.socialInstagram && <InstagramIcon className="h-4 w-4" />}
                 {form.socialTiktok && <TiktokIcon className="h-4 w-4" />}
                 {form.socialThreads && <ThreadsIcon className="h-4 w-4" />}

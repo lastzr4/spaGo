@@ -98,7 +98,7 @@ export default function AdminSettingsForm({
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[color:var(--surface-2)] text-brand-300">
           <PaletteIcon className="h-5 w-5" />
         </div>
-        <h1 className="text-lg font-bold text-[color:var(--text-primary)]">Tetapan Laman</h1>
+        <h1 className="font-display text-xl font-semibold text-[color:var(--text-primary)]">Tetapan Laman</h1>
       </div>
 
       <form onSubmit={handleSave} className="flex flex-col gap-5">
@@ -206,7 +206,7 @@ export default function AdminSettingsForm({
           <p className="text-[15px] font-bold text-[color:var(--text-primary)]">Notifikasi</p>
           <div>
             <label className="mb-2 flex items-center gap-1.5 text-sm font-semibold text-[color:var(--text-primary)]">
-              <MailIcon className="h-4 w-4 text-brand-500" />
+              <MailIcon className="h-4 w-4 text-brand-300" />
               Email admin
             </label>
             <input
